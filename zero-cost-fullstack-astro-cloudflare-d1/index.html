@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 – Astro Blog CMS</title>
+    <meta name="description" content="Complete technical architecture guide to launching a production blog on Cloudflare Pages, D1, and R2 with zero hosting expenses." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0b0f17; color: #f1f5f9; }
+      h1, h2, .font-serif { font-family: 'Playfair Display', serif; }
+      .prose p { margin-bottom: 1.25rem; line-height: 1.8; color: #cbd5e1; }
+      .prose h2 { font-size: 1.75rem; font-weight: 700; color: #ffffff; margin-top: 2rem; margin-bottom: 1rem; }
+      .prose h3 { font-size: 1.35rem; font-weight: 600; color: #f8fafc; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+      .prose ul, .prose ol { margin-left: 1.5rem; margin-bottom: 1.25rem; color: #cbd5e1; }
+      .prose li { margin-bottom: 0.5rem; }
+      .prose code { background: #1e293b; color: #f97316; padding: 0.2rem 0.4rem; border-radius: 0.375rem; font-size: 0.875em; }
+    </style>
+  </head>
+  <body class="min-h-screen flex flex-col justify-between selection:bg-orange-500/20 selection:text-orange-400">
+    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2 font-extrabold text-lg text-white hover:text-orange-400 transition-colors">
+          <span>←</span>
+          <span>Astro Blog CMS</span>
+        </a>
+        <a href="/admin" class="px-3.5 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs transition-all shadow-md">
+          ✍️ Edit in Sveltia CMS
+        </a>
+      </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-12 flex-1 w-full">
+      <div class="space-y-4 mb-8">
+        <div class="flex items-center gap-2 text-xs font-mono text-orange-400">
+          <span class="px-2.5 py-1 rounded-md bg-orange-500/10 border border-orange-500/20">Cloudflare & Edge</span>
+          <span>•</span>
+          <span>6 min read</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight font-serif">
+          Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint
+        </h1>
+        <p class="text-lg text-slate-400 leading-relaxed font-light">How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers.</p>
+      </div>
+
+      <div class="aspect-video w-full rounded-2xl overflow-hidden mb-10 border border-slate-800 shadow-2xl">
+              <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80" alt="Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint" class="w-full h-full object-cover">
+            </div>
+
+      <div class="prose max-w-none text-slate-300 text-base sm:text-lg leading-relaxed border-t border-slate-800/80 pt-8">
+        <p>When designing the infrastructure for a high-volume digital publication, the default impulse is often to provision managed PostgreSQL databases, dedicated Redis clusters, and auto-scaling container fleets on AWS or GCP.
+
+However, for 98% of content-driven websites, this is financial and architectural overkill. By combining Astro's static build optimization with Cloudflare Pages, D1 (edge SQLite), and R2 (S3-compatible asset storage), you can achieve enterprise-tier performance with exactly ₹0 / $0 monthly hosting expenses.
+
+<!-- block:blk-cf-1 -->
+
+## Why Astro + Cloudflare D1 is the Ultimate Pairing
+
+Astro excels at generating ultra-fast HTML at build time, hydration islands for interactive components, and server endpoints for admin writes.
+
+Cloudflare D1 is a serverless relational database built on SQLite distributed worldwide across Cloudflare's 300+ city edge network. Reads are near-instantaneous, and writes are managed through an Raft consensus protocol.
+
+<!-- block:blk-cf-2 -->
+
+<!-- block:blk-cf-3 -->
+
+## Infrastructure Breakdown & Cost Modeling
+
+<!-- block:blk-cf-4 -->
+
+<!-- block:blk-cf-5 --></p>
+      </div>
+    </main>
+
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-8 text-center text-xs text-slate-500">
+      <div class="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>© 2026 Astro Blog CMS. All rights reserved.</div>
+        <div class="flex items-center gap-4">
+          <a href="/" class="hover:text-slate-300">Home</a>
+          <span>•</span>
+          <a href="/admin" class="text-orange-400 hover:underline">Sveltia CMS Admin</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
