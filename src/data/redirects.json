@@ -1,0 +1,14 @@
+{
+  "rules": [
+    {
+      "from": "/articles/facebook-reels-ai",
+      "to": "/how-to-create-facebook-reels-with-ai",
+      "code": "301"
+    },
+    {
+      "from": "/blog/zero-cost-astro",
+      "to": "/zero-cost-fullstack-astro-cloudflare-d1",
+      "code": "301"
+    }
+  ]
+}
