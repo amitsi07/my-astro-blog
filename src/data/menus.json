@@ -1,0 +1,40 @@
+{
+  "items": [
+    {
+      "id": "m-home",
+      "label": "Home",
+      "url": "/",
+      "order": 1
+    },
+    {
+      "id": "m-tech",
+      "label": "AI & Reels",
+      "url": "/category/technology",
+      "order": 2
+    },
+    {
+      "id": "m-arch",
+      "label": "Architecture",
+      "url": "/category/web-architecture",
+      "order": 3
+    },
+    {
+      "id": "m-edge",
+      "label": "Cloudflare D1",
+      "url": "/category/cloudflare-edge",
+      "order": 4
+    },
+    {
+      "id": "m-about",
+      "label": "About",
+      "url": "/about",
+      "order": 5
+    },
+    {
+      "id": "m-contact",
+      "label": "Contact",
+      "url": "/contact",
+      "order": 6
+    }
+  ]
+}
