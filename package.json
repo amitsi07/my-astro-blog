@@ -1,0 +1,17 @@
+{
+  "name": "my-astro-blog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Astro Blog CMS – Static blog powered by Sveltia CMS and Cloudflare Pages",
+  "scripts": {
+    "build": "echo 'Pre-built static site ready in dist/'",
+    "preview": "npx serve dist"
+  },
+  "keywords": [
+    "astro",
+    "sveltia-cms",
+    "cloudflare-pages"
+  ],
+  "author": "amitsi07",
+  "license": "MIT"
+}
