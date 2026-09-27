@@ -36,6 +36,7 @@ collections:
       - { label: "Status", name: "status", widget: "select", options: ["published", "draft", "scheduled"], default: "published" }
       - { label: "Category", name: "category", widget: "string" }
       - { label: "Tags", name: "tags", widget: "list" }
+      - { label: "Author", name: "author", widget: "string", required: false, default: "Admin" }
       - { label: "Featured Hero Image", name: "featuredImage", widget: "image", required: false }
       - { label: "Image Alt Text", name: "featuredImageAlt", widget: "string", required: false }
       - { label: "Image Caption", name: "featuredImageCaption", widget: "string", required: false }
@@ -82,6 +83,23 @@ collections:
       - { label: "Tag Name", name: "name", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string" }
 
+  - name: "homepage"
+    label: "Homepage Builder"
+    files:
+      - label: "Hero Banner & Sections"
+        name: "hero_and_sections"
+        file: "src/data/homepage.json"
+        fields:
+          - { label: "Hero Headline", name: "heroHeadline", widget: "string" }
+          - { label: "Hero Subheadline", name: "heroSubheadline", widget: "text" }
+          - { label: "Hero CTA Button Label", name: "heroCtaText", widget: "string", default: "Explore Articles" }
+          - { label: "Hero CTA URL", name: "heroCtaUrl", widget: "string", default: "/articles" }
+          - { label: "Hero Background Image", name: "heroImage", widget: "image", required: false }
+          - { label: "Featured Section Title", name: "featuredSectionTitle", widget: "string", default: "Featured Stories" }
+          - { label: "Trending Section Title", name: "trendingSectionTitle", widget: "string", default: "Trending Now" }
+          - { label: "Newsletter Headline", name: "newsletterHeadline", widget: "string", default: "Subscribe to our Dispatch" }
+          - { label: "Newsletter Subtext", name: "newsletterSubtext", widget: "text", default: "Weekly curated intelligence delivered straight to your inbox." }
+
   - name: "menus"
     label: "Navigation Menus"
     files:
@@ -97,8 +115,51 @@ collections:
               - { label: "URL", name: "url", widget: "string" }
               - { label: "Open in New Tab", name: "targetNewTab", widget: "boolean", default: false }
 
+  - name: "users"
+    label: "Users & Authors"
+    folder: "src/content/authors"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Full Name", name: "name", widget: "string" }
+      - { label: "Slug / Username", name: "slug", widget: "string" }
+      - { label: "Email", name: "email", widget: "string" }
+      - { label: "Role", name: "role", widget: "select", options: ["admin", "editor", "author", "contributor"], default: "author" }
+      - { label: "Avatar Image", name: "avatar", widget: "image", required: false }
+      - { label: "Biography", name: "bio", widget: "text" }
+      - { label: "Twitter / X Profile", name: "twitter", widget: "string", required: false }
+      - { label: "GitHub Profile", name: "github", widget: "string", required: false }
+
+  - name: "redirects"
+    label: "301 URL Redirects"
+    files:
+      - label: "Redirect Rules"
+        name: "redirect_rules"
+        file: "src/data/redirects.json"
+        fields:
+          - label: "Rules List"
+            name: "rules"
+            widget: "list"
+            fields:
+              - { label: "Source Path (from)", name: "from", widget: "string" }
+              - { label: "Target URL (to)", name: "to", widget: "string" }
+              - { label: "Status Code", name: "code", widget: "select", options: ["301", "302"], default: "301" }
+
+  - name: "ads"
+    label: "Ads & Monetization"
+    files:
+      - label: "Ad Placements"
+        name: "ad_placements"
+        file: "src/data/ads.json"
+        fields:
+          - { label: "Enable Monetization", name: "isEnabled", widget: "boolean", default: false }
+          - { label: "Header Banner Ad Code", name: "headerBannerCode", widget: "text", required: false }
+          - { label: "In-Article Ad Code", name: "inArticleCode", widget: "text", required: false }
+          - { label: "Sidebar Ad Code", name: "sidebarCode", widget: "text", required: false }
+          - { label: "Footer Ad Code", name: "footerCode", widget: "text", required: false }
+
   - name: "settings"
-    label: "Settings & Customizer"
+    label: "Site Settings & Branding"
     files:
       - label: "General & Branding"
         name: "general_settings"
@@ -107,10 +168,16 @@ collections:
           - { label: "Site Name", name: "siteName", widget: "string" }
           - { label: "Tagline", name: "tagline", widget: "string" }
           - { label: "Site Description", name: "description", widget: "text" }
+          - { label: "Site URL", name: "siteUrl", widget: "string", required: false }
           - { label: "Logo URL", name: "logoUrl", widget: "image", required: false }
           - { label: "Favicon URL", name: "faviconUrl", widget: "image", required: false }
           - { label: "Posts Per Page", name: "postsPerPage", widget: "number", default: 9 }
-      - label: "SEO & Social Sharing"
+          - { label: "Copyright Text", name: "footerCopyright", widget: "string", default: "All rights reserved." }
+
+  - name: "seo"
+    label: "SEO & Social Sharing"
+    files:
+      - label: "SEO Metadata & Socials"
         name: "seo_settings"
         file: "src/data/seo.json"
         fields:
@@ -119,3 +186,4 @@ collections:
           - { label: "Social Share Card (OG Image)", name: "ogImage", widget: "image", required: false }
           - { label: "Twitter / X Handle", name: "twitterHandle", widget: "string", required: false }
           - { label: "Google Analytics 4 ID", name: "gaMeasurementId", widget: "string", required: false }
+          - { label: "Google Search Console Verification", name: "googleSiteVerification", widget: "string", required: false }
