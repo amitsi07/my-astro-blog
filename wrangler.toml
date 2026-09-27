@@ -1,0 +1,7 @@
+# Cloudflare Pages Configuration
+name = "my-astro-blog"
+compatibility_date = "2026-09-01"
+pages_build_output_dir = "dist"
+
+[vars]
+SITE_NAME = "Astro Blog CMS"
