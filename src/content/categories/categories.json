@@ -1,0 +1,38 @@
+[
+  {
+    "id": "cat-technology",
+    "name": "Technology & AI",
+    "slug": "technology",
+    "description": "Generative AI workflows, automation pipelines, video generation, and machine learning utilities.",
+    "color": "#6366f1",
+    "seoTitle": "Technology & Artificial Intelligence Articles - Astro Blog CMS",
+    "metaDescription": "Explore deep-dive guides on AI content creation, automated pipelines, and modern developer toolchains."
+  },
+  {
+    "id": "cat-architecture",
+    "name": "Web Architecture",
+    "slug": "web-architecture",
+    "description": "Serverless foundations, zero-JavaScript baselines, Astro island architecture, and CDN performance.",
+    "color": "#10b981",
+    "seoTitle": "Modern Web Architecture & Astro Guides",
+    "metaDescription": "In-depth architectural analyses on island hydration, caching layers, and high-performance publishing."
+  },
+  {
+    "id": "cat-cloudflare",
+    "name": "Cloudflare & Edge",
+    "slug": "cloudflare-edge",
+    "description": "Zero-cost infrastructure, Cloudflare D1 SQL, R2 media distribution, and Edge Workers.",
+    "color": "#f59e0b",
+    "seoTitle": "Cloudflare D1 & Edge Computing Guides",
+    "metaDescription": "Deploy scalable, zero-cost production web applications using Cloudflare Workers, Pages, and D1."
+  },
+  {
+    "id": "cat-workflows",
+    "name": "Developer Workflows",
+    "slug": "workflows",
+    "description": "GitOps strategies, SEO automation, CMS pipelines, and production release checklists.",
+    "color": "#3b82f6",
+    "seoTitle": "Developer Workflows & Publishing Automation",
+    "metaDescription": "Actionable blueprints for technical content teams, automated deployments, and editorial governance."
+  }
+]
