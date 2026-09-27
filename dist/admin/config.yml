@@ -47,6 +47,8 @@ collections:
       - { label: "Allow Reader Comments", name: "allowComments", widget: "boolean", default: true }
       - { label: "Excerpt / Summary", name: "excerpt", widget: "text" }
       - { label: "Article Body (Markdown)", name: "body", widget: "markdown" }
+      - { label: "SEO Meta Title", name: "seoTitle", widget: "string", required: false }
+      - { label: "SEO Meta Description", name: "metaDescription", widget: "text", required: false }
 
   - name: "pages"
     label: "Static Pages"
