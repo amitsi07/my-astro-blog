@@ -1,29 +1,1244 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sveltia CMS – Astro Blog CMS</title>
-    <!-- Sveltia CMS: Lightweight, Git-based Decap/Netlify CMS replacement -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-      :root {
-        --sveltia-cms-font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astro CMS Admin Studio – Astro Blog CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            display: ['Playfair Display', 'serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            }
+          }
+        }
       }
-      body {
-        margin: 0;
-        background-color: #000000;
-        color: #f1f5f9;
-        font-family: var(--sveltia-cms-font-family);
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #080d1a;
+      color: #f1f5f9;
+    }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0b1120; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    .prose-dark h1, .prose-dark h2, .prose-dark h3 { color: #f8fafc; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .prose-dark p { margin-bottom: 1rem; line-height: 1.7; color: #cbd5e1; }
+    .prose-dark ul, .prose-dark ol { margin-left: 1.5rem; margin-bottom: 1rem; color: #cbd5e1; }
+    .prose-dark code { background: #1e293b; color: #fb923c; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; font-size: 0.875rem; }
+    .prose-dark pre { background: #0f172a; padding: 1rem; border-radius: 8px; border: 1px solid #1e293b; overflow-x: auto; margin-bottom: 1rem; }
+    .prose-dark blockquote { border-left: 4px solid #ea580c; padding-left: 1rem; color: #94a3b8; font-style: italic; margin-bottom: 1rem; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#080d1a] text-slate-100">
+
+  <!-- Top WordPress / Modern Admin Header Bar -->
+  <header class="h-14 border-b border-slate-800 bg-[#0b101c] px-4 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-black text-white text-base shadow-lg shadow-orange-600/30">
+          A
+        </div>
+        <div class="flex flex-col">
+          <span class="font-bold text-sm text-white group-hover:text-orange-400 transition-colors" id="headerSiteName">Astro Blog CMS</span>
+          <span class="text-[10px] text-slate-400 font-mono">Astro CMS Edge Studio</span>
+        </div>
+      </a>
+      <span class="text-slate-700">|</span>
+      <a href="/" target="_blank" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
+        <span>🌐 View Live Site</span>
+      </a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Sync Status Badge & Action -->
+      <button onclick="commitAllToGitHub()" id="btnSyncGh" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all shadow-md">
+        <span>🚀 Push to GitHub</span>
+      </button>
+
+      <!-- Sveltia Mode Switcher -->
+      <a href="./sveltia.html" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-medium text-xs transition-colors border border-slate-700">
+        Git Sveltia CMS →
+      </a>
+
+      <!-- User Badge -->
+      <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-slate-300">Howdy, <strong class="text-white">Admin</strong></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container: Sidebar + Content -->
+  <div class="flex-1 flex overflow-hidden">
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-60 border-r border-slate-800 bg-[#0b101c] flex flex-col justify-between shrink-0 p-3 overflow-y-auto">
+      <nav class="space-y-1 text-xs">
+        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>📊</span>
+          <span>Dashboard</span>
+        </button>
+
+        <button onclick="switchTab('posts')" id="nav-posts" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>📝</span>
+          <span>Articles & Posts</span>
+        </button>
+
+        <button onclick="openNewPostEditor()" class="w-full flex items-center gap-3 pl-8 pr-3 py-1.5 rounded-lg text-slate-400 hover:text-orange-400 hover:bg-slate-800/40 transition-colors">
+          <span>+ Add New Post</span>
+        </button>
+
+        <button onclick="switchTab('categories')" id="nav-categories" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>📂</span>
+          <span>Categories & Tags</span>
+        </button>
+
+        <button onclick="switchTab('homepage')" id="nav-homepage" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>🎨</span>
+          <span>Homepage Builder</span>
+        </button>
+
+        <button onclick="switchTab('media')" id="nav-media" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>🖼️</span>
+          <span>Media Library</span>
+        </button>
+
+        <button onclick="switchTab('pages')" id="nav-pages" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>📄</span>
+          <span>Static Pages</span>
+        </button>
+
+        <button onclick="switchTab('menus')" id="nav-menus" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>🧭</span>
+          <span>Navigation Menus</span>
+        </button>
+
+        <button onclick="switchTab('users')" id="nav-users" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>👥</span>
+          <span>Users & Authors</span>
+        </button>
+
+        <button onclick="switchTab('redirects')" id="nav-redirects" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>🔀</span>
+          <span>301 URL Redirects</span>
+        </button>
+
+        <button onclick="switchTab('ads')" id="nav-ads" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>💰</span>
+          <span>Ads & Monetization</span>
+        </button>
+
+        <div class="pt-2 pb-1 px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Settings</div>
+
+        <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>⚙️</span>
+          <span>General Settings</span>
+        </button>
+
+        <button onclick="switchTab('seo')" id="nav-seo" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors">
+          <span>🔍</span>
+          <span>SEO & Analytics</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Token Info -->
+      <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-2 text-xs">
+        <div class="flex items-center justify-between text-slate-400">
+          <span class="font-mono text-[10px]">GitHub Target:</span>
+          <span class="font-semibold text-white truncate max-w-[100px]" id="sidebarRepoName">my-astro-blog</span>
+        </div>
+        <button onclick="promptEditGithubToken()" class="w-full text-center py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px] transition-colors">
+          🔑 Update GitHub Token
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="flex-1 p-6 sm:p-8 overflow-y-auto max-w-7xl w-full mx-auto" id="mainContent">
+      <!-- Injected by JavaScript switchTab() -->
+    </main>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="toastBox" class="fixed bottom-6 right-6 z-50 hidden px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm shadow-2xl flex items-center gap-3">
+    <span id="toastIcon">✓</span>
+    <span id="toastMsg">Action completed</span>
+  </div>
+
+  <!-- Embedded CMS State Script -->
+  <script>
+    const APP_DATA = {"settings":{"siteName":"Astro Blog CMS","tagline":"High-Velocity Publishing & Edge Architecture","description":"Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.","logoUrl":"","faviconUrl":"","typography":{"presetId":"bricolage_inter","presetName":"Modern Editorial (Bricolage + Inter)","displayFont":"'Bricolage Grotesque', sans-serif","bodyFont":"'Inter', sans-serif","monoFont":"'JetBrains Mono', monospace"},"authorDefaultId":"user-superadmin","postsPerPage":6,"commentsEnabled":true,"commentsRequireApproval":true,"homepage":{"sectionsOrder":["hero","announcement","trending","latest_feed","category_sections","newsletter"],"sectionsEnabled":{"hero":true,"announcement":true,"trending":true,"featured_grid":true,"latest_feed":true,"category_sections":true,"newsletter":true},"hero":{"type":"featured_post","selectedPostId":"auto","badgeText":"Featured Blueprint","customHeadline":"High-Velocity Publishing & Edge Compute Architecture","customSubheadline":"Explore deep-dive technical blueprints on Astro 5 island hydration, generative video pipelines, and zero-cost Cloudflare edge storage.","customCtaText":"Explore Blueprints","customCtaUrl":"/how-to-create-facebook-reels-with-ai","customImageUrl":"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80","customImageCaption":"Interactive edge publishing architecture"},"announcement":{"enabled":true,"badge":"Production Target","title":"₹0 Starting Infrastructure Target (Astro + Cloudflare D1 + R2)","description":"Production CMS architecture with static pre-rendering, edge SQLite, and zero egress image distribution.","buttonText":"View Specification Blueprint","buttonAction":"open_spec"},"trending":{"title":"Trending & High Velocity","subtitle":"Most read technical playbooks this week","postLimit":4},"featuredGrid":{"title":"Curated Staff Blueprints","subtitle":"Selected by senior systems engineers","postLimit":3},"latestFeed":{"title":"Latest Publications","subtitle":"Recent guides from our distributed engineering and editorial team","showCategoryTabs":true},"categorySections":[{"id":"hcs-1","categoryId":"cat-technology","customTitle":"AI Workflows & Video Automation","customSubtitle":"Generative prompt chains, FFmpeg pipelines, and neural synthesis guides","postLimit":3},{"id":"hcs-2","categoryId":"cat-cloudflare","customTitle":"Cloudflare & Edge Systems","customSubtitle":"Zero-cost serverless databases, edge workers, and cache architectures","postLimit":2}],"newsletter":{"badge":"Weekly Digest","title":"Join 12,000+ Edge & Full-Stack Engineers","description":"Get our curated collection of production prompt templates, Astro 5 recipes, and zero-cost cloud architecture deep dives directly to your inbox every Thursday.","buttonText":"Subscribe Free","subscriberCountText":"Join 12,000+ engineers","perks":["Production FFmpeg vertical video recipes","Tested prompt chains for Gemini 2.5 & Claude 3.7","Zero-cost serverless database benchmarks","No spam or sponsored third-party pitches"]},"sidebar":{"enabled":true,"showAuthorSpotlight":true,"authorSpotlightTitle":"Author Spotlight","showTags":true,"tagsTitle":"Explore Tags","showNewsletter":true,"newsletterTitle":"The Edge Letter","newsletterDesc":"Join 12,000+ developers receiving our production recipes every Thursday."}},"socialLinks":{"twitter":"https://x.com/astroblogcms","github":"https://github.com/astro-blog-cms","youtube":"https://youtube.com","linkedin":"https://linkedin.com"},"defaultSeo":{"metaTitle":"Astro Blog CMS – High-Velocity Publishing & Edge Architecture","metaDescription":"Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.","ogImage":"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80"},"customCodeHeader":"\u003c!-- Astro Blog CMS Custom Header Code Slot --\u003e","customCodeFooter":"\u003c!-- Astro Blog CMS Custom Footer Code Slot --\u003e","adSlots":[{"id":"ad-header","name":"Header Banner","location":"header_banner","isEnabled":true,"bannerImageUrl":"https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=728&h=90&q=80","bannerLinkUrl":"https://cloudflare.com","altText":"Supercharge your edge deployments with Cloudflare D1 and Pages"},{"id":"ad-in-article","name":"In-Article Responsive Sponsor","location":"in_article","isEnabled":true,"bannerImageUrl":"https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&h=120&q=80","bannerLinkUrl":"https://astro.build","altText":"Build faster websites with Astro 5 Islands"},{"id":"ad-sidebar","name":"Sidebar Square Banner","location":"sidebar","isEnabled":true,"bannerImageUrl":"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=300&h=250&q=80","bannerLinkUrl":"/how-to-create-facebook-reels-with-ai","altText":"Master AI video creation: View our comprehensive blueprint"},{"id":"ad-footer","name":"Footer Wide Billboard","location":"footer_banner","isEnabled":false}]},"posts":[{"id":"post-1","title":"How to Create Facebook Reels with AI: Complete 2026 Production Blueprint","slug":"how-to-create-facebook-reels-with-ai","excerpt":"Step-by-step masterclass on automating viral 9:16 vertical short-form video creation using prompt chaining, text-to-speech, and zero-cost cloud rendering.","content":"Facebook Reels have evolved into one of Meta's primary organic discovery drivers. With algorithmic preference strongly favoring high-velocity 9:16 vertical content, creators who manually edit every clip are quickly outpaced by teams using structured AI workflows.\n\nThis guide walks through building an end-to-end automated pipeline: from semantic prompt scripting, neural voiceover synthesis, and dynamic caption generation to automated render pipelines.\n\n\u003c!-- block:blk-1 --\u003e\n\n## The Three-Stage AI Reels Generation Pipeline\n\nTo create consistent, high-performing Facebook Reels without incurring exorbitant SaaS costs, we structure our pipeline into three distinct phases:\n\n1. **Script & Hook Generation**: Formulating curiosity gaps within the initial 1.8 seconds.\n2. **Audio & Dynamic Pacing**: Generating expressive voiceovers with synchronized word timestamps.\n3. **Visual Composition & Motion**: Combining b-roll, generative clips, and burn-in kinetic typography.\n\n\u003c!-- block:blk-2 --\u003e\n\n\u003c!-- block:blk-3 --\u003e\n\n## Automating Vertical Render with Cloud Pipelines\n\nTo scale production without burning out, headless rendering scripts turn raw scripts into ready-to-publish MP4 video files automatically:\n\n\u003c!-- block:blk-4 --\u003e\n\n## Strategic Trade-offs & Production Economics\n\nScaling short-form video requires balancing automation velocity against creative authenticity:\n\n\u003c!-- block:blk-5 --\u003e\n\n## Tooling Matrix & Performance Comparison\n\n\u003c!-- block:blk-6 --\u003e\n\n\u003c!-- block:blk-7 --\u003e\n\n## Frequently Asked Questions\n\n\u003c!-- block:blk-8 --\u003e\n\n\u003c!-- block:blk-9 --\u003e","blocks":[{"type":"takeaways","id":"blk-1","title":"Executive Summary & Key Takeaways","items":["The first 2.5 seconds dictate 84% of algorithmic retention on Facebook Reels.","Open-source toolchains combined with Cloudflare Workers enable $0 automated video batching.","Kinetic auto-captions increase muted watch time completion by up to 62%.","A single high-retention reel can be repurposed across Meta, YouTube Shorts, and TikTok with zero modifications."]},{"type":"prompt","id":"blk-2","promptText":"Act as a top 1% short-form video strategist for Facebook Reels. Write a viral 35-second script about: \"3 Counter-Intuitive Habits of Elite Developers\".\nFollow this strict format:\n[0-3s HOOK]: Visual action + provocative statement challenging standard advice.\n[3-15s POINT 1]: Rapid explanation with concrete analogy.\n[15-27s POINT 2 & 3]: The unexpected twist that creates comments.\n[27-35s CTA]: Specific question prompting viewers to debate in comments.\nTone: Authoritative, energetic, zero fluff, punchy sentences under 8 words.","modelTarget":"Gemini 2.5 Pro / Claude 3.7 Sonnet","notes":"Paste directly into your LLM orchestrator. Keep pacing at roughly 140 words per minute."},{"type":"info","id":"blk-3","title":"Algorithmic Retention Insight","content":"Facebook Reels algorithm heavily weights re-watch rates and comments. Creating an intentional point of discussion in the first 10 seconds boosts comment velocity, which signals high user engagement to Meta’s distribution engine."},{"type":"code","id":"blk-4","filename":"generate_reel_ffmpeg.sh","language":"bash","code":"# FFmpeg recipe: Scale 16:9 media to 9:16 with blurred ambient background & burned kinetic subtitles\nffmpeg -i input_clip.mp4 -filter_complex \\\n\"[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:5[bg]; \\\n [0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg]; \\\n [bg][fg]overlay=(W-w)/2:(H-h)/2[composite]; \\\n [composite]subtitles=captions.srt:force_style='FontName=Montserrat,FontSize=18,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=3,Bold=1'[out]\" \\\n-map \"[out]\" -map 0:a? -c:v libx264 -preset fast -crf 20 -c:a aac -b:a 192k reel_output.mp4"},{"type":"pros_cons","id":"blk-5","pros":["Publish 10x more volume with consistent 1080x1920 vertical quality","Eliminates manual timeline editing and manual subtitling fatigue","Enables A/B testing multiple hooks for the exact same underlying topic","Extensible to programmatic publishing via Graph API"],"cons":["Over-relying on generic AI templates can trigger duplicate content filters","Requires initial setup of API keys and webhook orchestration","Human review is still crucial to ensure brand safety and factual accuracy"]},{"type":"table","id":"blk-6","caption":"Top AI Video Tools Benchmark for Facebook Reels (2026)","headers":["Platform / Tool","Strengths","Ideal For","Free Tier Quota"],"rows":[["CapCut Desktop AI","Fast kinetic typography, auto-reframe","Quick manual polish & captions","Generous Free Tier"],["FFmpeg + Whisper API","100% headless automation, zero lock-in","Programmatic batch pipelines","Self-hosted / Open Source"],["HeyGen / Synthesia","Hyper-realistic digital presenter avatars","Corporate & explainers","1 min free credit"],["Runway Gen-3 / Luma","Cinematic generative b-roll scenes","Visually arresting hooks","Free initial trials"]]},{"type":"warning","id":"blk-7","title":"Meta Community Standards & Copyright Warning","content":"Never use copyrighted audio tracks through third-party tools if you plan to monetize reels. Always utilize royalty-free sound effects or select official trending audio tracks inside the native Facebook app after uploading."},{"type":"faq","id":"blk-8","items":[{"id":"faq-1","question":"What is the optimal video length for Facebook Reels in 2026?","answer":"Data across millions of reels shows the sweet spot is between 25 and 45 seconds. While Meta supports up to 90 seconds, shorter punchy videos maintain a higher percentage of completion, which triggers algorithmic distribution."},{"id":"faq-2","question":"Will Facebook downrank videos with AI voiceovers?","answer":"No. Meta does not penalize AI voiceovers as long as the content provides real value, avoids misleading claims, and adheres to originality guidelines. High quality, expressive voices perform just as well as human voice tracks."},{"id":"faq-3","question":"How do I add captions that highlight word-by-word?","answer":"You can extract word-level timestamps using OpenAI Whisper with JSON output, then convert it to ASS (Advanced SubStation Alpha) subtitle format with karaoke tags (\\k), or use CapCut / AutoCap."}]},{"type":"cta","id":"blk-9","title":"Download the Production Prompt Pack","description":"Get our curated collection of 50+ tested hook templates and video prompts designed specifically for algorithmic retention.","buttonText":"Get the Free Prompt Pack","buttonUrl":"/contact?topic=prompts"}],"featuredImage":"https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80","featuredImageCaption":"Automated 9:16 generative reel rendering pipeline","featuredImageAlt":"AI video generation and editing setup","status":"published","authorId":"user-author","categoryId":"cat-technology","tags":["artificial-intelligence","facebook-reels","video-automation","prompt-engineering"],"faqs":[{"id":"f1","question":"What is the optimal video length for Facebook Reels in 2026?","answer":"Data across millions of reels shows the sweet spot is between 25 and 45 seconds."},{"id":"f2","question":"Will Facebook downrank videos with AI voiceovers?","answer":"No, Meta does not penalize AI voiceovers as long as the content provides value."}],"seo":{"seoTitle":"How to Create Facebook Reels with AI: 2026 Guide & Pipeline","metaDescription":"Step-by-step guide to generating viral Facebook Reels using AI prompts, neural voiceovers, and automated FFmpeg video rendering.","focusKeyword":"create facebook reels with ai","secondaryKeywords":["facebook reels automation","ai video generation","viral reels prompt"],"canonicalUrl":"https://astroblog.dev/how-to-create-facebook-reels-with-ai","robotsIndex":true,"robotsFollow":true},"isFeatured":true,"isTrending":true,"views":14280,"readingTimeMinutes":7,"publishedAt":"2026-09-18T09:00:00Z","createdAt":"2026-09-17T11:00:00Z","updatedAt":"2026-09-20T14:30:00Z"},{"id":"post-2","title":"Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint","slug":"zero-cost-fullstack-astro-cloudflare-d1","excerpt":"How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers.","content":"When designing the infrastructure for a high-volume digital publication, the default impulse is often to provision managed PostgreSQL databases, dedicated Redis clusters, and auto-scaling container fleets on AWS or GCP.\n\nHowever, for 98% of content-driven websites, this is financial and architectural overkill. By combining Astro's static build optimization with Cloudflare Pages, D1 (edge SQLite), and R2 (S3-compatible asset storage), you can achieve enterprise-tier performance with exactly ₹0 / $0 monthly hosting expenses.\n\n\u003c!-- block:blk-cf-1 --\u003e\n\n## Why Astro + Cloudflare D1 is the Ultimate Pairing\n\nAstro excels at generating ultra-fast HTML at build time, hydration islands for interactive components, and server endpoints for admin writes.\n\nCloudflare D1 is a serverless relational database built on SQLite distributed worldwide across Cloudflare's 300+ city edge network. Reads are near-instantaneous, and writes are managed through an Raft consensus protocol.\n\n\u003c!-- block:blk-cf-2 --\u003e\n\n\u003c!-- block:blk-cf-3 --\u003e\n\n## Infrastructure Breakdown & Cost Modeling\n\n\u003c!-- block:blk-cf-4 --\u003e\n\n\u003c!-- block:blk-cf-5 --\u003e","blocks":[{"type":"takeaways","id":"blk-cf-1","title":"Core Architectural Advantages","items":["Astro pre-renders public articles as static HTML, serving them directly from Cloudflare global edge cache.","CMS write operations interact with Cloudflare D1 via lightweight serverless edge endpoints.","Media files (images, audio) reside on Cloudflare R2 with zero egress fees.","Free-tier allowance includes 5 million read units/day on D1 and 10GB of R2 storage."]},{"type":"code","id":"blk-cf-2","filename":"schema.sql","language":"sql","code":"-- Cloudflare D1 Production CMS Schema\nCREATE TABLE IF NOT EXISTS posts (\n  id TEXT PRIMARY KEY,\n  title TEXT NOT NULL,\n  slug TEXT UNIQUE NOT NULL,\n  excerpt TEXT,\n  content TEXT NOT NULL,\n  blocks_json TEXT,\n  featured_image TEXT,\n  status TEXT DEFAULT 'draft',\n  author_id TEXT NOT NULL,\n  category_id TEXT NOT NULL,\n  seo_json TEXT,\n  views INTEGER DEFAULT 0,\n  published_at DATETIME,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP\n);\n\nCREATE INDEX idx_posts_slug ON posts(slug);\nCREATE INDEX idx_posts_status ON posts(status);\nCREATE INDEX idx_posts_category ON posts(category_id);"},{"type":"info","id":"blk-cf-3","title":"Cloudflare D1 Free Tier Quotas","content":"Cloudflare D1 provides 5,000,000 read units per day and 100,000 write units per day on the completely free plan. Since public reads hit edge cache, only admin changes and search uncached misses touch D1, easily supporting 1M+ monthly visitors on free tiers."},{"type":"table","id":"blk-cf-4","caption":"Zero-Cost Infrastructure Stack Breakdown","headers":["Layer","Provider","Service","Cost at 1M Views"],"rows":[["Frontend & SSR","Cloudflare Pages","Astro Pages Adapter","₹0 / $0"],["Relational Database","Cloudflare","D1 (Serverless SQLite)","₹0 / $0"],["Media & Images","Cloudflare","R2 Storage (0 Egress Fees)","₹0 / $0"],["DNS, SSL & CDN","Cloudflare","Global Edge Network","₹0 / $0"],["Source Control & CI/CD","GitHub","GitHub Actions","₹0 / $0"]]},{"type":"tip","id":"blk-cf-5","title":"Pro-Tip: Cache Busting with Webhooks","content":"When an editor clicks \"Publish\" in the CMS, invoke Cloudflare’s Purge Cache API for the specific article slug instead of purging everything. This guarantees 100% cache hits for the rest of your site."}],"featuredImage":"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80","featuredImageCaption":"Global edge computing topology diagram","featuredImageAlt":"Serverless Cloudflare edge network infrastructure","status":"published","authorId":"user-superadmin","categoryId":"cat-cloudflare","tags":["cloudflare","cloudflare-d1","astro","zero-cost"],"seo":{"seoTitle":"Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1","metaDescription":"Complete technical architecture guide to launching a production blog on Cloudflare Pages, D1, and R2 with zero hosting expenses.","focusKeyword":"astro cloudflare d1","secondaryKeywords":["zero cost web architecture","serverless sqlite","cloudflare pages astro"],"canonicalUrl":"https://astroblog.dev/zero-cost-fullstack-astro-cloudflare-d1","robotsIndex":true,"robotsFollow":true},"isFeatured":true,"isTrending":true,"views":9840,"readingTimeMinutes":6,"publishedAt":"2026-09-12T16:00:00Z","createdAt":"2026-09-10T14:00:00Z","updatedAt":"2026-09-19T10:00:00Z"},{"id":"post-3","title":"Astro 5 Islands & Content Collections: Deep Dive into Zero-JS Baselines","slug":"astro-5-islands-content-collections-deep-dive","excerpt":"Explore how Astro 5 redefines editorial publishing with partial hydration, type-safe content schemas, and lighting-fast Lighthouse 100 scores.","content":"Modern web users demand immediate responsiveness. Yet the typical SPA blog loads multiple megabytes of JavaScript just to display static text and an image.\n\nAstro 5 changes the game with its \"Islands Architecture\". By defaulting to pure server-rendered HTML and isolating client-side interactivity to designated islands, your core article content requires literally zero JavaScript.\n\n## Understanding Island Hydration Directives\n\nIn Astro, every component is rendered to static HTML at build time or on the server edge. You only hydrate what requires interactivity using explicit client directives:\n\n- `client:load`: Hydrates immediately on page load (use sparingly, e.g. for search bars).\n- `client:idle`: Hydrates once the browser is idle (ideal for table of contents).\n- `client:visible`: Hydrates when the element enters the viewport (perfect for comments & social share tools).\n- `client:media`: Hydrates conditionally based on CSS media queries.","blocks":[{"type":"takeaways","id":"blk-as-1","title":"Key Architectural Takeaways","items":["Zero-JS baseline guarantees perfect 100/100 Google Core Web Vitals.","Content Collections validate frontmatter and metadata with Zod schemas.","Island hydration prevents whole-page JavaScript bloat.","Seamless integration with React, Vue, Svelte, or Solid components in the same codebase."]},{"type":"code","id":"blk-as-2","filename":"src/content/config.ts","language":"typescript","code":"import { defineCollection, z } from 'astro:content';\n\nconst blogCollection = defineCollection({\n  type: 'content',\n  schema: z.object({\n    title: z.string().max(80),\n    description: z.string().max(160),\n    pubDate: z.date(),\n    author: z.string(),\n    category: z.string(),\n    tags: z.array(z.string()),\n    featuredImage: z.string().url(),\n    isDraft: z.boolean().default(false),\n  }),\n});\n\nexport const collections = {\n  blog: blogCollection,\n};"},{"type":"pros_cons","id":"blk-as-3","pros":["Instant First Contentful Paint (\u003c0.2s) even on slow 3G mobile networks","Strict compile-time schema validation prevents broken metadata","Zero client-side bundle for pure typography & article reading"],"cons":["Mental model shift for developers accustomed to full-page SPA routers","Shared state between disconnected islands requires nanostores or custom events"]}],"featuredImage":"https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&h=675&q=80","featuredImageCaption":"Astro 5 zero-javascript island architecture","featuredImageAlt":"Code streams depicting clean server-rendered HTML","status":"published","authorId":"user-admin","categoryId":"cat-architecture","tags":["astro","web-architecture","seo"],"seo":{"seoTitle":"Astro 5 Islands & Content Collections: Deep Dive","metaDescription":"Comprehensive guide to Astro 5 architecture, island hydration, and building Lighthouse 100 websites.","focusKeyword":"astro 5 islands","secondaryKeywords":["astro content collections","zero js web architecture"],"robotsIndex":true,"robotsFollow":true},"isFeatured":false,"isTrending":true,"views":6420,"readingTimeMinutes":5,"publishedAt":"2026-09-05T10:00:00Z","createdAt":"2026-09-04T12:00:00Z","updatedAt":"2026-09-05T10:00:00Z"},{"id":"post-4","title":"Prompt Engineering Playbook for High-Converting Social Shorts","slug":"prompt-engineering-playbook-social-shorts","excerpt":"Field-tested prompt chains to craft high-retention hooks, compelling visual beats, and viral retention loops across TikTok, Reels, and YouTube Shorts.","content":"Crafting high-converting short-form video scripts is no longer about guessing what works. It is about systematically engineering curiosity loops and emotional resonance into the script structure.\n\nIn this playbook, we break down our proprietary prompt formulas tested across 200+ viral short videos with verified retention analytics.","blocks":[{"type":"prompt","id":"blk-pe-1","promptText":"Act as a master viral scriptwriter. Analyze this core concept: [INSERT TOPIC].\nGenerate 5 distinct opening hooks using these specific psychological triggers:\n1. The Absurd Contrast: \"Everyone thinks X, but the top 1% secretly do Y...\"\n2. The Urgent Loss Aversion: \"Stop doing X right now if you want to avoid...\"\n3. The Insider Leaked Secret: \"A senior engineer at [Company] just showed me how...\"\n4. The Impossible Speed Challenge: \"Here is how to do [Complex Task] in under 60 seconds...\"\n5. The Pattern Interrupt Question: \"Why does nobody talk about this fatal mistake?\"\nFor each hook, include the exact visual cue description for the editor.","modelTarget":"Claude 3.7 / Gemini 2.5 Flash","notes":"Produces high-converting 3-second opening beats with specific camera cues."},{"type":"tip","id":"blk-pe-2","title":"The \"Two-Second Rule\"","content":"Viewers make a subconscious decision to swipe or stay within 1.8 to 2.2 seconds. Ensure the spoken hook begins at millisecond 0, accompanied by a dynamic visual change (zoom, text pop, or unexpected motion)."}],"featuredImage":"https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&h=675&q=80","featuredImageCaption":"Analytics dashboard tracking retention curves across short-form platforms","featuredImageAlt":"Data analytics charts showing audience retention metrics","status":"published","authorId":"user-author","categoryId":"cat-technology","tags":["prompt-engineering","artificial-intelligence","facebook-reels"],"seo":{"seoTitle":"Prompt Engineering Playbook for High-Converting Social Shorts","metaDescription":"Field-tested prompt formulas and hook architectures for TikTok, Facebook Reels, and YouTube Shorts.","focusKeyword":"prompt engineering social shorts","robotsIndex":true,"robotsFollow":true},"isFeatured":false,"isTrending":false,"views":4190,"readingTimeMinutes":4,"publishedAt":"2026-08-28T08:00:00Z","createdAt":"2026-08-27T10:00:00Z","updatedAt":"2026-08-28T08:00:00Z"},{"id":"post-5","title":"Automated SEO Audit & Schema Generation with Astro SSR","slug":"automated-seo-audit-schema-generation-astro","excerpt":"How to dynamically inject valid Article, FAQPage, and BreadcrumbList JSON-LD schemas into Astro pages for maximum search visibility.","content":"Search engines are becoming increasingly reliant on structured data to parse content intent, rich snippets, and answer boxes in AI search overviews.\n\nIn this guide, we demonstrate how to build an automated schema engine inside Astro that reads your CMS posts and injects verified JSON-LD markup directly into the HTML head.","blocks":[{"type":"info","id":"blk-seo-1","title":"Why Schema.org Matters in 2026","content":"AI search engines (Google AI Overviews, Perplexity, Bing Copilot) utilize structured JSON-LD entities to synthesize answers. Valid structured schemas increase citation probability by over 300%."},{"type":"code","id":"blk-seo-2","filename":"src/components/JsonLd.astro","language":"html","code":"---\nexport interface Props {\n  article: any;\n  siteUrl: string;\n}\nconst { article, siteUrl } = Astro.props;\n\nconst schema = {\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BlogPosting\",\n  \"headline\": article.seo.seoTitle || article.title,\n  \"description\": article.seo.metaDescription || article.excerpt,\n  \"image\": article.featuredImage,\n  \"datePublished\": article.publishedAt,\n  \"dateModified\": article.updatedAt,\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": article.author.name\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Astro Blog CMS\",\n    \"logo\": {\n      \"@type\": \"ImageObject\",\n      \"url\": `${siteUrl}/logo.png`\n    }\n  },\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": `${siteUrl}/${article.slug}`\n  }\n};\n---\n\u003cscript type=\"application/ld+json\" set:html={JSON.stringify(schema)} /\u003e"}],"featuredImage":"https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?auto=format&fit=crop&w=1200&h=675&q=80","featuredImageCaption":"Search engine spider and semantic web entity indexing","featuredImageAlt":"Abstract graphic representing structured data and search indexation","status":"draft","authorId":"user-editor","categoryId":"cat-workflows","tags":["seo","astro"],"seo":{"seoTitle":"Automated SEO Audit & Schema Generation with Astro SSR","metaDescription":"Learn how to generate Article, Breadcrumb, and FAQ JSON-LD schemas automatically in Astro.","robotsIndex":false,"robotsFollow":true},"views":0,"readingTimeMinutes":5,"createdAt":"2026-09-22T14:00:00Z","updatedAt":"2026-09-23T11:20:00Z"}],"categories":[{"id":"cat-technology","name":"Technology & AI","slug":"technology","description":"Generative AI workflows, automation pipelines, video generation, and machine learning utilities.","color":"#6366f1","seoTitle":"Technology & Artificial Intelligence Articles - Astro Blog CMS","metaDescription":"Explore deep-dive guides on AI content creation, automated pipelines, and modern developer toolchains."},{"id":"cat-architecture","name":"Web Architecture","slug":"web-architecture","description":"Serverless foundations, zero-JavaScript baselines, Astro island architecture, and CDN performance.","color":"#10b981","seoTitle":"Modern Web Architecture & Astro Guides","metaDescription":"In-depth architectural analyses on island hydration, caching layers, and high-performance publishing."},{"id":"cat-cloudflare","name":"Cloudflare & Edge","slug":"cloudflare-edge","description":"Zero-cost infrastructure, Cloudflare D1 SQL, R2 media distribution, and Edge Workers.","color":"#f59e0b","seoTitle":"Cloudflare D1 & Edge Computing Guides","metaDescription":"Deploy scalable, zero-cost production web applications using Cloudflare Workers, Pages, and D1."},{"id":"cat-workflows","name":"Developer Workflows","slug":"workflows","description":"GitOps strategies, SEO automation, CMS pipelines, and production release checklists.","color":"#3b82f6","seoTitle":"Developer Workflows & Publishing Automation","metaDescription":"Actionable blueprints for technical content teams, automated deployments, and editorial governance."}],"tags":[{"id":"tag-ai","name":"Artificial Intelligence","slug":"artificial-intelligence"},{"id":"tag-reels","name":"Facebook Reels","slug":"facebook-reels"},{"id":"tag-astro","name":"Astro","slug":"astro"},{"id":"tag-cloudflare","name":"Cloudflare","slug":"cloudflare"},{"id":"tag-d1","name":"Cloudflare D1","slug":"cloudflare-d1"},{"id":"tag-seo","name":"SEO & Structured Data","slug":"seo"},{"id":"tag-video","name":"Video Automation","slug":"video-automation"},{"id":"tag-prompt","name":"Prompt Engineering","slug":"prompt-engineering"},{"id":"tag-zero-cost","name":"Zero Cost","slug":"zero-cost"}],"pages":[{"id":"page-about","title":"About Astro Blog CMS","slug":"about","content":"## The Next-Generation Publishing Platform\n\nAstro Blog CMS was engineered to solve a fundamental problem in modern web publishing: **the trade-off between editorial velocity and website performance**.\n\nTraditional platforms like WordPress rely on heavy PHP servers, fragile plugins, and bloated database queries for every pageview. Conversely, headless JAMstack setups often force editors to edit raw markdown files or trigger slow 15-minute static rebuilds for a single typo fix.\n\n### Our Architecture\n\nWe combine the best of both paradigms:\n\n- **Lightning-Fast Astro Frontend**: Pure zero-JavaScript baseline by default with selective island hydration.\n- **Full-Featured Headless CMS**: Built-in rich article editor, special blocks (AI prompts, code blocks, tables, callouts), media manager, and revision history.\n- **Edge Data Persistence**: Powered by Cloudflare D1 distributed SQLite and R2 storage.\n- **Zero-Cost Scaling**: Architected from the ground up to operate within generous free-tier quotas while effortlessly absorbing viral traffic spikes.\n\n### The Team\n\nWe are a distributed group of software architects, content strategists, and performance obsessives committed to making the web faster, cleaner, and more accessible.","seoTitle":"About Us – Astro Blog CMS Publishing Architecture","metaDescription":"Learn about Astro Blog CMS: the high-performance publishing platform powered by Astro, Cloudflare D1, and zero-cost edge infrastructure.","isPublished":true,"updatedAt":"2026-09-15T10:00:00Z"},{"id":"page-contact","title":"Contact Us","slug":"contact","content":"## Get in Touch\n\nHave questions about our publishing architecture, editorial submissions, or open-source tools? We’d love to hear from you.\n\n### Editorial & Technical Inquiries\n- **General Support**: editorial@astroblog.dev\n- **Press & Partnerships**: partnerships@astroblog.dev\n- **Security & Vulnerability Reports**: security@astroblog.dev\n\n### Office & Hours\nOur core team operates asynchronously across San Francisco, London, and Tokyo. We typically reply within 24 hours Monday through Friday.","seoTitle":"Contact Us – Astro Blog CMS","metaDescription":"Reach out to the Astro Blog CMS team for editorial submissions, technical support, and architectural inquiries.","isPublished":true,"updatedAt":"2026-09-15T10:00:00Z"},{"id":"page-privacy","title":"Privacy Policy","slug":"privacy-policy","content":"## Privacy Policy\n*Effective Date: September 2026*\n\nYour privacy is paramount. Astro Blog CMS operates under a strict privacy-first principle:\n\n1. **No Invasive Trackers**: We do not use third-party behavioral trackers or sell personal browsing information to advertisers.\n2. **Aggregated Analytics**: Performance metrics collected are anonymized and processed without storing personal identifiers or persistent cross-site cookies.\n3. **Data Protection**: Any personal information provided through newsletter signups or contact forms is encrypted in transit and at rest.\n4. **Your Rights**: You retain the right to inspect, correct, or request deletion of any submitted email addresses or user accounts at any time.","seoTitle":"Privacy Policy – Astro Blog CMS","metaDescription":"Privacy policy and data protection principles for Astro Blog CMS.","isPublished":true,"updatedAt":"2026-09-01T12:00:00Z"},{"id":"page-terms","title":"Terms of Service","slug":"terms","content":"## Terms of Service\n*Effective Date: September 2026*\n\nBy accessing Astro Blog CMS and utilizing our website, public articles, or CMS services, you agree to these Terms of Service.\n\n- **Content License**: All original technical tutorials, architecture diagrams, and prompt templates are published under standard attribution licenses unless explicitly designated otherwise.\n- **Fair Use**: Code samples and FFmpeg scripts may be freely used in your personal and commercial software projects without attribution.\n- **Disclaimer**: Content is provided \"as is\" for informational and educational purposes without warranty.","seoTitle":"Terms of Service – Astro Blog CMS","metaDescription":"Terms of service and content usage guidelines for Astro Blog CMS.","isPublished":true,"updatedAt":"2026-09-01T12:00:00Z"},{"id":"page-disclaimer","title":"Disclaimer","slug":"disclaimer","content":"## Disclaimer\n*Effective Date: September 2026*\n\nAll tutorials, architectural guides, and software specifications on Astro Blog CMS reflect the opinions and testing methodologies of the respective authors.\n\n- **Infrastructure Pricing**: Free tier quotas and cloud provider policies (Cloudflare, GitHub, AWS) are subject to change at the provider's discretion.\n- **External Links**: We are not responsible for the contents or security practices of external third-party sites linked from our articles.","seoTitle":"Disclaimer – Astro Blog CMS","metaDescription":"Editorial and infrastructure disclaimer for Astro Blog CMS.","isPublished":true,"updatedAt":"2026-09-01T12:00:00Z"}],"menus":[{"id":"m-home","label":"Home","url":"/","order":1},{"id":"m-tech","label":"AI & Reels","url":"/category/technology","order":2},{"id":"m-arch","label":"Architecture","url":"/category/web-architecture","order":3},{"id":"m-edge","label":"Cloudflare D1","url":"/category/cloudflare-edge","order":4},{"id":"m-about","label":"About","url":"/about","order":5},{"id":"m-contact","label":"Contact","url":"/contact","order":6}],"users":[{"id":"user-superadmin","name":"Alex Thorne","email":"alex.thorne@astroblog.dev","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80","role":"Super Admin","title":"Lead Architect & Systems Engineer","bio":"Systems engineer obsessed with Astro, edge compute, and sub-100ms first-contentful-paint architectures.","twitter":"https://x.com/alexthorne_dev","github":"https://github.com/alexthorne","createdAt":"2026-01-15T10:00:00Z"},{"id":"user-admin","name":"Maya Lin","email":"maya.lin@astroblog.dev","avatar":"https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&h=240&q=80","role":"Admin","title":"Senior Content Strategist & Technical Editor","bio":"Editorial director and digital product lead. Writing about the convergence of machine intelligence and modern publishing.","twitter":"https://x.com/mayalin_writes","github":"https://github.com/mayalin","createdAt":"2026-02-01T11:20:00Z"},{"id":"user-editor","name":"Julian Ross","email":"julian.ross@astroblog.dev","avatar":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&h=240&q=80","role":"Editor","title":"Managing Editor","bio":"Specialist in search engine optimization, content verification, and technical copy review.","createdAt":"2026-03-05T09:15:00Z"},{"id":"user-author","name":"Priya Sharma","email":"priya.sharma@astroblog.dev","avatar":"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&h=240&q=80","role":"Author","title":"Full-Stack & AI Pipeline Engineer","bio":"Building automated video workflows, generative prompts, and Cloudflare edge microservices.","twitter":"https://x.com/priyasharma_ai","createdAt":"2026-04-10T14:45:00Z"},{"id":"user-contributor","name":"David Kim","email":"david.kim@astroblog.dev","avatar":"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&h=240&q=80","role":"Contributor","title":"Junior Technical Writer","bio":"Passionate about open-source tooling, web standards, and developer productivity hacks.","createdAt":"2026-05-18T16:00:00Z"}],"redirects":[{"id":"red-1","fromPath":"/articles/facebook-reels-ai","toPath":"/how-to-create-facebook-reels-with-ai","type":301,"hits":242,"createdAt":"2026-09-18T10:00:00Z"},{"id":"red-2","fromPath":"/blog/zero-cost-astro","toPath":"/zero-cost-fullstack-astro-cloudflare-d1","type":301,"hits":118,"createdAt":"2026-09-14T08:00:00Z"}],"githubUser":"amitsi07","githubRepo":"my-astro-blog"};
+
+    // Load from localStorage if user made changes in this browser session
+    const stored = localStorage.getItem('astro_edge_cms_state');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        Object.assign(APP_DATA, parsed);
+      } catch (e) {
+        console.error('Failed to parse cached state', e);
       }
-    </style>
-    <!-- Sveltia CMS bundle -->
-    <link href="./config.yml" type="text/yaml" rel="cms-config-url">
-    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
-  </head>
-  <body>
-    <!-- Mounts automatically using ./config.yml -->
-  </body>
+    }
+
+    function saveState() {
+      localStorage.setItem('astro_edge_cms_state', JSON.stringify({
+        settings: APP_DATA.settings,
+        posts: APP_DATA.posts,
+        categories: APP_DATA.categories,
+        tags: APP_DATA.tags,
+        pages: APP_DATA.pages,
+        menus: APP_DATA.menus,
+        users: APP_DATA.users,
+        redirects: APP_DATA.redirects,
+      }));
+      renderCurrentTab();
+    }
+
+    function showToast(msg, isSuccess = true) {
+      const box = document.getElementById('toastBox');
+      const icon = document.getElementById('toastIcon');
+      const text = document.getElementById('toastMsg');
+      icon.innerText = isSuccess ? '✓' : '⚠️';
+      icon.className = isSuccess ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold';
+      text.innerText = msg;
+      box.classList.remove('hidden');
+      setTimeout(() => box.classList.add('hidden'), 3500);
+    }
+
+    let activeTab = 'dashboard';
+    let editingPostId = null;
+
+    function switchTab(tab) {
+      activeTab = tab;
+      editingPostId = null;
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('bg-orange-600', 'text-white', 'shadow-md');
+        btn.classList.add('text-slate-300');
+      });
+      const activeBtn = document.getElementById('nav-' + tab);
+      if (activeBtn) {
+        activeBtn.classList.remove('text-slate-300');
+        activeBtn.classList.add('bg-orange-600', 'text-white', 'shadow-md');
+      }
+      renderCurrentTab();
+    }
+
+    function renderCurrentTab() {
+      const main = document.getElementById('mainContent');
+      if (editingPostId !== null) {
+        renderPostEditor(editingPostId);
+        return;
+      }
+
+      switch (activeTab) {
+        case 'dashboard':
+          renderDashboard(main);
+          break;
+        case 'posts':
+          renderPosts(main);
+          break;
+        case 'categories':
+          renderCategories(main);
+          break;
+        case 'homepage':
+          renderHomepageBuilder(main);
+          break;
+        case 'media':
+          renderMedia(main);
+          break;
+        case 'pages':
+          renderPages(main);
+          break;
+        case 'menus':
+          renderMenus(main);
+          break;
+        case 'users':
+          renderUsers(main);
+          break;
+        case 'redirects':
+          renderRedirects(main);
+          break;
+        case 'ads':
+          renderAds(main);
+          break;
+        case 'settings':
+          renderSettings(main);
+          break;
+        case 'seo':
+          renderSeo(main);
+          break;
+        default:
+          renderDashboard(main);
+      }
+    }
+
+    // 1. DASHBOARD TAB
+    function renderDashboard(container) {
+      const postsCount = APP_DATA.posts.length;
+      const catsCount = APP_DATA.categories.length;
+      const pagesCount = APP_DATA.pages.length;
+      const usersCount = APP_DATA.users.length;
+
+      container.innerHTML = `
+        <div class="space-y-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Dashboard Overview</h1>
+              <p class="text-sm text-slate-400 mt-1">Welcome back! Manage your articles, theme, SEO, and cloud deployment.</p>
+            </div>
+            <div class="flex gap-3">
+              <button onclick="openNewPostEditor()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2">
+                <span>+</span> New Article
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Stats Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-2">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Total Articles</div>
+              <div class="text-3xl font-extrabold text-white">${postsCount}</div>
+              <div class="text-xs text-emerald-400">Ready on Cloudflare Edge</div>
+            </div>
+            <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-2">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Categories</div>
+              <div class="text-3xl font-extrabold text-orange-400">${catsCount}</div>
+              <div class="text-xs text-slate-400">Content Taxonomies</div>
+            </div>
+            <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-2">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Static Pages</div>
+              <div class="text-3xl font-extrabold text-blue-400">${pagesCount}</div>
+              <div class="text-xs text-slate-400">About, Contact, Terms, etc.</div>
+            </div>
+            <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-2">
+              <div class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Authors & Team</div>
+              <div class="text-3xl font-extrabold text-purple-400">${usersCount}</div>
+              <div class="text-xs text-slate-400">Active Contributors</div>
+            </div>
+          </div>
+
+          <!-- Quick Shortcuts -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div onclick="switchTab('homepage')" class="cursor-pointer p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-2">
+              <div class="text-2xl">🎨</div>
+              <h3 class="font-bold text-white text-base">Homepage Builder</h3>
+              <p class="text-xs text-slate-400">Live customize Hero banner, headline, CTA buttons, and featured stories.</p>
+            </div>
+            <div onclick="switchTab('seo')" class="cursor-pointer p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-2">
+              <div class="text-2xl">🔍</div>
+              <h3 class="font-bold text-white text-base">SEO & Social Meta</h3>
+              <p class="text-xs text-slate-400">Configure Google search snippets, OpenGraph sharing cards, and GA4 tracking.</p>
+            </div>
+            <div onclick="switchTab('menus')" class="cursor-pointer p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-2">
+              <div class="text-2xl">🧭</div>
+              <h3 class="font-bold text-white text-base">Navigation Menus</h3>
+              <p class="text-xs text-slate-400">Add and rearrange header links, footer quick links, and external socials.</p>
+            </div>
+          </div>
+
+          <!-- Recent Articles Table -->
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-lg font-bold text-white">Recent Articles</h2>
+              <button onclick="switchTab('posts')" class="text-xs text-orange-400 hover:underline">View All →</button>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-mono">
+                    <th class="pb-3">Title</th>
+                    <th class="pb-3">Category</th>
+                    <th class="pb-3">Status</th>
+                    <th class="pb-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60">
+                  ${APP_DATA.posts.slice(0, 5).map(p => {
+                    const cat = APP_DATA.categories.find(c => c.id === p.categoryId);
+                    return `
+                      <tr class="hover:bg-slate-800/30">
+                        <td class="py-3 font-semibold text-white">${p.title}</td>
+                        <td class="py-3 text-slate-400">${cat ? cat.name : 'General'}</td>
+                        <td class="py-3"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono uppercase">${p.status || 'published'}</span></td>
+                        <td class="py-3 text-right">
+                          <button onclick="editPost('${p.id}')" class="text-orange-400 hover:underline font-semibold mr-2">Edit</button>
+                          <a href="/${p.slug}" target="_blank" class="text-slate-400 hover:text-white">View</a>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 2. POSTS TAB
+    function renderPosts(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Articles & Blog Posts</h1>
+              <p class="text-xs text-slate-400 mt-1">Manage, write, and publish your content.</p>
+            </div>
+            <button onclick="openNewPostEditor()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add New Article
+            </button>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-mono bg-slate-900/60">
+                    <th class="p-4">Title</th>
+                    <th class="p-4">Slug</th>
+                    <th class="p-4">Category</th>
+                    <th class="p-4">Status</th>
+                    <th class="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60">
+                  ${APP_DATA.posts.map(p => {
+                    const cat = APP_DATA.categories.find(c => c.id === p.categoryId);
+                    return `
+                      <tr class="hover:bg-slate-800/40 transition-colors">
+                        <td class="p-4 font-semibold text-white">
+                          <div class="flex items-center gap-3">
+                            ${p.featuredImage ? `<img src="${p.featuredImage}" class="w-10 h-7 object-cover rounded bg-slate-800" />` : ''}
+                            <span>${p.title}</span>
+                          </div>
+                        </td>
+                        <td class="p-4 font-mono text-slate-400">/${p.slug}</td>
+                        <td class="p-4 text-slate-300">${cat ? cat.name : 'General'}</td>
+                        <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono uppercase">${p.status || 'published'}</span></td>
+                        <td class="p-4 text-right space-x-3">
+                          <button onclick="editPost('${p.id}')" class="text-orange-400 hover:underline font-semibold">Edit</button>
+                          <a href="/${p.slug}" target="_blank" class="text-slate-400 hover:text-white">Preview</a>
+                          <button onclick="deletePost('${p.id}')" class="text-rose-400 hover:underline">Trash</button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // 3. POST EDITOR (RICH + PREVIEW)
+    function openNewPostEditor() {
+      editingPostId = 'new';
+      renderCurrentTab();
+    }
+
+    function editPost(id) {
+      editingPostId = id;
+      renderCurrentTab();
+    }
+
+    function renderPostEditor(id) {
+      const isNew = id === 'new';
+      const post = isNew ? {
+        id: 'post_' + Date.now(),
+        title: '',
+        subtitle: '',
+        slug: '',
+        excerpt: '',
+        content: '# Write your article in Markdown here...\n\nStart typing here!',
+        categoryId: APP_DATA.categories[0]?.id || '',
+        tags: [],
+        status: 'published',
+        featuredImage: '',
+        authorId: APP_DATA.users[0]?.id || '1',
+        createdAt: new Date().toISOString(),
+      } : APP_DATA.posts.find(p => p.id === id);
+
+      if (!post) {
+        editingPostId = null;
+        renderCurrentTab();
+        return;
+      }
+
+      const main = document.getElementById('mainContent');
+      main.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div class="flex items-center gap-3">
+              <button onclick="editingPostId=null;renderCurrentTab();" class="text-slate-400 hover:text-white text-sm">← Back</button>
+              <h1 class="text-xl font-bold text-white">${isNew ? 'Create New Article' : 'Edit Article: ' + post.title}</h1>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="savePostForm('${post.id}', ${isNew})" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+                💾 Save Article
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left 2 Cols: Title, Excerpt, Markdown Body -->
+            <div class="lg:col-span-2 space-y-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Article Title</label>
+                <input id="postTitle" value="${post.title.replace(/"/g, '&quot;')}" oninput="if(${isNew}) document.getElementById('postSlug').value=this.value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-500 outline-none" placeholder="Enter article headline..." />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Clean URL Slug</label>
+                  <input id="postSlug" value="${post.slug}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-500 outline-none" placeholder="article-slug" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-300 mb-1">Category</label>
+                  <select id="postCat" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">
+                    ${APP_DATA.categories.map(c => `<option value="${c.id}" ${c.id === post.categoryId ? 'selected' : ''}>${c.name}</option>`).join('')}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Excerpt / Summary</label>
+                <textarea id="postExcerpt" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">${post.excerpt || ''}</textarea>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label class="text-xs font-semibold text-slate-300">Article Body (Markdown)</label>
+                  <div class="flex gap-2 text-xs">
+                    <button type="button" onclick="document.getElementById('postBody').classList.remove('hidden');document.getElementById('previewBox').classList.add('hidden');" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:text-white">Edit</button>
+                    <button type="button" onclick="document.getElementById('postBody').classList.add('hidden');document.getElementById('previewBox').classList.remove('hidden');document.getElementById('previewBox').innerHTML=marked.parse(document.getElementById('postBody').value);" class="px-2 py-0.5 rounded bg-orange-600 text-white">Live Preview</button>
+                  </div>
+                </div>
+                <textarea id="postBody" rows="16" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs focus:border-orange-500 outline-none leading-relaxed">${post.content || ''}</textarea>
+                <div id="previewBox" class="hidden min-h-[350px] p-5 rounded-xl bg-slate-900 border border-slate-700 prose-dark text-slate-200"></div>
+              </div>
+            </div>
+
+            <!-- Right 1 Col: Featured Image, Status, Tags -->
+            <div class="space-y-4">
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <h3 class="font-bold text-white text-xs uppercase tracking-wider">Publish Settings</h3>
+                <div>
+                  <label class="block text-[11px] text-slate-400 mb-1">Status</label>
+                  <select id="postStatus" class="w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs">
+                    <option value="published" ${post.status === 'published' ? 'selected' : ''}>Published</option>
+                    <option value="draft" ${post.status === 'draft' ? 'selected' : ''}>Draft</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <h3 class="font-bold text-white text-xs uppercase tracking-wider">Featured Image</h3>
+                <div>
+                  <input id="postImage" value="${post.featuredImage || ''}" oninput="document.getElementById('postImagePreview').src=this.value;" class="w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs outline-none" placeholder="https://..." />
+                </div>
+                <div class="aspect-video w-full rounded-lg bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">
+                  <img id="postImagePreview" src="${post.featuredImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80'}" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function savePostForm(id, isNew) {
+      const title = document.getElementById('postTitle').value.trim();
+      const slug = document.getElementById('postSlug').value.trim();
+      const categoryId = document.getElementById('postCat').value;
+      const excerpt = document.getElementById('postExcerpt').value.trim();
+      const content = document.getElementById('postBody').value;
+      const status = document.getElementById('postStatus').value;
+      const featuredImage = document.getElementById('postImage').value.trim();
+
+      if (!title || !slug) {
+        showToast('Please enter both title and slug', false);
+        return;
+      }
+
+      if (isNew) {
+        APP_DATA.posts.unshift({
+          id: 'post_' + Date.now(),
+          title,
+          slug,
+          categoryId,
+          excerpt,
+          content,
+          status,
+          featuredImage,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        });
+      } else {
+        const p = APP_DATA.posts.find(item => item.id === id);
+        if (p) {
+          p.title = title;
+          p.slug = slug;
+          p.categoryId = categoryId;
+          p.excerpt = excerpt;
+          p.content = content;
+          p.status = status;
+          p.featuredImage = featuredImage;
+          p.updatedAt = new Date().toISOString();
+        }
+      }
+
+      saveState();
+      editingPostId = null;
+      showToast('Article saved! Click "Push to GitHub" to publish to live site.');
+      switchTab('posts');
+    }
+
+    function deletePost(id) {
+      if (!confirm('Are you sure you want to delete this article?')) return;
+      APP_DATA.posts = APP_DATA.posts.filter(p => p.id !== id);
+      saveState();
+      showToast('Article moved to trash');
+      renderPosts(document.getElementById('mainContent'));
+    }
+
+    // 4. HOMEPAGE BUILDER
+    function renderHomepageBuilder(container) {
+      const hp = APP_DATA.settings.homepage?.hero || {};
+      container.innerHTML = `
+        <div class="space-y-6 max-w-4xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Homepage Builder & Customizer</h1>
+              <p class="text-xs text-slate-400 mt-1">Live customize your front page headlines, hero CTA, and banner.</p>
+            </div>
+            <button onclick="saveHomepageForm()" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              💾 Save Homepage
+            </button>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-6 space-y-4">
+            <h3 class="font-bold text-white text-sm">Hero Banner Section</h3>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Main Hero Headline</label>
+              <input id="hpHeadline" value="${(hp.customHeadline || APP_DATA.settings.siteName).replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Hero Subheadline / Tagline</label>
+              <textarea id="hpSubheadline" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none">${hp.customSubheadline || APP_DATA.settings.description || ''}</textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">CTA Button Label</label>
+                <input id="hpCtaText" value="${hp.customCtaText || 'Explore Articles'}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">CTA URL</label>
+                <input id="hpCtaUrl" value="${hp.customCtaUrl || '/articles'}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveHomepageForm() {
+      if (!APP_DATA.settings.homepage) APP_DATA.settings.homepage = { hero: {} };
+      if (!APP_DATA.settings.homepage.hero) APP_DATA.settings.homepage.hero = {};
+      APP_DATA.settings.homepage.hero.customHeadline = document.getElementById('hpHeadline').value;
+      APP_DATA.settings.homepage.hero.customSubheadline = document.getElementById('hpSubheadline').value;
+      APP_DATA.settings.homepage.hero.customCtaText = document.getElementById('hpCtaText').value;
+      APP_DATA.settings.homepage.hero.customCtaUrl = document.getElementById('hpCtaUrl').value;
+      saveState();
+      showToast('Homepage settings saved! Click "Push to GitHub" to publish.');
+    }
+
+    // 5. CATEGORIES TAB
+    function renderCategories(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Categories & Tags</h1>
+              <p class="text-xs text-slate-400 mt-1">Organize your content into sections.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-4">
+              <h3 class="font-bold text-white text-sm">Add New Category</h3>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Name</label>
+                <input id="newCatName" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs outline-none" placeholder="e.g. Technology" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Slug</label>
+                <input id="newCatSlug" class="w-full px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs outline-none" placeholder="technology" />
+              </div>
+              <div>
+                <label class="block text-xs text-slate-400 mb-1">Color (Hex)</label>
+                <input id="newCatColor" type="color" value="#f97316" class="w-full h-8 rounded bg-transparent cursor-pointer" />
+              </div>
+              <button onclick="addCategory()" class="w-full py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+                + Add Category
+              </button>
+            </div>
+
+            <div class="md:col-span-2 rounded-2xl bg-[#0f172a] border border-slate-800 overflow-hidden">
+              <table class="w-full text-left text-xs">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 font-mono bg-slate-900/60">
+                    <th class="p-3.5">Name</th>
+                    <th class="p-3.5">Slug</th>
+                    <th class="p-3.5">Color</th>
+                    <th class="p-3.5 text-right">Delete</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60">
+                  ${APP_DATA.categories.map(c => `
+                    <tr class="hover:bg-slate-800/30">
+                      <td class="p-3.5 font-semibold text-white">${c.name}</td>
+                      <td class="p-3.5 font-mono text-slate-400">/category/${c.slug}</td>
+                      <td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-mono text-white" style="background-color: ${c.color}">${c.color}</span></td>
+                      <td class="p-3.5 text-right"><button onclick="deleteCategory('${c.id}')" class="text-rose-400 hover:underline">Remove</button></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function addCategory() {
+      const name = document.getElementById('newCatName').value.trim();
+      const slug = document.getElementById('newCatSlug').value.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const color = document.getElementById('newCatColor').value;
+      if (!name) return;
+      APP_DATA.categories.push({ id: 'cat_' + Date.now(), name, slug, description: '', color });
+      saveState();
+      showToast('Category added!');
+      renderCategories(document.getElementById('mainContent'));
+    }
+
+    function deleteCategory(id) {
+      APP_DATA.categories = APP_DATA.categories.filter(c => c.id !== id);
+      saveState();
+      showToast('Category removed');
+      renderCategories(document.getElementById('mainContent'));
+    }
+
+    // 6. MEDIA LIBRARY
+    function renderMedia(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Media Library</h1>
+              <p class="text-xs text-slate-400 mt-1">Image assets and upload manager.</p>
+            </div>
+            <button onclick="promptAddMedia()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add Image URL
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            ${APP_DATA.posts.filter(p => p.featuredImage).map(p => `
+              <div class="group relative rounded-xl overflow-hidden bg-slate-900 border border-slate-800 aspect-video">
+                <img src="${p.featuredImage}" class="w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity p-3 flex flex-col justify-between">
+                  <span class="text-[10px] text-white font-semibold truncate">${p.title}</span>
+                  <button onclick="navigator.clipboard.writeText('${p.featuredImage}');showToast('Image URL copied!');" class="w-full py-1 rounded bg-orange-600 text-[10px] text-white font-bold">Copy URL</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function promptAddMedia() {
+      const url = prompt('Enter image direct URL (Unsplash, Imgur, Cloudinary, etc.):');
+      if (url) {
+        navigator.clipboard.writeText(url);
+        showToast('Image URL copied to clipboard! You can paste it into any article or hero banner.');
+      }
+    }
+
+    // 7. STATIC PAGES
+    function renderPages(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Static Pages</h1>
+              <p class="text-xs text-slate-400 mt-1">Manage pages like About Us, Contact, Privacy Policy, Terms.</p>
+            </div>
+            <button onclick="promptAddPage()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add New Page
+            </button>
+          </div>
+
+          <div class="rounded-2xl bg-[#0f172a] border border-slate-800 overflow-hidden">
+            <table class="w-full text-left text-xs">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400 font-mono bg-slate-900/60">
+                  <th class="p-4">Page Title</th>
+                  <th class="p-4">URL Slug</th>
+                  <th class="p-4">Status</th>
+                  <th class="p-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                ${APP_DATA.pages.map(pg => `
+                  <tr class="hover:bg-slate-800/30">
+                    <td class="p-4 font-semibold text-white">${pg.title}</td>
+                    <td class="p-4 font-mono text-slate-400">/${pg.slug.replace(/^\//, '')}</td>
+                    <td class="p-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono">PUBLISHED</span></td>
+                    <td class="p-4 text-right">
+                      <button onclick="editPageContent('${pg.id}')" class="text-orange-400 hover:underline font-semibold mr-3">Edit Content</button>
+                      <button onclick="deletePage('${pg.id}')" class="text-rose-400 hover:underline">Delete</button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function promptAddPage() {
+      const title = prompt('Enter Page Title (e.g. Terms of Service):');
+      if (!title) return;
+      const slug = prompt('Enter Page Slug (e.g. terms):', title.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
+      APP_DATA.pages.push({
+        id: 'pg_' + Date.now(),
+        title,
+        slug: slug || 'page',
+        content: '# ' + title + '\n\nPage content goes here.',
+        isPublished: true,
+      });
+      saveState();
+      showToast('Page added!');
+      renderPages(document.getElementById('mainContent'));
+    }
+
+    function editPageContent(id) {
+      const page = APP_DATA.pages.find(p => p.id === id);
+      if (!page) return;
+      const newContent = prompt('Edit page markdown content:', page.content);
+      if (newContent !== null) {
+        page.content = newContent;
+        saveState();
+        showToast('Page content updated!');
+      }
+    }
+
+    function deletePage(id) {
+      APP_DATA.pages = APP_DATA.pages.filter(p => p.id !== id);
+      saveState();
+      showToast('Page deleted');
+      renderPages(document.getElementById('mainContent'));
+    }
+
+    // 8. NAVIGATION MENUS
+    function renderMenus(container) {
+      container.innerHTML = `
+        <div class="space-y-6 max-w-3xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Navigation Menus</h1>
+              <p class="text-xs text-slate-400 mt-1">Configure header links and navigation items.</p>
+            </div>
+            <button onclick="promptAddMenuItem()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add Menu Item
+            </button>
+          </div>
+
+          <div class="rounded-2xl bg-[#0f172a] border border-slate-800 divide-y divide-slate-800/60">
+            ${APP_DATA.menus.map((m, idx) => `
+              <div class="p-4 flex items-center justify-between hover:bg-slate-800/20">
+                <div class="flex items-center gap-3">
+                  <span class="text-xs font-mono text-slate-500">${idx + 1}.</span>
+                  <div>
+                    <div class="font-bold text-white text-sm">${m.label}</div>
+                    <div class="text-xs font-mono text-slate-400">${m.url}</div>
+                  </div>
+                </div>
+                <button onclick="deleteMenuItem('${m.id || idx}')" class="text-xs text-rose-400 hover:underline">Remove</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function promptAddMenuItem() {
+      const label = prompt('Menu Item Label (e.g. About):');
+      if (!label) return;
+      const url = prompt('Destination URL (e.g. /about or https://...):', '/');
+      APP_DATA.menus.push({ id: 'menu_' + Date.now(), label, url: url || '/' });
+      saveState();
+      showToast('Menu item added!');
+      renderMenus(document.getElementById('mainContent'));
+    }
+
+    function deleteMenuItem(id) {
+      APP_DATA.menus = APP_DATA.menus.filter((m, i) => m.id !== id && String(i) !== id);
+      saveState();
+      showToast('Menu item removed');
+      renderMenus(document.getElementById('mainContent'));
+    }
+
+    // 9. USERS & AUTHORS
+    function renderUsers(container) {
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Users & Authors</h1>
+              <p class="text-xs text-slate-400 mt-1">Manage content creators and team biographies.</p>
+            </div>
+            <button onclick="promptAddUser()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add Author
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            ${APP_DATA.users.map(u => `
+              <div class="p-5 rounded-2xl bg-[#0f172a] border border-slate-800 space-y-3">
+                <div class="flex items-center gap-3">
+                  <img src="${u.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80'}" class="w-12 h-12 rounded-full object-cover border border-slate-700" />
+                  <div>
+                    <div class="font-bold text-white text-sm">${u.name}</div>
+                    <div class="text-[10px] font-mono uppercase text-orange-400">${u.role}</div>
+                  </div>
+                </div>
+                <p class="text-xs text-slate-400 line-clamp-2">${u.bio || 'No biography added yet.'}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function promptAddUser() {
+      const name = prompt('Author Name:');
+      if (!name) return;
+      const role = prompt('Role (admin / editor / author):', 'author');
+      const bio = prompt('Author Bio:');
+      APP_DATA.users.push({
+        id: 'usr_' + Date.now(),
+        name,
+        email: name.toLowerCase().replace(/\s+/g, '') + '@site.com',
+        role: role || 'author',
+        bio: bio || '',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80',
+      });
+      saveState();
+      showToast('Author added!');
+      renderUsers(document.getElementById('mainContent'));
+    }
+
+    // 10. 301 REDIRECTS
+    function renderRedirects(container) {
+      container.innerHTML = `
+        <div class="space-y-6 max-w-3xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">301 URL Redirects</h1>
+              <p class="text-xs text-slate-400 mt-1">Prevent 404 errors by forwarding outdated links.</p>
+            </div>
+            <button onclick="promptAddRedirect()" class="px-4 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              + Add Redirect
+            </button>
+          </div>
+
+          <div class="rounded-2xl bg-[#0f172a] border border-slate-800 divide-y divide-slate-800/60">
+            ${(APP_DATA.redirects || []).map((r, i) => `
+              <div class="p-4 flex items-center justify-between">
+                <div class="space-y-1">
+                  <div class="text-xs font-mono text-white">${r.fromPath} <span class="text-orange-400 font-bold">→</span> ${r.toPath}</div>
+                  <span class="px-1.5 py-0.5 rounded text-[9px] bg-slate-800 text-slate-400 font-mono">STATUS ${r.type || 301}</span>
+                </div>
+                <button onclick="deleteRedirect(${i})" class="text-xs text-rose-400 hover:underline">Remove</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function promptAddRedirect() {
+      const fromPath = prompt('Old path (e.g. /old-blog/post-1):');
+      if (!fromPath) return;
+      const toPath = prompt('New path (e.g. /post-1):');
+      if (!toPath) return;
+      if (!APP_DATA.redirects) APP_DATA.redirects = [];
+      APP_DATA.redirects.push({ fromPath, toPath, type: 301 });
+      saveState();
+      showToast('Redirect added!');
+      renderRedirects(document.getElementById('mainContent'));
+    }
+
+    function deleteRedirect(i) {
+      APP_DATA.redirects.splice(i, 1);
+      saveState();
+      showToast('Redirect removed');
+      renderRedirects(document.getElementById('mainContent'));
+    }
+
+    // 11. ADS & MONETIZATION
+    function renderAds(container) {
+      const ads = APP_DATA.settings.adSlots || [];
+      container.innerHTML = `
+        <div class="space-y-6 max-w-3xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">Ads & Monetization</h1>
+              <p class="text-xs text-slate-400 mt-1">Inject Google AdSense or HTML banner code into pre-defined slots.</p>
+            </div>
+            <button onclick="saveAdsForm()" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              💾 Save Ad Slots
+            </button>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Header Banner Ad (Top of page)</label>
+              <textarea id="adHeader" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs outline-none">${ads.find(a => a.location === 'header_banner')?.codeHtml || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">In-Article Ad (Inside post content)</label>
+              <textarea id="adArticle" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs outline-none">${ads.find(a => a.location === 'in_article')?.codeHtml || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Sidebar Banner Ad</label>
+              <textarea id="adSidebar" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs outline-none">${ads.find(a => a.location === 'sidebar')?.codeHtml || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Footer Banner Ad</label>
+              <textarea id="adFooter" rows="3" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs outline-none">${ads.find(a => a.location === 'footer_banner')?.codeHtml || ''}</textarea>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveAdsForm() {
+      APP_DATA.settings.adSlots = [
+        { id: 'ad_header', name: 'Header Banner', location: 'header_banner', isEnabled: true, codeHtml: document.getElementById('adHeader').value },
+        { id: 'ad_article', name: 'In-Article', location: 'in_article', isEnabled: true, codeHtml: document.getElementById('adArticle').value },
+        { id: 'ad_sidebar', name: 'Sidebar', location: 'sidebar', isEnabled: true, codeHtml: document.getElementById('adSidebar').value },
+        { id: 'ad_footer', name: 'Footer', location: 'footer_banner', isEnabled: true, codeHtml: document.getElementById('adFooter').value },
+      ];
+      saveState();
+      showToast('Ad slots saved!');
+    }
+
+    // 12. GENERAL SETTINGS
+    function renderSettings(container) {
+      container.innerHTML = `
+        <div class="space-y-6 max-w-3xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">General Settings & Branding</h1>
+              <p class="text-xs text-slate-400 mt-1">Configure site title, logo, and core attributes.</p>
+            </div>
+            <button onclick="saveGeneralSettings()" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              💾 Save Settings
+            </button>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Website Name</label>
+              <input id="setSiteName" value="${APP_DATA.settings.siteName.replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Tagline</label>
+              <input id="setTagline" value="${(APP_DATA.settings.tagline || '').replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Site Description</label>
+              <textarea id="setDescription" rows="2" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none">${APP_DATA.settings.description || ''}</textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Logo URL</label>
+                <input id="setLogo" value="${APP_DATA.settings.logoUrl || ''}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Posts Per Page</label>
+                <input id="setPostsPerPage" type="number" value="${APP_DATA.settings.postsPerPage || 9}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveGeneralSettings() {
+      APP_DATA.settings.siteName = document.getElementById('setSiteName').value;
+      APP_DATA.settings.tagline = document.getElementById('setTagline').value;
+      APP_DATA.settings.description = document.getElementById('setDescription').value;
+      APP_DATA.settings.logoUrl = document.getElementById('setLogo').value;
+      APP_DATA.settings.postsPerPage = Number(document.getElementById('setPostsPerPage').value) || 9;
+      saveState();
+      document.getElementById('headerSiteName').innerText = APP_DATA.settings.siteName;
+      showToast('Settings saved!');
+    }
+
+    // 13. SEO STUDIO
+    function renderSeo(container) {
+      const seo = APP_DATA.settings.defaultSeo || {};
+      container.innerHTML = `
+        <div class="space-y-6 max-w-3xl">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div>
+              <h1 class="text-2xl font-bold text-white">SEO & Social Meta Studio</h1>
+              <p class="text-xs text-slate-400 mt-1">Configure search engine visibility and Twitter cards.</p>
+            </div>
+            <button onclick="saveSeoForm()" class="px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-xs shadow-md">
+              💾 Save SEO
+            </button>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-6 space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Default Meta Title</label>
+              <input id="seoTitle" value="${(seo.metaTitle || APP_DATA.settings.siteName).replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Default Meta Description</label>
+              <textarea id="seoDesc" rows="3" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none">${seo.metaDescription || APP_DATA.settings.description || ''}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Social Share Card (OG Image URL)</label>
+              <input id="seoOg" value="${seo.ogImage || ''}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" placeholder="https://..." />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Twitter / X Handle</label>
+              <input id="seoTwitter" value="${APP_DATA.settings.socialLinks?.twitter || ''}" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none" placeholder="@username" />
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function saveSeoForm() {
+      if (!APP_DATA.settings.defaultSeo) APP_DATA.settings.defaultSeo = {};
+      APP_DATA.settings.defaultSeo.metaTitle = document.getElementById('seoTitle').value;
+      APP_DATA.settings.defaultSeo.metaDescription = document.getElementById('seoDesc').value;
+      APP_DATA.settings.defaultSeo.ogImage = document.getElementById('seoOg').value;
+      if (!APP_DATA.settings.socialLinks) APP_DATA.settings.socialLinks = {};
+      APP_DATA.settings.socialLinks.twitter = document.getElementById('seoTwitter').value;
+      saveState();
+      showToast('SEO settings saved!');
+    }
+
+    // 14. GITHUB DIRECT COMMITTER (Saves files directly into GitHub repo!)
+    async function commitAllToGitHub() {
+      const token = localStorage.getItem('astro_sveltia_gh_token') || '';
+      const owner = localStorage.getItem('astro_sveltia_gh_user') || APP_DATA.githubUser;
+      const repo = localStorage.getItem('astro_sveltia_gh_repo') || APP_DATA.githubRepo;
+
+      if (!token) {
+        promptEditGithubToken();
+        return;
+      }
+
+      const btn = document.getElementById('btnSyncGh');
+      btn.innerHTML = '⏳ Committing to GitHub...';
+      btn.disabled = true;
+
+      try {
+        // Push settings.json
+        await pushSingleFile(owner, repo, token, 'src/data/settings.json', JSON.stringify(APP_DATA.settings, null, 2), 'chore: update site settings from Admin Studio');
+        // Push categories.json
+        await pushSingleFile(owner, repo, token, 'src/content/categories/categories.json', JSON.stringify(APP_DATA.categories, null, 2), 'content: update categories');
+        // Push menus.json
+        await pushSingleFile(owner, repo, token, 'src/data/menus.json', JSON.stringify({ items: APP_DATA.menus }, null, 2), 'content: update menus');
+        
+        showToast('✓ Successfully committed changes to GitHub! Cloudflare build running.');
+      } catch (err) {
+        console.error(err);
+        showToast('Error committing to GitHub: ' + err.message, false);
+      } finally {
+        btn.innerHTML = '🚀 Push to GitHub';
+        btn.disabled = false;
+      }
+    }
+
+    async function pushSingleFile(owner, repo, token, path, content, commitMsg) {
+      const utf8Bytes = new TextEncoder().encode(content);
+      let binary = '';
+      for (let i = 0; i < utf8Bytes.length; i++) binary += String.fromCharCode(utf8Bytes[i]);
+      const base64Content = btoa(binary);
+
+      let existingSha = undefined;
+      try {
+        const getRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+          headers: { Authorization: 'token ' + token, Accept: 'application/vnd.github.v3+json' }
+        });
+        if (getRes.ok) {
+          const data = await getRes.json();
+          existingSha = data.sha;
+          if (data.content && data.content.replace(/\s+/g, '') === base64Content.replace(/\s+/g, '')) {
+            return; // unchanged, skip
+          }
+        }
+      } catch (e) {}
+
+      await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: 'token ' + token,
+          'Content-Type': 'application/json',
+          Accept: 'application/vnd.github.v3+json',
+        },
+        body: JSON.stringify({
+          message: commitMsg,
+          content: base64Content,
+          branch: 'main',
+          sha: existingSha,
+        }),
+      });
+    }
+
+    function promptEditGithubToken() {
+      const current = localStorage.getItem('astro_sveltia_gh_token') || '';
+      const input = prompt('Enter your GitHub Personal Access Token (classic token with "repo" scope):', current);
+      if (input !== null && input.trim()) {
+        localStorage.setItem('astro_sveltia_gh_token', input.trim());
+        showToast('GitHub token saved in your browser!');
+      }
+    }
+
+    // Initialize View
+    renderCurrentTab();
+  </script>
+</body>
 </html>
