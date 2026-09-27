@@ -1,0 +1,158 @@
+{
+  "siteName": "Astro Blog CMS",
+  "tagline": "High-Velocity Publishing & Edge Architecture",
+  "description": "Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.",
+  "logoUrl": "",
+  "faviconUrl": "",
+  "typography": {
+    "presetId": "bricolage_inter",
+    "presetName": "Modern Editorial (Bricolage + Inter)",
+    "displayFont": "'Bricolage Grotesque', sans-serif",
+    "bodyFont": "'Inter', sans-serif",
+    "monoFont": "'JetBrains Mono', monospace"
+  },
+  "authorDefaultId": "user-superadmin",
+  "postsPerPage": 6,
+  "commentsEnabled": true,
+  "commentsRequireApproval": true,
+  "homepage": {
+    "sectionsOrder": [
+      "hero",
+      "announcement",
+      "trending",
+      "latest_feed",
+      "category_sections",
+      "newsletter"
+    ],
+    "sectionsEnabled": {
+      "hero": true,
+      "announcement": true,
+      "trending": true,
+      "featured_grid": true,
+      "latest_feed": true,
+      "category_sections": true,
+      "newsletter": true
+    },
+    "hero": {
+      "type": "featured_post",
+      "selectedPostId": "auto",
+      "badgeText": "Featured Blueprint",
+      "customHeadline": "High-Velocity Publishing & Edge Compute Architecture",
+      "customSubheadline": "Explore deep-dive technical blueprints on Astro 5 island hydration, generative video pipelines, and zero-cost Cloudflare edge storage.",
+      "customCtaText": "Explore Blueprints",
+      "customCtaUrl": "/how-to-create-facebook-reels-with-ai",
+      "customImageUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80",
+      "customImageCaption": "Interactive edge publishing architecture"
+    },
+    "announcement": {
+      "enabled": true,
+      "badge": "Production Target",
+      "title": "₹0 Starting Infrastructure Target (Astro + Cloudflare D1 + R2)",
+      "description": "Production CMS architecture with static pre-rendering, edge SQLite, and zero egress image distribution.",
+      "buttonText": "View Specification Blueprint",
+      "buttonAction": "open_spec"
+    },
+    "trending": {
+      "title": "Trending & High Velocity",
+      "subtitle": "Most read technical playbooks this week",
+      "postLimit": 4
+    },
+    "featuredGrid": {
+      "title": "Curated Staff Blueprints",
+      "subtitle": "Selected by senior systems engineers",
+      "postLimit": 3
+    },
+    "latestFeed": {
+      "title": "Latest Publications",
+      "subtitle": "Recent guides from our distributed engineering and editorial team",
+      "showCategoryTabs": true
+    },
+    "categorySections": [
+      {
+        "id": "hcs-1",
+        "categoryId": "cat-technology",
+        "customTitle": "AI Workflows & Video Automation",
+        "customSubtitle": "Generative prompt chains, FFmpeg pipelines, and neural synthesis guides",
+        "postLimit": 3
+      },
+      {
+        "id": "hcs-2",
+        "categoryId": "cat-cloudflare",
+        "customTitle": "Cloudflare & Edge Systems",
+        "customSubtitle": "Zero-cost serverless databases, edge workers, and cache architectures",
+        "postLimit": 2
+      }
+    ],
+    "newsletter": {
+      "badge": "Weekly Digest",
+      "title": "Join 12,000+ Edge & Full-Stack Engineers",
+      "description": "Get our curated collection of production prompt templates, Astro 5 recipes, and zero-cost cloud architecture deep dives directly to your inbox every Thursday.",
+      "buttonText": "Subscribe Free",
+      "subscriberCountText": "Join 12,000+ engineers",
+      "perks": [
+        "Production FFmpeg vertical video recipes",
+        "Tested prompt chains for Gemini 2.5 & Claude 3.7",
+        "Zero-cost serverless database benchmarks",
+        "No spam or sponsored third-party pitches"
+      ]
+    },
+    "sidebar": {
+      "enabled": true,
+      "showAuthorSpotlight": true,
+      "authorSpotlightTitle": "Author Spotlight",
+      "showTags": true,
+      "tagsTitle": "Explore Tags",
+      "showNewsletter": true,
+      "newsletterTitle": "The Edge Letter",
+      "newsletterDesc": "Join 12,000+ developers receiving our production recipes every Thursday."
+    }
+  },
+  "socialLinks": {
+    "twitter": "https://x.com/astroblogcms",
+    "github": "https://github.com/astro-blog-cms",
+    "youtube": "https://youtube.com",
+    "linkedin": "https://linkedin.com"
+  },
+  "defaultSeo": {
+    "metaTitle": "Astro Blog CMS – High-Velocity Publishing & Edge Architecture",
+    "metaDescription": "Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.",
+    "ogImage": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80"
+  },
+  "customCodeHeader": "<!-- Astro Blog CMS Custom Header Code Slot -->",
+  "customCodeFooter": "<!-- Astro Blog CMS Custom Footer Code Slot -->",
+  "adSlots": [
+    {
+      "id": "ad-header",
+      "name": "Header Banner",
+      "location": "header_banner",
+      "isEnabled": true,
+      "bannerImageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=728&h=90&q=80",
+      "bannerLinkUrl": "https://cloudflare.com",
+      "altText": "Supercharge your edge deployments with Cloudflare D1 and Pages"
+    },
+    {
+      "id": "ad-in-article",
+      "name": "In-Article Responsive Sponsor",
+      "location": "in_article",
+      "isEnabled": true,
+      "bannerImageUrl": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&h=120&q=80",
+      "bannerLinkUrl": "https://astro.build",
+      "altText": "Build faster websites with Astro 5 Islands"
+    },
+    {
+      "id": "ad-sidebar",
+      "name": "Sidebar Square Banner",
+      "location": "sidebar",
+      "isEnabled": true,
+      "bannerImageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=300&h=250&q=80",
+      "bannerLinkUrl": "/how-to-create-facebook-reels-with-ai",
+      "altText": "Master AI video creation: View our comprehensive blueprint"
+    },
+    {
+      "id": "ad-footer",
+      "name": "Footer Wide Billboard",
+      "location": "footer_banner",
+      "isEnabled": false
+    }
+  ]
+}
