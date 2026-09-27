@@ -1,0 +1,47 @@
+[
+  {
+    "id": "tag-ai",
+    "name": "Artificial Intelligence",
+    "slug": "artificial-intelligence"
+  },
+  {
+    "id": "tag-reels",
+    "name": "Facebook Reels",
+    "slug": "facebook-reels"
+  },
+  {
+    "id": "tag-astro",
+    "name": "Astro",
+    "slug": "astro"
+  },
+  {
+    "id": "tag-cloudflare",
+    "name": "Cloudflare",
+    "slug": "cloudflare"
+  },
+  {
+    "id": "tag-d1",
+    "name": "Cloudflare D1",
+    "slug": "cloudflare-d1"
+  },
+  {
+    "id": "tag-seo",
+    "name": "SEO & Structured Data",
+    "slug": "seo"
+  },
+  {
+    "id": "tag-video",
+    "name": "Video Automation",
+    "slug": "video-automation"
+  },
+  {
+    "id": "tag-prompt",
+    "name": "Prompt Engineering",
+    "slug": "prompt-engineering"
+  },
+  {
+    "id": "tag-zero-cost",
+    "name": "Zero Cost",
+    "slug": "zero-cost"
+  }
+]
