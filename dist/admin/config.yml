@@ -1,0 +1,72 @@
+# ========================================================
+# SVELTIA CMS CONFIGURATION FOR ASTRO BLOG CMS
+# Place in: public/admin/config.yml
+# ========================================================
+
+backend:
+  name: github
+  repo: amitsi07/my-astro-blog
+  branch: main
+
+# Media Uploads Directory (Relative to project root and public URL)
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+# Display & UI Settings
+site_url: "https://my-astro-blog.pages.dev"
+display_url: "https://my-astro-blog.pages.dev"
+logo_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=120&h=120&q=80"
+
+publish_mode: simple
+show_preview_links: true
+
+collections:
+  - name: "posts"
+    label: "Articles & Blog Posts"
+    label_singular: "Article"
+    folder: "src/content/blog"
+    create: true
+    slug: "{{slug}}"
+    preview_path: "{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+      - { label: "Slug / Clean URL", name: "slug", widget: "string" }
+      - { label: "Published Date", name: "publishedAt", widget: "datetime" }
+      - { label: "Status", name: "status", widget: "select", options: ["published", "draft", "scheduled"], default: "published" }
+      - { label: "Category", name: "category", widget: "string" }
+      - { label: "Tags", name: "tags", widget: "list" }
+      - { label: "Featured Hero Image", name: "featuredImage", widget: "image", required: false }
+      - { label: "Image Alt Text", name: "featuredImageAlt", widget: "string", required: false }
+      - { label: "Image Caption", name: "featuredImageCaption", widget: "string", required: false }
+      - { label: "Photo Credit", name: "featuredImageCredit", widget: "string", required: false }
+      - { label: "Show in Post Header", name: "showFeaturedImageInPost", widget: "boolean", default: true }
+      - { label: "Featured on Homepage", name: "isFeatured", widget: "boolean", default: false }
+      - { label: "Trending Badge", name: "isTrending", widget: "boolean", default: false }
+      - { label: "Allow Reader Comments", name: "allowComments", widget: "boolean", default: true }
+      - { label: "Excerpt / Summary", name: "excerpt", widget: "text" }
+      - { label: "Article Body (Markdown)", name: "body", widget: "markdown" }
+
+  - name: "categories"
+    label: "Categories"
+    folder: "src/content/categories"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Category Name", name: "name", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Description", name: "description", widget: "text" }
+      - { label: "Brand Color (Hex)", name: "color", widget: "color" }
+
+  - name: "settings"
+    label: "Homepage & Theme Settings"
+    files:
+      - label: "Homepage & Branding"
+        name: "homepage_settings"
+        file: "src/data/settings.json"
+        fields:
+          - { label: "Site Name", name: "siteName", widget: "string" }
+          - { label: "Tagline", name: "tagline", widget: "string" }
+          - { label: "Site Description", name: "description", widget: "text" }
+          - { label: "Hero Headline", name: "heroHeadline", widget: "string" }
+          - { label: "Hero Subheadline", name: "heroSubheadline", widget: "text" }
