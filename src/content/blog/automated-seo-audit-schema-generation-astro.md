@@ -6,7 +6,7 @@ featuredImage: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?aut
 category: "Developer Workflows"
 tags: ["seo", "astro"]
 authorId: "user-editor"
-publishedAt: "2026-09-28T01:16:34.452Z"
+publishedAt: "2026-09-28T01:48:22.175Z"
 status: "draft"
 readingTime: 5
 seo:
