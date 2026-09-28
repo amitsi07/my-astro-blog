@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us – Astro Blog CMS Publishing Architecture – Astro Blog CMS</title>
+  <meta name="description" content="Learn about Astro Blog CMS: the high-performance publishing platform powered by Astro, Cloudflare D1, and zero-cost edge infrastructure." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; background-color: #060910; color: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; }
+    h1, h2, h3 { font-weight: 700; color: #ffffff; }
+  </style>
+</head>
+<body>
+  <header class="w-full border-b border-slate-800/80 bg-[#080c14] py-4 px-6 flex items-center justify-between">
+    <a href="/" class="font-bold text-white text-lg">🔥 Astro Blog CMS</a>
+    <a href="/" class="text-xs text-orange-400 hover:underline">← Home</a>
+  </header>
+
+  <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <div class="mb-8 pb-6 border-b border-slate-800">
+      <div class="text-xs text-orange-400 font-mono font-bold uppercase mb-2">Documentation / Page</div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white">About Astro Blog CMS</h1>
+    </div>
+
+    <div class="prose-content leading-relaxed text-slate-300">
+      <h2 id="the-next-generation-publishing-platform" class="scroll-mt-24 font-display text-2xl sm:text-3xl font-bold text-white mt-10 mb-4 pb-2 border-b border-slate-800/60">The Next-Generation Publishing Platform</h2><p class="my-4 text-base sm:text-lg text-slate-300 leading-relaxed">Astro Blog CMS was engineered to solve a fundamental problem in modern web publishing: <strong class="text-white font-bold">the trade-off between editorial velocity and website performance</strong>.</p><p class="my-4 text-base sm:text-lg text-slate-300 leading-relaxed">Traditional platforms like WordPress rely on heavy PHP servers, fragile plugins, and bloated database queries for every pageview. Conversely, headless JAMstack setups often force editors to edit raw markdown files or trigger slow 15-minute static rebuilds for a single typo fix.</p><h3 id="our-architecture" class="scroll-mt-24 font-display text-xl font-bold text-slate-100 mt-8 mb-3">Our Architecture</h3><p class="my-4 text-base sm:text-lg text-slate-300 leading-relaxed">We combine the best of both paradigms:</p><ul class="my-4 space-y-2 list-disc list-inside text-slate-300 text-base leading-relaxed pl-2"><li>**Lightning-Fast Astro Frontend**: Pure zero-JavaScript baseline by default with selective island hydration.</li><li>**Full-Featured Headless CMS**: Built-in rich article editor, special blocks (AI prompts, code blocks, tables, callouts), media manager, and revision history.</li><li>**Edge Data Persistence**: Powered by Cloudflare D1 distributed SQLite and R2 storage.</li><li>**Zero-Cost Scaling**: Architected from the ground up to operate within generous free-tier quotas while effortlessly absorbing viral traffic spikes.</li></ul><h3 id="the-team" class="scroll-mt-24 font-display text-xl font-bold text-slate-100 mt-8 mb-3">The Team</h3><p class="my-4 text-base sm:text-lg text-slate-300 leading-relaxed">We are a distributed group of software architects, content strategists, and performance obsessives committed to making the web faster, cleaner, and more accessible.</p>
+    </div>
+  </main>
+
+  <footer class="w-full border-t border-slate-800/80 bg-[#060910] text-slate-500 py-6 text-center text-xs">
+    © 2026 Astro Blog CMS. All rights reserved.
+  </footer>
+</body>
+</html>
