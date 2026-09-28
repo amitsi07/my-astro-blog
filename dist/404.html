@@ -1,0 +1,897 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Astro Blog CMS – High-Velocity Publishing &amp; Edge Architecture</title>
+  <meta name="description" content="Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets." />
+  <meta property="og:title" content="Astro Blog CMS" />
+  <meta property="og:description" content="Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets." />
+  <meta property="og:type" content="website" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background-color: #060910;
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2, h3, .font-display { font-family: 'Playfair Display', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body class="selection:bg-orange-500/20 selection:text-orange-400">
+
+  <!-- 1. Top Admin Bar -->
+  <div class="w-full bg-[#101522] border-b border-slate-800 px-4 py-1 text-[11px] text-slate-300 flex items-center justify-between sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <a href="/admin" class="flex items-center gap-1.5 text-slate-300 hover:text-white font-medium transition-colors">
+        <span class="text-orange-400 font-black">🔥</span>
+        <span class="font-semibold">Astro Blog CMS</span>
+        <span class="text-slate-500">›</span>
+        <span>Dashboard</span>
+      </a>
+      <span class="text-slate-700 hidden sm:inline">|</span>
+      <a href="/admin" class="hidden sm:inline text-slate-400 hover:text-white transition-colors">
+        + Write New Post
+      </a>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-slate-400 hidden sm:inline">Howdy, <strong class="text-white">Admin</strong></span>
+      <span class="px-1.5 py-0.2 rounded text-[10px] bg-orange-950/80 border border-orange-500/30 text-orange-300 font-mono">Super Admin</span>
+      <a href="/admin" class="ml-1 px-2.5 py-0.5 rounded bg-orange-600 hover:bg-orange-500 text-white font-semibold transition-all">Open Admin</a>
+    </div>
+  </div>
+
+  <!-- 2. Public Header -->
+  <header class="w-full border-b border-slate-800/80 bg-[#080c14]/95 backdrop-blur-md sticky top-[28px] z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+          <a href="/" class="flex items-center gap-2.5 text-left group">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-600 via-orange-500 to-amber-400 flex items-center justify-center text-white shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform">
+              <span class="font-black text-lg">A</span>
+            </div>
+            <div>
+              <span class="font-display font-bold text-lg text-white tracking-tight group-hover:text-orange-400 transition-colors">
+                Astro Blog CMS
+              </span>
+              <span class="hidden sm:block text-[10px] text-slate-400 tracking-wider uppercase font-medium -mt-1">
+                Astro + Edge D1
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <!-- Navigation links -->
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+          
+            <a href="/" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              Home
+            </a>
+          
+            <a href="/category/technology" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              AI &amp; Reels
+            </a>
+          
+            <a href="/category/web-architecture" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              Architecture
+            </a>
+          
+            <a href="/category/cloudflare-edge" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              Cloudflare D1
+            </a>
+          
+            <a href="/about" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              About
+            </a>
+          
+            <a href="/contact" class="px-3 py-1.5 text-xs lg:text-sm font-medium rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/40 transition-colors">
+              Contact
+            </a>
+          
+        </nav>
+
+        <!-- Right actions -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button type="button" onclick="openSearchModal()" class="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800/60 text-slate-400 hover:text-slate-200 transition-colors text-xs">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            <span class="hidden sm:inline">Search...</span>
+            <kbd class="hidden lg:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-slate-800 text-slate-400 border border-slate-700">⌘K</kbd>
+          </button>
+          <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Menu -->
+    <div id="mobileMenu" class="hidden md:hidden border-t border-slate-800 bg-[#080c14] px-4 pt-3 pb-6 space-y-2">
+      
+        <a href="/" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          Home
+        </a>
+      
+        <a href="/category/technology" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          AI &amp; Reels
+        </a>
+      
+        <a href="/category/web-architecture" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          Architecture
+        </a>
+      
+        <a href="/category/cloudflare-edge" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          Cloudflare D1
+        </a>
+      
+        <a href="/about" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          About
+        </a>
+      
+        <a href="/contact" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800/40 hover:text-white">
+          Contact
+        </a>
+      
+    </div>
+  </header>
+
+  <!-- 3. Main Body Container -->
+  <main class="flex-1 w-full space-y-16 py-8">
+
+    <!-- HERO SECTION -->
+    
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="relative rounded-3xl border border-slate-800 bg-gradient-to-b from-[#111726] to-[#0a0e17] overflow-hidden shadow-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center p-6 sm:p-10 lg:p-12">
+          <div class="lg:col-span-7 space-y-5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                <span>🔥</span>
+                <span>Featured Blueprint</span>
+              </span>
+              <span class="inline-flex items-center gap-1 text-xs text-amber-400 font-medium">
+                <span>⚡</span>
+                <span>Trending #1</span>
+              </span>
+            </div>
+
+            <h1 class="font-display text-2xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.15]">
+              <a href="/how-to-create-facebook-reels-with-ai" class="hover:text-orange-400 transition-colors">
+                How to Create Facebook Reels with AI: Complete 2026 Production Blueprint
+              </a>
+            </h1>
+
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
+              Step-by-step masterclass on automating viral 9:16 vertical short-form video creation using prompt chaining, text-to-speech, and zero-cost cloud rendering.
+            </p>
+
+            <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 pt-2 font-mono">
+              <span>7 min read</span>
+              <span>·</span>
+              <span>Clean URL: /how-to-create-facebook-reels-with-ai</span>
+              <span>·</span>
+              <span>14,280 reads</span>
+            </div>
+
+            <div class="pt-2">
+              <a href="/how-to-create-facebook-reels-with-ai" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-semibold text-sm shadow-lg shadow-orange-600/25 transition-all active:scale-95">
+                <span>Read Full Blueprint</span>
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5">
+            <a href="/how-to-create-facebook-reels-with-ai" class="block group relative rounded-2xl overflow-hidden border border-slate-700/60 shadow-xl aspect-video lg:aspect-[4/3] bg-slate-900">
+              <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80" alt="How to Create Facebook Reels with AI: Complete 2026 Production Blueprint" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                <span class="text-xs text-slate-300 font-mono">Automated 9:16 generative reel rendering pipeline</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+
+    <!-- ANNOUNCEMENT BANNER -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-2xl border border-slate-800 bg-[#090d16] p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-lg">
+            ✨
+          </div>
+          <div>
+            <h4 class="font-semibold text-sm text-white">Cloudflare Pages & Edge Compute Architecture</h4>
+            <p class="text-xs text-slate-400">Zero-cost global edge CDN delivery with instant sub-50ms TTFB.</p>
+          </div>
+        </div>
+        <button type="button" onclick="openSpecModal()" class="flex-shrink-0 px-4 py-2 rounded-lg border border-slate-700 hover:border-amber-500/50 bg-slate-900 text-slate-200 hover:text-white text-xs font-medium transition-colors">
+          View Blueprint
+        </button>
+      </div>
+    </section>
+
+    <!-- TRENDING RIBBON -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <span class="text-orange-400 font-bold text-lg">📈</span>
+          <h2 class="font-display text-xl sm:text-2xl font-bold text-white">Trending &amp; High Velocity</h2>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        
+          <a href="/how-to-create-facebook-reels-with-ai" class="group p-4 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1320] transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+                <span class="text-orange-400/80 font-bold">01</span>
+                <span style="color: #6366f1">Technology &amp; AI</span>
+              </div>
+              <h3 class="font-display text-sm font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-2 mb-2">
+                How to Create Facebook Reels with AI: Complete 2026 Production Blueprint
+              </h3>
+              <p class="text-xs text-slate-400 line-clamp-2">
+                Step-by-step masterclass on automating viral 9:16 vertical short-form video creation using prompt chaining, text-to-speech, and zero-cost cloud rendering.
+              </p>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mt-4 pt-3 border-t border-slate-800/60 font-mono">
+              <span>7 min read</span>
+              <span>14,280 views</span>
+            </div>
+          </a>
+          <a href="/zero-cost-fullstack-astro-cloudflare-d1" class="group p-4 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1320] transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+                <span class="text-orange-400/80 font-bold">02</span>
+                <span style="color: #f59e0b">Cloudflare &amp; Edge</span>
+              </div>
+              <h3 class="font-display text-sm font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-2 mb-2">
+                Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint
+              </h3>
+              <p class="text-xs text-slate-400 line-clamp-2">
+                How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers.
+              </p>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mt-4 pt-3 border-t border-slate-800/60 font-mono">
+              <span>6 min read</span>
+              <span>9,840 views</span>
+            </div>
+          </a>
+          <a href="/astro-5-islands-content-collections-deep-dive" class="group p-4 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1320] transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+                <span class="text-orange-400/80 font-bold">03</span>
+                <span style="color: #10b981">Web Architecture</span>
+              </div>
+              <h3 class="font-display text-sm font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-2 mb-2">
+                Astro 5 Islands &amp; Content Collections: Deep Dive into Zero-JS Baselines
+              </h3>
+              <p class="text-xs text-slate-400 line-clamp-2">
+                Explore how Astro 5 redefines editorial publishing with partial hydration, type-safe content schemas, and lighting-fast Lighthouse 100 scores.
+              </p>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mt-4 pt-3 border-t border-slate-800/60 font-mono">
+              <span>5 min read</span>
+              <span>6,420 views</span>
+            </div>
+          </a>
+          <a href="/prompt-engineering-playbook-social-shorts" class="group p-4 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1320] transition-all flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-mono">
+                <span class="text-orange-400/80 font-bold">04</span>
+                <span style="color: #6366f1">Technology &amp; AI</span>
+              </div>
+              <h3 class="font-display text-sm font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-2 mb-2">
+                Prompt Engineering Playbook for High-Converting Social Shorts
+              </h3>
+              <p class="text-xs text-slate-400 line-clamp-2">
+                Field-tested prompt chains to craft high-retention hooks, compelling visual beats, and viral retention loops across TikTok, Reels, and YouTube Shorts.
+              </p>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-500 mt-4 pt-3 border-t border-slate-800/60 font-mono">
+              <span>4 min read</span>
+              <span>4,190 views</span>
+            </div>
+          </a>
+      </div>
+    </section>
+
+    <!-- CURATED STAFF GRID -->
+    
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-2 mb-6">
+        <span class="text-orange-400 font-bold text-lg">🔥</span>
+        <h2 class="font-display text-xl sm:text-2xl font-bold text-white">Curated Staff Blueprints</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+          <article class="group rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 transition-all overflow-hidden flex flex-col justify-between">
+            <div>
+              <a href="/zero-cost-fullstack-astro-cloudflare-d1" class="block aspect-video w-full overflow-hidden border-b border-slate-800/60 bg-slate-950">
+                <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80" alt="Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              </a>
+              <div class="p-5 space-y-2">
+                <span class="text-xs font-semibold" style="color: #f59e0b">Cloudflare &amp; Edge</span>
+                <h3 class="font-display text-base font-bold text-white group-hover:text-orange-400 transition-colors line-clamp-2">
+                  <a href="/zero-cost-fullstack-astro-cloudflare-d1">Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint</a>
+                </h3>
+                <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                  How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers.
+                </p>
+              </div>
+            </div>
+            <div class="p-5 pt-0 flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/40 mt-3 font-mono">
+              <span>6 min read</span>
+              <a href="/zero-cost-fullstack-astro-cloudflare-d1" class="text-orange-400 font-medium hover:underline">Read →</a>
+            </div>
+          </article>
+      </div>
+    </section>
+    
+
+    <!-- LATEST FEED + SIDEBAR -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div class="lg:col-span-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+            <div class="flex items-center gap-2">
+              <span class="text-orange-400 text-lg">📖</span>
+              <h2 class="font-display text-xl sm:text-2xl font-bold text-white">Latest Publications</h2>
+            </div>
+            <!-- Category Tabs -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1 max-w-full">
+              <button onclick="filterFeedCategory('all')" id="tab-all" class="cat-filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-orange-600 text-white whitespace-nowrap">
+                All (4)
+              </button>
+              
+                <button onclick="filterFeedCategory('cat-technology')" id="tab-cat-technology" class="cat-filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                  Technology &amp; AI (2)
+                </button>
+                <button onclick="filterFeedCategory('cat-architecture')" id="tab-cat-architecture" class="cat-filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                  Web Architecture (1)
+                </button>
+                <button onclick="filterFeedCategory('cat-cloudflare')" id="tab-cat-cloudflare" class="cat-filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                  Cloudflare &amp; Edge (1)
+                </button>
+                <button onclick="filterFeedCategory('cat-workflows')" id="tab-cat-workflows" class="cat-filter-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white whitespace-nowrap">
+                  Developer Workflows (0)
+                </button>
+            </div>
+          </div>
+
+          <!-- Feed Posts List -->
+          <div class="space-y-6" id="feedPostsContainer">
+            
+              <article data-category="cat-technology" class="feed-article group p-5 sm:p-6 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1422] transition-all grid grid-cols-1 sm:grid-cols-12 gap-5">
+                <div class="sm:col-span-8 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
+                      <span class="font-semibold" style="color: #6366f1">Technology &amp; AI</span>
+                      <span>·</span>
+                      <span>Sep 18, 2026</span>
+                      <span>·</span>
+                      <span>7 min read</span>
+                    </div>
+                    <h3 class="font-display text-lg sm:text-xl font-bold text-white group-hover:text-orange-400 transition-colors leading-snug mb-2">
+                      <a href="/how-to-create-facebook-reels-with-ai">How to Create Facebook Reels with AI: Complete 2026 Production Blueprint</a>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                      Step-by-step masterclass on automating viral 9:16 vertical short-form video creation using prompt chaining, text-to-speech, and zero-cost cloud rendering.
+                    </p>
+                  </div>
+                  <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/50 text-xs">
+                    <div class="flex items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&h=240&q=80" alt="Priya Sharma" class="w-5 h-5 rounded-full object-cover" />
+                      <span class="text-slate-300 font-medium">Priya Sharma</span>
+                    </div>
+                    <a href="/how-to-create-facebook-reels-with-ai" class="text-orange-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-medium font-mono">
+                      <span>Read</span>
+                      <span>→</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="sm:col-span-4 overflow-hidden rounded-xl border border-slate-800 aspect-video sm:aspect-auto sm:h-full bg-slate-900">
+                  <a href="/how-to-create-facebook-reels-with-ai">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&h=675&q=80" alt="How to Create Facebook Reels with AI: Complete 2026 Production Blueprint" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </a>
+                </div>
+              </article>
+              <article data-category="cat-cloudflare" class="feed-article group p-5 sm:p-6 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1422] transition-all grid grid-cols-1 sm:grid-cols-12 gap-5">
+                <div class="sm:col-span-8 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
+                      <span class="font-semibold" style="color: #f59e0b">Cloudflare &amp; Edge</span>
+                      <span>·</span>
+                      <span>Sep 12, 2026</span>
+                      <span>·</span>
+                      <span>6 min read</span>
+                    </div>
+                    <h3 class="font-display text-lg sm:text-xl font-bold text-white group-hover:text-orange-400 transition-colors leading-snug mb-2">
+                      <a href="/zero-cost-fullstack-astro-cloudflare-d1">Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint</a>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                      How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers.
+                    </p>
+                  </div>
+                  <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/50 text-xs">
+                    <div class="flex items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80" alt="Alex Thorne" class="w-5 h-5 rounded-full object-cover" />
+                      <span class="text-slate-300 font-medium">Alex Thorne</span>
+                    </div>
+                    <a href="/zero-cost-fullstack-astro-cloudflare-d1" class="text-orange-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-medium font-mono">
+                      <span>Read</span>
+                      <span>→</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="sm:col-span-4 overflow-hidden rounded-xl border border-slate-800 aspect-video sm:aspect-auto sm:h-full bg-slate-900">
+                  <a href="/zero-cost-fullstack-astro-cloudflare-d1">
+                    <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80" alt="Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </a>
+                </div>
+              </article>
+              <article data-category="cat-architecture" class="feed-article group p-5 sm:p-6 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1422] transition-all grid grid-cols-1 sm:grid-cols-12 gap-5">
+                <div class="sm:col-span-8 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
+                      <span class="font-semibold" style="color: #10b981">Web Architecture</span>
+                      <span>·</span>
+                      <span>Sep 5, 2026</span>
+                      <span>·</span>
+                      <span>5 min read</span>
+                    </div>
+                    <h3 class="font-display text-lg sm:text-xl font-bold text-white group-hover:text-orange-400 transition-colors leading-snug mb-2">
+                      <a href="/astro-5-islands-content-collections-deep-dive">Astro 5 Islands &amp; Content Collections: Deep Dive into Zero-JS Baselines</a>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                      Explore how Astro 5 redefines editorial publishing with partial hydration, type-safe content schemas, and lighting-fast Lighthouse 100 scores.
+                    </p>
+                  </div>
+                  <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/50 text-xs">
+                    <div class="flex items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&h=240&q=80" alt="Maya Lin" class="w-5 h-5 rounded-full object-cover" />
+                      <span class="text-slate-300 font-medium">Maya Lin</span>
+                    </div>
+                    <a href="/astro-5-islands-content-collections-deep-dive" class="text-orange-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-medium font-mono">
+                      <span>Read</span>
+                      <span>→</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="sm:col-span-4 overflow-hidden rounded-xl border border-slate-800 aspect-video sm:aspect-auto sm:h-full bg-slate-900">
+                  <a href="/astro-5-islands-content-collections-deep-dive">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&h=675&q=80" alt="Astro 5 Islands &amp; Content Collections: Deep Dive into Zero-JS Baselines" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </a>
+                </div>
+              </article>
+              <article data-category="cat-technology" class="feed-article group p-5 sm:p-6 rounded-2xl border border-slate-800/80 bg-[#0a0e17] hover:border-slate-700 hover:bg-[#0e1422] transition-all grid grid-cols-1 sm:grid-cols-12 gap-5">
+                <div class="sm:col-span-8 flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400 mb-2 font-mono">
+                      <span class="font-semibold" style="color: #6366f1">Technology &amp; AI</span>
+                      <span>·</span>
+                      <span>Aug 28, 2026</span>
+                      <span>·</span>
+                      <span>4 min read</span>
+                    </div>
+                    <h3 class="font-display text-lg sm:text-xl font-bold text-white group-hover:text-orange-400 transition-colors leading-snug mb-2">
+                      <a href="/prompt-engineering-playbook-social-shorts">Prompt Engineering Playbook for High-Converting Social Shorts</a>
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                      Field-tested prompt chains to craft high-retention hooks, compelling visual beats, and viral retention loops across TikTok, Reels, and YouTube Shorts.
+                    </p>
+                  </div>
+                  <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-800/50 text-xs">
+                    <div class="flex items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=240&h=240&q=80" alt="Priya Sharma" class="w-5 h-5 rounded-full object-cover" />
+                      <span class="text-slate-300 font-medium">Priya Sharma</span>
+                    </div>
+                    <a href="/prompt-engineering-playbook-social-shorts" class="text-orange-400 group-hover:translate-x-1 transition-transform flex items-center gap-1 font-medium font-mono">
+                      <span>Read</span>
+                      <span>→</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="sm:col-span-4 overflow-hidden rounded-xl border border-slate-800 aspect-video sm:aspect-auto sm:h-full bg-slate-900">
+                  <a href="/prompt-engineering-playbook-social-shorts">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&h=675&q=80" alt="Prompt Engineering Playbook for High-Converting Social Shorts" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </a>
+                </div>
+              </article>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-4 space-y-8">
+          <!-- Author Spotlight -->
+          <div class="p-6 rounded-2xl border border-slate-800 bg-[#0a0e17] space-y-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-300 pb-2 border-b border-slate-800">
+              Author Spotlight
+            </div>
+            
+              <div class="flex items-center gap-3">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&h=240&q=80" alt="Alex Thorne" class="w-10 h-10 rounded-full object-cover border border-slate-700" />
+                <div>
+                  <div class="text-xs font-semibold text-white">Alex Thorne</div>
+                  <div class="text-[11px] text-slate-400">Lead Architect &amp; Systems Engineer</div>
+                </div>
+              </div>
+            
+              <div class="flex items-center gap-3">
+                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=240&h=240&q=80" alt="Maya Lin" class="w-10 h-10 rounded-full object-cover border border-slate-700" />
+                <div>
+                  <div class="text-xs font-semibold text-white">Maya Lin</div>
+                  <div class="text-[11px] text-slate-400">Senior Content Strategist &amp; Technical Editor</div>
+                </div>
+              </div>
+            
+              <div class="flex items-center gap-3">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=240&h=240&q=80" alt="Julian Ross" class="w-10 h-10 rounded-full object-cover border border-slate-700" />
+                <div>
+                  <div class="text-xs font-semibold text-white">Julian Ross</div>
+                  <div class="text-[11px] text-slate-400">Managing Editor</div>
+                </div>
+              </div>
+            
+          </div>
+
+          <!-- Tags Cloud -->
+          <div class="p-6 rounded-2xl border border-slate-800 bg-[#0a0e17] space-y-4">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-300 pb-2 border-b border-slate-800">
+              Explore Topics & Tags
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              
+                <a href="/tag/artificial-intelligence" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Artificial Intelligence
+                </a>
+              
+                <a href="/tag/facebook-reels" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Facebook Reels
+                </a>
+              
+                <a href="/tag/astro" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Astro
+                </a>
+              
+                <a href="/tag/cloudflare" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Cloudflare
+                </a>
+              
+                <a href="/tag/cloudflare-d1" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Cloudflare D1
+                </a>
+              
+                <a href="/tag/seo" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #SEO &amp; Structured Data
+                </a>
+              
+                <a href="/tag/video-automation" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Video Automation
+                </a>
+              
+                <a href="/tag/prompt-engineering" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Prompt Engineering
+                </a>
+              
+                <a href="/tag/zero-cost" class="px-2.5 py-1 text-xs rounded-lg border border-slate-800 bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
+                  #Zero Cost
+                </a>
+              
+            </div>
+          </div>
+
+          <!-- Sidebar Newsletter -->
+          <div class="p-6 rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-950/20 to-[#0c101a] space-y-3">
+            <div class="flex items-center gap-2 text-orange-400 font-semibold text-xs uppercase tracking-wider">
+              <span>✉️</span>
+              <span>The Edge Dispatch</span>
+            </div>
+            <h4 class="font-display font-bold text-white text-base">Zero-Cost Cloud & AI Weekly</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">Join 12,000+ developers receiving our production recipes every Thursday.</p>
+            <form onsubmit="handleSubscribe(event, this)" class="space-y-2">
+              <input type="email" required placeholder="Enter email address" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-800 bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-orange-500" />
+              <button type="submit" class="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-colors">Join 12,000+ Engineers</button>
+            </form>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- FULL-WIDTH NEWSLETTER -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="rounded-3xl border border-orange-500/30 bg-gradient-to-br from-orange-950/30 via-[#111726] to-[#0a0f1b] p-8 sm:p-12 shadow-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-7 space-y-4">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+              Weekly Technical Digest
+            </span>
+            <h2 class="font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white">
+              Curated Edge & AI Architecture
+            </h2>
+            <p class="text-sm text-slate-300 leading-relaxed max-w-xl">
+              Join thousands of engineers receiving weekly deep dives on Astro, Cloudflare Pages, and zero-cost serverless patterns.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 text-xs text-slate-200">
+              <div class="flex items-center gap-2"><span>✓</span><span>Zero spam guarantee</span></div>
+              <div class="flex items-center gap-2"><span>✓</span><span>Sub-100ms FCP blueprints</span></div>
+            </div>
+          </div>
+          <div class="lg:col-span-5">
+            <div class="p-6 rounded-2xl border border-slate-800 bg-[#090d16] space-y-4">
+              <span class="text-xs font-semibold text-slate-300 block">Join 14,200+ engineers</span>
+              <form onsubmit="handleSubscribe(event, this)" class="space-y-3">
+                <input type="email" required placeholder="engineer@company.com" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-800 bg-slate-900 text-white placeholder-slate-500 focus:outline-none focus:border-orange-500" />
+                <button type="submit" class="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold shadow-md shadow-orange-600/30 transition-all active:scale-95">Subscribe Free</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 4. Public Footer -->
+  <footer class="w-full border-t border-slate-800/80 bg-[#060910] text-slate-400 mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
+        <!-- Brand column -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold">
+              🔥
+            </div>
+            <span class="font-display font-bold text-lg text-white">Astro Blog CMS</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
+            Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.
+          </p>
+          <button type="button" onclick="openSpecModal()" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-orange-500/30 bg-orange-950/20 hover:bg-orange-950/30 text-orange-300 text-xs font-medium transition-colors">
+            <span>✨</span>
+            <span>Inspect Architecture Blueprint & Cloudflare Setup</span>
+          </button>
+        </div>
+
+        <!-- Categories column -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4">Categories</h4>
+          <ul class="space-y-2.5 text-xs sm:text-sm">
+            
+              <li>
+                <a href="/category/technology" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background-color: #6366f1"></span>
+                  <span>Technology &amp; AI</span>
+                </a>
+              </li>
+            
+              <li>
+                <a href="/category/web-architecture" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background-color: #10b981"></span>
+                  <span>Web Architecture</span>
+                </a>
+              </li>
+            
+              <li>
+                <a href="/category/cloudflare-edge" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background-color: #f59e0b"></span>
+                  <span>Cloudflare &amp; Edge</span>
+                </a>
+              </li>
+            
+              <li>
+                <a href="/category/workflows" class="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full" style="background-color: #3b82f6"></span>
+                  <span>Developer Workflows</span>
+                </a>
+              </li>
+            
+          </ul>
+        </div>
+
+        <!-- Information / Pages -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-4">Information & Pages</h4>
+          <ul class="space-y-2.5 text-xs sm:text-sm">
+            
+              <li><a href="/about" class="hover:text-white transition-colors">About Astro Blog CMS</a></li>
+            
+              <li><a href="/contact" class="hover:text-white transition-colors">Contact Us</a></li>
+            
+              <li><a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            
+              <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+            
+              <li><a href="/disclaimer" class="hover:text-white transition-colors">Disclaimer</a></li>
+            
+          </ul>
+        </div>
+
+        <!-- Footer Newsletter -->
+        <div class="space-y-3">
+          <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider">Weekly Edge Digest</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">Curated blueprints, Astro patterns, and zero-cost cloud architecture recipes.</p>
+          <form onsubmit="handleSubscribe(event, this)" class="space-y-2">
+            <input type="email" required placeholder="reader@domain.com" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-800 bg-slate-900 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-orange-500" />
+            <button type="submit" class="w-full py-2 px-3 text-xs font-semibold rounded-lg bg-orange-600 hover:bg-orange-500 text-white transition-colors">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Bottom copyright -->
+      <div class="mt-12 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-3">
+        <div>© 2026 Astro Blog CMS. All rights reserved.</div>
+        <div class="flex items-center gap-4">
+          <span class="text-slate-400">☁️ Cloudflare D1 + Pages Global Edge</span>
+          <span>·</span>
+          <span>Sub-50ms Fast Baseline</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- 5. Interactive Search Modal -->
+  <div id="searchModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
+    <div class="w-full max-w-xl bg-[#0b101c] border border-slate-800 rounded-2xl p-4 sm:p-6 space-y-4 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-orange-400">🔍</span>
+          <span class="font-bold text-sm text-white">Search Articles & Tags</span>
+        </div>
+        <button type="button" onclick="closeSearchModal()" class="text-slate-400 hover:text-white text-sm font-bold">✕</button>
+      </div>
+      <input id="searchInput" oninput="handleSearchQuery(this.value)" type="text" placeholder="Search keywords, topics, frameworks..." class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:border-orange-500 outline-none" />
+      <div id="searchResults" class="max-h-64 overflow-y-auto space-y-2 text-xs">
+        <div class="text-slate-500 text-center py-4">Type to search articles across the site...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Architecture Blueprint Modal -->
+  <div id="specModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-[#0b101c] border border-slate-800 rounded-2xl p-6 space-y-4 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-400">✨</span>
+          <span class="font-bold text-sm sm:text-base text-white">Cloudflare Pages & Astro Architecture</span>
+        </div>
+        <button type="button" onclick="closeSpecModal()" class="text-slate-400 hover:text-white font-bold">✕</button>
+      </div>
+      <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <strong class="text-white text-sm block">1. Cloudflare Pages Global Edge</strong>
+          <p>Zero-cost static generation & serverless edge runtime caching across 300+ worldwide locations.</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <strong class="text-white text-sm block">2. Sveltia CMS & Astro Admin Studio</strong>
+          <p>Integrated Git-based CMS at <code class="text-orange-400 font-mono">/admin</code> allowing 1-click publishing directly into GitHub.</p>
+        </div>
+        <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1">
+          <strong class="text-white text-sm block">3. Zero Build Errors & Instant Deploy</strong>
+          <p>Pre-rendered static HTML and structured data guarantees lightning fast FCP and perfect Google Lighthouse scores.</p>
+        </div>
+      </div>
+      <div class="pt-2 text-right">
+        <button type="button" onclick="closeSpecModal()" class="px-4 py-2 rounded-xl bg-orange-600 text-white font-bold text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client-side Interactive Search & Category Filter Script -->
+  <script>
+    var RAW_DATA = "eyJwb3N0cyI6W3siaWQiOiJwb3N0LTEiLCJ0aXRsZSI6IkhvdyB0byBDcmVhdGUgRmFjZWJvb2sgUmVlbHMgd2l0aCBBSTogQ29tcGxldGUgMjAyNiBQcm9kdWN0aW9uIEJsdWVwcmludCIsInNsdWciOiJob3ctdG8tY3JlYXRlLWZhY2Vib29rLXJlZWxzLXdpdGgtYWkiLCJleGNlcnB0IjoiU3RlcC1ieS1zdGVwIG1hc3RlcmNsYXNzIG9uIGF1dG9tYXRpbmcgdmlyYWwgOToxNiB2ZXJ0aWNhbCBzaG9ydC1mb3JtIHZpZGVvIGNyZWF0aW9uIHVzaW5nIHByb21wdCBjaGFpbmluZywgdGV4dC10by1zcGVlY2gsIGFuZCB6ZXJvLWNvc3QgY2xvdWQgcmVuZGVyaW5nLiIsImZlYXR1cmVkSW1hZ2UiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTYxODAwNTE4MjM4NC1hODNhOGJkNTdmYmU/YXV0bz1mb3JtYXQmZml0PWNyb3Amdz0xMjAwJmg9Njc1JnE9ODAiLCJjYXRlZ29yeUlkIjoiY2F0LXRlY2hub2xvZ3kiLCJ0YWdzIjpbImFydGlmaWNpYWwtaW50ZWxsaWdlbmNlIiwiZmFjZWJvb2stcmVlbHMiLCJ2aWRlby1hdXRvbWF0aW9uIiwicHJvbXB0LWVuZ2luZWVyaW5nIl0sInB1Ymxpc2hlZEF0IjoiMjAyNi0wOS0xOFQwOTowMDowMFoiLCJyZWFkaW5nVGltZSI6Nywidmlld3MiOjE0MjgwfSx7ImlkIjoicG9zdC0yIiwidGl0bGUiOiJaZXJvLUNvc3QgRnVsbC1TdGFjayBBcmNoaXRlY3R1cmU6IEFzdHJvICsgQ2xvdWRmbGFyZSBEMSArIFIyIEJsdWVwcmludCIsInNsdWciOiJ6ZXJvLWNvc3QtZnVsbHN0YWNrLWFzdHJvLWNsb3VkZmxhcmUtZDEiLCJleGNlcnB0IjoiSG93IHdlIGVuZ2luZWVyZWQgYSBoaWdoLXRocm91Z2hwdXQgQ01TIGFuZCBwdWJsaWMgYmxvZyB0aGF0IGhhbmRsZXMgbWlsbGlvbnMgb2YgcGFnZXZpZXdzIHBlciBtb250aCBvbiBDbG91ZGZsYXJl4oCZcyBmcmVlIHRpZXIgd2l0aG91dCBwYXlpbmcgYSBzaW5nbGUgZG9sbGFyIGZvciBzZXJ2ZXJzLiIsImZlYXR1cmVkSW1hZ2UiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTU1ODQ5NDk0OS1lZjAxMGNiZGNjMzE/YXV0bz1mb3JtYXQmZml0PWNyb3Amdz0xMjAwJmg9Njc1JnE9ODAiLCJjYXRlZ29yeUlkIjoiY2F0LWNsb3VkZmxhcmUiLCJ0YWdzIjpbImNsb3VkZmxhcmUiLCJjbG91ZGZsYXJlLWQxIiwiYXN0cm8iLCJ6ZXJvLWNvc3QiXSwicHVibGlzaGVkQXQiOiIyMDI2LTA5LTEyVDE2OjAwOjAwWiIsInJlYWRpbmdUaW1lIjo2LCJ2aWV3cyI6OTg0MH0seyJpZCI6InBvc3QtMyIsInRpdGxlIjoiQXN0cm8gNSBJc2xhbmRzICYgQ29udGVudCBDb2xsZWN0aW9uczogRGVlcCBEaXZlIGludG8gWmVyby1KUyBCYXNlbGluZXMiLCJzbHVnIjoiYXN0cm8tNS1pc2xhbmRzLWNvbnRlbnQtY29sbGVjdGlvbnMtZGVlcC1kaXZlIiwiZXhjZXJwdCI6IkV4cGxvcmUgaG93IEFzdHJvIDUgcmVkZWZpbmVzIGVkaXRvcmlhbCBwdWJsaXNoaW5nIHdpdGggcGFydGlhbCBoeWRyYXRpb24sIHR5cGUtc2FmZSBjb250ZW50IHNjaGVtYXMsIGFuZCBsaWdodGluZy1mYXN0IExpZ2h0aG91c2UgMTAwIHNjb3Jlcy4iLCJmZWF0dXJlZEltYWdlIjoiaHR0cHM6Ly9pbWFnZXMudW5zcGxhc2guY29tL3Bob3RvLTE1MjYzNzQ5NjUzMjgtN2Y2MWQ0ZGMxOGM1P2F1dG89Zm9ybWF0JmZpdD1jcm9wJnc9MTIwMCZoPTY3NSZxPTgwIiwiY2F0ZWdvcnlJZCI6ImNhdC1hcmNoaXRlY3R1cmUiLCJ0YWdzIjpbImFzdHJvIiwid2ViLWFyY2hpdGVjdHVyZSIsInNlbyJdLCJwdWJsaXNoZWRBdCI6IjIwMjYtMDktMDVUMTA6MDA6MDBaIiwicmVhZGluZ1RpbWUiOjUsInZpZXdzIjo2NDIwfSx7ImlkIjoicG9zdC00IiwidGl0bGUiOiJQcm9tcHQgRW5naW5lZXJpbmcgUGxheWJvb2sgZm9yIEhpZ2gtQ29udmVydGluZyBTb2NpYWwgU2hvcnRzIiwic2x1ZyI6InByb21wdC1lbmdpbmVlcmluZy1wbGF5Ym9vay1zb2NpYWwtc2hvcnRzIiwiZXhjZXJwdCI6IkZpZWxkLXRlc3RlZCBwcm9tcHQgY2hhaW5zIHRvIGNyYWZ0IGhpZ2gtcmV0ZW50aW9uIGhvb2tzLCBjb21wZWxsaW5nIHZpc3VhbCBiZWF0cywgYW5kIHZpcmFsIHJldGVudGlvbiBsb29wcyBhY3Jvc3MgVGlrVG9rLCBSZWVscywgYW5kIFlvdVR1YmUgU2hvcnRzLiIsImZlYXR1cmVkSW1hZ2UiOiJodHRwczovL2ltYWdlcy51bnNwbGFzaC5jb20vcGhvdG8tMTQ2MDkyNTg5NTkxNy1hZmRhYjgyN2M1MmY/YXV0bz1mb3JtYXQmZml0PWNyb3Amdz0xMjAwJmg9Njc1JnE9ODAiLCJjYXRlZ29yeUlkIjoiY2F0LXRlY2hub2xvZ3kiLCJ0YWdzIjpbInByb21wdC1lbmdpbmVlcmluZyIsImFydGlmaWNpYWwtaW50ZWxsaWdlbmNlIiwiZmFjZWJvb2stcmVlbHMiXSwicHVibGlzaGVkQXQiOiIyMDI2LTA4LTI4VDA4OjAwOjAwWiIsInJlYWRpbmdUaW1lIjo0LCJ2aWV3cyI6NDE5MH0seyJpZCI6InBvc3QtNSIsInRpdGxlIjoiQXV0b21hdGVkIFNFTyBBdWRpdCAmIFNjaGVtYSBHZW5lcmF0aW9uIHdpdGggQXN0cm8gU1NSIiwic2x1ZyI6ImF1dG9tYXRlZC1zZW8tYXVkaXQtc2NoZW1hLWdlbmVyYXRpb24tYXN0cm8iLCJleGNlcnB0IjoiSG93IHRvIGR5bmFtaWNhbGx5IGluamVjdCB2YWxpZCBBcnRpY2xlLCBGQVFQYWdlLCBhbmQgQnJlYWRjcnVtYkxpc3QgSlNPTi1MRCBzY2hlbWFzIGludG8gQXN0cm8gcGFnZXMgZm9yIG1heGltdW0gc2VhcmNoIHZpc2liaWxpdHkuIiwiZmVhdHVyZWRJbWFnZSI6Imh0dHBzOi8vaW1hZ2VzLnVuc3BsYXNoLmNvbS9waG90by0xNTA3MjM4NjkxNzQwLTE4N2E1YjFkMzdiOD9hdXRvPWZvcm1hdCZmaXQ9Y3JvcCZ3PTEyMDAmaD02NzUmcT04MCIsImNhdGVnb3J5SWQiOiJjYXQtd29ya2Zsb3dzIiwidGFncyI6WyJzZW8iLCJhc3RybyJdLCJwdWJsaXNoZWRBdCI6IjIwMjYtMDktMjJUMTQ6MDA6MDBaIiwicmVhZGluZ1RpbWUiOjUsInZpZXdzIjowfV0sImNhdGVnb3JpZXMiOlt7ImlkIjoiY2F0LXRlY2hub2xvZ3kiLCJuYW1lIjoiVGVjaG5vbG9neSAmIEFJIiwic2x1ZyI6InRlY2hub2xvZ3kiLCJjb2xvciI6IiM2MzY2ZjEifSx7ImlkIjoiY2F0LWFyY2hpdGVjdHVyZSIsIm5hbWUiOiJXZWIgQXJjaGl0ZWN0dXJlIiwic2x1ZyI6IndlYi1hcmNoaXRlY3R1cmUiLCJjb2xvciI6IiMxMGI5ODEifSx7ImlkIjoiY2F0LWNsb3VkZmxhcmUiLCJuYW1lIjoiQ2xvdWRmbGFyZSAmIEVkZ2UiLCJzbHVnIjoiY2xvdWRmbGFyZS1lZGdlIiwiY29sb3IiOiIjZjU5ZTBiIn0seyJpZCI6ImNhdC13b3JrZmxvd3MiLCJuYW1lIjoiRGV2ZWxvcGVyIFdvcmtmbG93cyIsInNsdWciOiJ3b3JrZmxvd3MiLCJjb2xvciI6IiMzYjgyZjYifV19";
+    var SITE_DATA = { posts: [], categories: [] };
+    try {
+      if (RAW_DATA) {
+        var json = decodeURIComponent(escape(atob(RAW_DATA)));
+        SITE_DATA = JSON.parse(json);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    function toggleMobileMenu() {
+      var m = document.getElementById('mobileMenu');
+      if (m) m.classList.toggle('hidden');
+    }
+
+    function openSearchModal() {
+      var sm = document.getElementById('searchModal');
+      if (sm) {
+        sm.classList.remove('hidden');
+        var inp = document.getElementById('searchInput');
+        if (inp) { inp.value = ''; inp.focus(); }
+      }
+    }
+
+    function closeSearchModal() {
+      var sm = document.getElementById('searchModal');
+      if (sm) sm.classList.add('hidden');
+    }
+
+    function openSpecModal() {
+      var sm = document.getElementById('specModal');
+      if (sm) sm.classList.remove('hidden');
+    }
+
+    function closeSpecModal() {
+      var sm = document.getElementById('specModal');
+      if (sm) sm.classList.add('hidden');
+    }
+
+    function handleSearchQuery(query) {
+      var container = document.getElementById('searchResults');
+      if (!container) return;
+      var q = (query || '').trim().toLowerCase();
+      if (!q) {
+        container.innerHTML = '<div class="text-slate-500 text-center py-4">Type to search articles across the site...</div>';
+        return;
+      }
+      var matches = (SITE_DATA.posts || []).filter(function(p) {
+        return (p.title || '').toLowerCase().indexOf(q) !== -1 ||
+               (p.excerpt || '').toLowerCase().indexOf(q) !== -1 ||
+               (p.tags || []).some(function(t) { return (t || '').toLowerCase().indexOf(q) !== -1; });
+      });
+
+      if (matches.length === 0) {
+        container.innerHTML = '<div class="text-slate-400 text-center py-4">No articles found matching "' + query + '"</div>';
+        return;
+      }
+
+      container.innerHTML = matches.map(function(m) {
+        return '<a href="/' + m.slug + '" class="block p-3 rounded-xl bg-slate-900 hover:bg-slate-800 transition-colors border border-slate-800">' +
+          '<div class="font-bold text-white text-xs sm:text-sm">' + m.title + '</div>' +
+          '<div class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">' + (m.excerpt || '') + '</div>' +
+        '</a>';
+      }).join('');
+    }
+
+    function filterFeedCategory(catId) {
+      document.querySelectorAll('.cat-filter-btn').forEach(function(btn) {
+        btn.classList.remove('bg-orange-600', 'text-white');
+        btn.classList.add('bg-slate-900', 'text-slate-400', 'border', 'border-slate-800');
+      });
+      var activeBtn = document.getElementById('tab-' + catId);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-slate-900', 'text-slate-400', 'border', 'border-slate-800');
+        activeBtn.classList.add('bg-orange-600', 'text-white');
+      }
+
+      document.querySelectorAll('.feed-article').forEach(function(el) {
+        var elCat = el.getAttribute('data-category');
+        if (catId === 'all' || elCat === catId) {
+          el.style.display = 'grid';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    }
+
+    function handleSubscribe(e, form) {
+      e.preventDefault();
+      form.innerHTML = '<div class="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-semibold text-center">✓ Thank you for subscribing! You are all set.</div>';
+    }
+
+    // Keyboard shortcut (Cmd+K / Ctrl+K)
+    window.addEventListener('keydown', function(e) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearchModal();
+      }
+      if (e.key === 'Escape') {
+        closeSearchModal();
+        closeSpecModal();
+      }
+    });
+  </script>
+</body>
+</html>
