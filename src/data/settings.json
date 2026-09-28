@@ -154,5 +154,17 @@
       "location": "footer_banner",
       "isEnabled": false
     }
-  ]
+  ],
+  "footer": {
+    "aboutTitle": "Astro Blog CMS",
+    "aboutText": "Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.",
+    "copyrightText": "© 2026 Astro Blog CMS. All rights reserved.",
+    "customDisclaimer": "Cloudflare D1 + Pages Global Edge",
+    "newsletterTitle": "Weekly Edge Digest",
+    "newsletterDesc": "Curated blueprints, Astro patterns, and zero-cost cloud architecture recipes.",
+    "showNewsletter": true,
+    "showCategories": true,
+    "showQuickLinks": true,
+    "showSocials": true
+  }
 }
