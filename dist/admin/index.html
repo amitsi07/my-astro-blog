@@ -180,6 +180,120 @@
     </div>
   </div>
 
+  <!-- 4b. Element Picker Modal (Insert Visual Block In-Line) -->
+  <div id="insertElementModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="w-full max-w-xl bg-[#0d1424] border border-slate-700 rounded-2xl p-5 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="font-bold text-sm sm:text-base text-white">Insert Element In-Line</h3>
+          <p class="text-[11px] text-slate-400">Choose a rich interactive block to place in your article.</p>
+        </div>
+        <button type="button" onclick="closeInsertElementModal()" class="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 text-sm font-bold">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+        <!-- 1. AI Prompt Box -->
+        <button type="button" onclick="insertVisualBlockType('prompt')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-orange-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-orange-500/20 text-orange-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">⚡</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-orange-400 transition-colors">AI Prompt Box</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">With 1-click copy button & model target</div>
+          </div>
+        </button>
+
+        <!-- 2. Code Snippet -->
+        <button type="button" onclick="insertVisualBlockType('code')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-indigo-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">&lt;/&gt;</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-indigo-400 transition-colors">Code Block</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Syntax highlight, filename & copy</div>
+          </div>
+        </button>
+
+        <!-- 3. Notice / Callout -->
+        <button type="button" onclick="insertVisualBlockType('callout')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-blue-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-blue-500/20 text-blue-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">💡</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-blue-400 transition-colors">Notice / Callout</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Info, Pro Tip, Warning, or Important</div>
+          </div>
+        </button>
+
+        <!-- 4. Pros & Cons -->
+        <button type="button" onclick="insertVisualBlockType('pros_cons')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">⚖️</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-emerald-400 transition-colors">Pros & Cons Columns</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Side-by-side comparison matrix</div>
+          </div>
+        </button>
+
+        <!-- 5. Table Builder -->
+        <button type="button" onclick="insertVisualBlockType('table')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-amber-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-amber-500/20 text-amber-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">📊</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-amber-400 transition-colors">Table Builder</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Structured rows & columns grid</div>
+          </div>
+        </button>
+
+        <!-- 6. FAQ Accordion -->
+        <button type="button" onclick="insertVisualBlockType('faq')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-purple-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-purple-500/20 text-purple-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">❓</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-purple-400 transition-colors">FAQ Accordion</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Interactive Q&A disclosure boxes</div>
+          </div>
+        </button>
+
+        <!-- 7. Key Takeaways -->
+        <button type="button" onclick="insertVisualBlockType('takeaways')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-cyan-500/20 text-cyan-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">📌</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-cyan-400 transition-colors">Key Takeaways Box</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Executive bullet points summary</div>
+          </div>
+        </button>
+
+        <!-- 8. Call to Action (CTA) -->
+        <button type="button" onclick="insertVisualBlockType('cta')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-rose-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-rose-500/20 text-rose-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">🚀</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-rose-400 transition-colors">Call to Action (CTA)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Banner with title, copy & button</div>
+          </div>
+        </button>
+
+        <!-- 9. Inline Image -->
+        <button type="button" onclick="insertVisualBlockType('image')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-emerald-500/60 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">🖼️</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-emerald-400 transition-colors">Image / Photo Element</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Upload file or preset with caption</div>
+          </div>
+        </button>
+
+        <!-- 10. Section Divider -->
+        <button type="button" onclick="insertVisualBlockType('divider')" class="p-3 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-600 text-left flex items-start gap-3 transition-all group">
+          <div class="p-2 rounded-lg bg-slate-800 text-slate-400 font-bold text-base shrink-0 group-hover:scale-105 transition-transform">✦</div>
+          <div>
+            <div class="font-bold text-white group-hover:text-slate-300 transition-colors">Section Divider Line</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">Decorative break between parts</div>
+          </div>
+        </button>
+      </div>
+
+      <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
+        <button type="button" onclick="insertVisualBlockType('paragraph')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5">
+          <span>✍️</span><span>+ New Text Paragraph</span>
+        </button>
+        <button type="button" onclick="closeInsertElementModal()" class="px-3 py-1.5 rounded-lg text-slate-400 hover:text-white text-xs">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 5. Toast Notification -->
   <div id="toastBox" class="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 hidden px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs sm:text-sm shadow-2xl flex items-center gap-3">
     <span id="toastIcon">✓</span>
@@ -835,34 +949,13 @@
             '</div>' +
 
             // Editor Area: Visual Blocks vs Raw Markdown
-            '<div class="rounded-2xl border border-slate-800 bg-[#0d1322] overflow-hidden shadow-md">' +
-              '<div id="visualBlocksContainer" class="p-4 space-y-3">' +
-                '<div class="p-2 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between gap-2 rounded-xl mb-2">' +
-                  '<div class="flex items-center gap-1">' +
-                    '<button type="button" onclick="formatBold()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs" title="Bold">B</button>' +
-                    '<button type="button" onclick="formatItalic()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 italic text-xs" title="Italic">I</button>' +
-                    '<button type="button" onclick="formatH2()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H2</button>' +
-                    '<button type="button" onclick="formatH3()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H3</button>' +
-                    '<button type="button" onclick="formatList()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">• List</button>' +
-                    '<button type="button" onclick="formatQuote()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs"> Quote</button>' +
-                  '</div>' +
-                  '<span class="text-[10px] text-slate-500 font-mono">WordPress Visual Editor Active</span>' +
-                '</div>' +
-
-                '<textarea id="postBody" rows="16" oninput="updateLiveStats(this.value)" class="w-full bg-transparent border-0 text-slate-100 font-sans text-sm sm:text-base focus:ring-0 outline-none leading-relaxed resize-y" placeholder="Write paragraph or heading text here...">' + (post.content || '') + '</textarea>' +
+            '<div id="visualBlocksContainer" class="space-y-4"></div>' +
+            '<div id="rawMarkdownContainer" class="hidden p-4 bg-slate-950 rounded-2xl border border-slate-800 space-y-2 shadow-inner">' +
+              '<div class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs text-slate-400 font-mono">' +
+                '<span class="text-orange-400 font-semibold">Raw Markdown Source</span>' +
+                '<span>Synced with Visual Blocks</span>' +
               '</div>' +
-
-              '<div id="rawMarkdownContainer" class="hidden p-4 bg-slate-950 space-y-2">' +
-                '<div class="text-xs text-orange-400 font-mono font-semibold">Markdown Source Code</div>' +
-                '<textarea id="postRawMarkdown" rows="18" oninput="document.getElementById(\'postBody\').value=this.value;updateLiveStats(this.value);" class="w-full bg-transparent border-0 text-amber-300 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y"></textarea>' +
-              '</div>' +
-            '</div>' +
-
-            // Bottom In-Line Insert Button
-            '<div class="flex justify-center py-1">' +
-              '<button type="button" onclick="openInsertElementModal(999)" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-400 border border-slate-700 text-xs font-bold flex items-center gap-2 shadow-sm transition-all hover:border-orange-500">' +
-                '<span>+</span><span>Add Element Below This Line</span>' +
-              '</button>' +
+              '<textarea id="postRawMarkdown" rows="18" oninput="updateLiveStats(this.value);" class="w-full bg-transparent border-0 text-amber-300 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y"></textarea>' +
             '</div>' +
 
             // Excerpt & Summary
@@ -1002,105 +1095,539 @@
         '</div>' +
       '</div>' +
 
-      // INSERT ELEMENT RIGHT BELOW MODAL POPOVER (Exact Screenshot 1)
-      '<div id="insertElementModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">' +
-        '<div class="relative w-full max-w-md bg-[#0b101c] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 text-slate-200 max-h-[90vh] overflow-y-auto">' +
-          '<div class="flex items-center justify-between pb-3 border-b border-slate-800">' +
-            '<h3 class="text-xs font-bold uppercase tracking-wider text-white">INSERT ELEMENT RIGHT BELOW</h3>' +
-            '<button type="button" onclick="closeInsertElementModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold text-sm">✕</button>' +
-          '</div>' +
+      // Call post editor item initialization
+      setTimeout(function() {
+        initPostEditorItems(post);
+      }, 10);
+    }
 
-          '<div class="space-y-2">' +
-            '<button type="button" onclick="insertVisualBlockType(\'image\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg font-bold shrink-0">🖼️</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Image / Photo Element</div>' +
-                '<div class="text-[11px] text-slate-400">Upload file from computer or pick preset</div>' +
-              '</div>' +
-            '</button>' +
+    // STATE FOR VISUAL BLOCKS STREAM
+    var currentEditorItems = [];
+    var targetInsertIdx = -1;
 
-            '<button type="button" onclick="insertVisualBlockType(\'divider\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg font-bold shrink-0">➖</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Section Divider Line</div>' +
-                '<div class="text-[11px] text-slate-400">Decorative break between paragraphs</div>' +
-              '</div>' +
-            '</button>' +
+    function initPostEditorItems(post) {
+      var rawContent = (post && post.content) || '';
+      var rawBlocks = (post && post.blocks) || [];
+      currentEditorItems = [];
 
-            '<button type="button" onclick="insertVisualBlockType(\'prompt\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold shrink-0">⚡</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">AI Prompt Box</div>' +
-                '<div class="text-[11px] text-slate-400">Prompt with 1-click copy button</div>' +
-              '</div>' +
-            '</button>' +
+      if (rawContent.indexOf('<!-- block:') !== -1) {
+        var parts = rawContent.split(/(<!--\s*block:[a-zA-Z0-9_-]+\s*-->)/g);
+        var usedBlockIds = {};
 
-            '<button type="button" onclick="insertVisualBlockType(\'code\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg font-bold shrink-0">&lt;/&gt;</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Code Block</div>' +
-                '<div class="text-[11px] text-slate-400">Syntax highlighted + filename</div>' +
-              '</div>' +
-            '</button>' +
+        parts.forEach(function(part, idx) {
+          var trimmed = (part || '').trim();
+          if (!trimmed) return;
 
-            '<button type="button" onclick="insertVisualBlockType(\'callout\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg font-bold shrink-0">ℹ️</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Notice / Callout Box</div>' +
-                '<div class="text-[11px] text-slate-400">Info, Tip, or Warning banner</div>' +
-              '</div>' +
-            '</button>' +
+          var match = trimmed.match(/<!--\s*block:([a-zA-Z0-9_-]+)\s*-->/);
+          if (match) {
+            var blkId = match[1];
+            var found = rawBlocks.find(function(b) { return b.id === blkId; });
+            if (found) {
+              currentEditorItems.push({ id: 'item-' + blkId, type: 'block', block: found });
+              usedBlockIds[blkId] = true;
+              return;
+            }
+          }
 
-            '<button type="button" onclick="insertVisualBlockType(\'proscons\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-lg font-bold shrink-0">⚖️</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Pros & Cons Columns</div>' +
-                '<div class="text-[11px] text-slate-400">Comparison list with checks & crosses</div>' +
-              '</div>' +
-            '</button>' +
+          currentEditorItems.push({
+            id: 'item-txt-' + idx + '-' + Date.now(),
+            type: 'text',
+            text: part
+          });
+        });
 
-            '<button type="button" onclick="insertVisualBlockType(\'table\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center text-lg font-bold shrink-0">📊</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Table Builder</div>' +
-                '<div class="text-[11px] text-slate-400">Structured rows & columns</div>' +
-              '</div>' +
-            '</button>' +
+        rawBlocks.forEach(function(b) {
+          if (!usedBlockIds[b.id]) {
+            currentEditorItems.push({ id: 'item-' + b.id, type: 'block', block: b });
+          }
+        });
+      } else if (rawContent.trim()) {
+        currentEditorItems = [{ id: 'txt-1', type: 'text', text: rawContent }];
+      } else {
+        currentEditorItems = [{ id: 'txt-1', type: 'text', text: '' }];
+      }
 
-            '<button type="button" onclick="insertVisualBlockType(\'faq\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg font-bold shrink-0">❓</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">FAQ Accordion</div>' +
-                '<div class="text-[11px] text-slate-400">Collapsible Q&A accordion</div>' +
-              '</div>' +
-            '</button>' +
+      renderEditorItemsStream();
+      updateLiveStats(compileEditorItemsToMarkdown());
+    }
 
-            '<button type="button" onclick="insertVisualBlockType(\'takeaways\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg font-bold shrink-0">📋</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Key Takeaways Box</div>' +
-                '<div class="text-[11px] text-slate-400">Highlighted bullet summary list</div>' +
-              '</div>' +
-            '</button>' +
+    function compileEditorItemsToMarkdown() {
+      return currentEditorItems.map(function(item) {
+        if (item.type === 'text') return (item.text || '').trim();
+        if (item.block) return '<!-- block:' + item.block.id + ' -->';
+        return '';
+      }).filter(function(s) { return s.length > 0; }).join('\n\n');
+    }
 
-            '<button type="button" onclick="insertVisualBlockType(\'cta\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg font-bold shrink-0">🚀</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Call to Action (CTA)</div>' +
-                '<div class="text-[11px] text-slate-400">Banner with title, copy & button</div>' +
-              '</div>' +
-            '</button>' +
+    function extractEditorBlocks() {
+      var blocks = [];
+      currentEditorItems.forEach(function(it) {
+        if (it.type === 'block' && it.block) blocks.push(it.block);
+      });
+      return blocks;
+    }
 
-            '<button type="button" onclick="insertVisualBlockType(\'paragraph\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
-              '<div class="w-9 h-9 rounded-xl bg-slate-700/50 text-slate-300 flex items-center justify-center text-lg font-bold shrink-0">✍️</div>' +
-              '<div>' +
-                '<div class="text-xs font-bold text-white group-hover:text-orange-400">New Text Paragraph</div>' +
-                '<div class="text-[11px] text-slate-400">Add an empty writing section</div>' +
+    function renderEditorItemsStream() {
+      var container = document.getElementById('visualBlocksContainer');
+      if (!container) return;
+
+      var html = '';
+      currentEditorItems.forEach(function(item, idx) {
+        if (item.type === 'text') {
+          html += '<div class="group relative rounded-2xl border border-slate-800/80 hover:border-slate-700 bg-slate-900/30 p-3.5 transition-all">' +
+            '<div class="flex items-center justify-between mb-2 text-xs text-slate-400">' +
+              '<div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'**\', \'**\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold" title="Bold">B</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'*\', \'*\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 italic" title="Italic">I</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'## \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H2</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'### \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H3</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'- \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">• List</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', \'> \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">Quote</button>' +
               '</div>' +
-            '</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
+              '<div class="flex items-center gap-1.5">' +
+                (idx > 0 ? '<button type="button" onclick="moveEditorItem(' + idx + ', -1)" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white" title="Move Up">↑</button>' : '') +
+                (idx < currentEditorItems.length - 1 ? '<button type="button" onclick="moveEditorItem(' + idx + ', 1)" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white" title="Move Down">↓</button>' : '') +
+                (currentEditorItems.length > 1 ? '<button type="button" onclick="removeEditorItem(' + idx + ')" class="p-1 rounded bg-slate-800 hover:bg-rose-900 text-rose-400" title="Delete Text Section">🗑️</button>' : '') +
+              '</div>' +
+            '</div>' +
+            '<textarea id="item_txt_' + idx + '" oninput="currentEditorItems[' + idx + '].text=this.value;updateLiveStats(compileEditorItemsToMarkdown());" rows="' + Math.max(3, (item.text || '').split('\n').length) + '" class="w-full bg-transparent text-slate-200 placeholder-slate-600 focus:outline-none text-sm sm:text-base leading-relaxed font-sans resize-y" placeholder="Write paragraph or heading text here (type ## for H2, - for bullet list)...">' + (item.text || '') + '</textarea>' +
+          '</div>';
+        } else if (item.type === 'block' && item.block) {
+          var b = item.block;
+          var label = (b.type === 'prompt' ? 'AI Prompt Box (With Copy Button)' : b.type === 'pros_cons' ? 'PROS & CONS COMPARISON' : b.type.toUpperCase() + ' BLOCK');
+
+          html += '<div class="relative rounded-2xl border-2 border-orange-500/50 bg-[#0d1424] p-4 sm:p-5 shadow-xl space-y-3.5 transition-all">' +
+            '<div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 gap-2">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="text-orange-400 text-base font-bold">' + (b.type === 'prompt' ? '⚡' : b.type === 'code' ? '&lt;/&gt;' : b.type === 'pros_cons' ? '⚖️' : b.type === 'table' ? '📊' : b.type === 'faq' ? '❓' : b.type === 'takeaways' ? '📌' : b.type === 'cta' ? '🚀' : b.type === 'image' ? '🖼️' : '📦') + '</span>' +
+                '<span class="font-bold text-xs uppercase tracking-wider text-white">' + label + '</span>' +
+                '<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">✓ Placed right below line ' + (idx + 1) + '</span>' +
+              '</div>' +
+              '<div class="flex items-center gap-1.5">' +
+                (idx > 0 ? '<button type="button" onclick="moveEditorItem(' + idx + ', -1)" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold">↑ Move Up</button>' : '') +
+                (idx < currentEditorItems.length - 1 ? '<button type="button" onclick="moveEditorItem(' + idx + ', 1)" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold">↓ Move Down</button>' : '') +
+                '<button type="button" onclick="removeEditorItem(' + idx + ')" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-rose-400 hover:bg-rose-950 text-xs font-bold">✕ Delete</button>' +
+              '</div>' +
+            '</div>';
+
+          // 1. AI PROMPT BOX
+          if (b.type === 'prompt') {
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="flex flex-col sm:flex-row gap-3">' +
+                '<div class="flex-1 space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Target AI Model / Tool</label>' +
+                  '<input type="text" value="' + (b.modelTarget || 'Claude 3.7 / Gemini 2.5 / DeepSeek').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.modelTarget=this.value;" placeholder="e.g. Claude 3.7 / Gemini 2.5 / DeepSeek V3" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none focus:border-orange-500" />' +
+                '</div>' +
+                '<div class="flex-1 space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">User Notes / Usage Tip</label>' +
+                  '<input type="text" value="' + (b.notes || 'Copy and paste directly into your prompt orchestrator.').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.notes=this.value;" placeholder="e.g. Paste directly into your prompt orchestrator" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none focus:border-orange-500" />' +
+                '</div>' +
+              '</div>' +
+              '<div class="space-y-1">' +
+                '<div class="flex items-center justify-between">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Prompt Text (What readers will copy)</label>' +
+                  '<button type="button" onclick="testCopyPrompt(' + idx + ', this)" class="px-2.5 py-1 text-[11px] rounded-lg bg-orange-600/30 hover:bg-orange-600 text-orange-200 hover:text-white font-semibold transition-all">📋 Test Copy Button</button>' +
+                '</div>' +
+                '<textarea rows="4" oninput="currentEditorItems[' + idx + '].block.promptText=this.value;" placeholder="Act as an expert... Write your detailed prompt instructions here..." class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-100 focus:outline-none focus:border-orange-500 leading-relaxed">' + (b.promptText || '') + '</textarea>' +
+              '</div>' +
+            '</div>';
+          }
+          // 2. CODE BLOCK
+          else if (b.type === 'code') {
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+                '<div class="space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Programming Language</label>' +
+                  '<select onchange="currentEditorItems[' + idx + '].block.language=this.value;" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none">' +
+                    ['typescript', 'javascript', 'python', 'bash', 'sql', 'html', 'css', 'json', 'rust', 'go'].map(function(lang) {
+                      return '<option value="' + lang + '" ' + (b.language === lang ? 'selected' : '') + '>' + lang.toUpperCase() + '</option>';
+                    }).join('') +
+                  '</select>' +
+                '</div>' +
+                '<div class="space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Filename (Optional)</label>' +
+                  '<input type="text" value="' + (b.filename || '') + '" oninput="currentEditorItems[' + idx + '].block.filename=this.value;" placeholder="e.g. index.ts or config.json" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                '</div>' +
+              '</div>' +
+              '<div class="space-y-1">' +
+                '<div class="flex items-center justify-between">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Code Snippet</label>' +
+                  '<button type="button" onclick="testCopyCode(' + idx + ', this)" class="px-2.5 py-0.5 text-[11px] rounded bg-slate-800 hover:bg-slate-700 text-slate-300">📋 Copy Code</button>' +
+                '</div>' +
+                '<textarea rows="5" oninput="currentEditorItems[' + idx + '].block.code=this.value;" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-emerald-400 leading-relaxed">' + (b.code || '') + '</textarea>' +
+              '</div>' +
+            '</div>';
+          }
+          // 3. CALLOUT / NOTICE
+          else if (b.type === 'callout' || b.type === 'info' || b.type === 'tip' || b.type === 'warning' || b.type === 'important') {
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+                '<div class="space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Callout Style</label>' +
+                  '<select onchange="currentEditorItems[' + idx + '].block.type=this.value;renderEditorItemsStream();" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white outline-none">' +
+                    '<option value="info" ' + (b.type === 'info' ? 'selected' : '') + '>Info (Blue 💡)</option>' +
+                    '<option value="tip" ' + (b.type === 'tip' ? 'selected' : '') + '>Pro Tip (Green 🚀)</option>' +
+                    '<option value="warning" ' + (b.type === 'warning' ? 'selected' : '') + '>Warning (Amber ⚠️)</option>' +
+                    '<option value="important" ' + (b.type === 'important' ? 'selected' : '') + '>Important (Rose 🛑)</option>' +
+                  '</select>' +
+                '</div>' +
+                '<div class="space-y-1">' +
+                  '<label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Title / Headline</label>' +
+                  '<input type="text" value="' + (b.title || 'Notice / Tip').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.title=this.value;" placeholder="Callout Title" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white font-semibold" />' +
+                '</div>' +
+              '</div>' +
+              '<textarea rows="3" oninput="currentEditorItems[' + idx + '].block.content=this.value;" placeholder="Message content..." class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200">' + (b.content || '') + '</textarea>' +
+            '</div>';
+          }
+          // 4. PROS & CONS
+          else if (b.type === 'pros_cons') {
+            var pros = b.pros || ['Sub-10ms edge rendering', 'Zero hosting overhead'];
+            var cons = b.cons || ['Requires build step for static generation'];
+            html += '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">' +
+              // Pros
+              '<div class="p-3.5 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">' +
+                '<div class="flex items-center justify-between text-xs font-bold text-emerald-400 uppercase tracking-wider">' +
+                  '<span>Pros (Advantages)</span>' +
+                  '<button type="button" onclick="addProsConsItem(' + idx + ', true)" class="text-[11px] hover:underline">+ Add Pro</button>' +
+                '</div>' +
+                pros.map(function(pro, pI) {
+                  return '<div class="flex items-center gap-1.5">' +
+                    '<span class="text-emerald-400 text-xs font-bold">✓</span>' +
+                    '<input type="text" value="' + pro.replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.pros[' + pI + ']=this.value;" class="flex-1 px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                    '<button type="button" onclick="removeProsConsItem(' + idx + ', true, ' + pI + ')" class="text-slate-500 hover:text-rose-400 px-1 font-bold">×</button>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+              // Cons
+              '<div class="p-3.5 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-2">' +
+                '<div class="flex items-center justify-between text-xs font-bold text-rose-400 uppercase tracking-wider">' +
+                  '<span>Cons (Trade-offs)</span>' +
+                  '<button type="button" onclick="addProsConsItem(' + idx + ', false)" class="text-[11px] hover:underline">+ Add Con</button>' +
+                '</div>' +
+                cons.map(function(con, cI) {
+                  return '<div class="flex items-center gap-1.5">' +
+                    '<span class="text-rose-400 text-xs font-bold">✗</span>' +
+                    '<input type="text" value="' + con.replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.cons[' + cI + ']=this.value;" class="flex-1 px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                    '<button type="button" onclick="removeProsConsItem(' + idx + ', false, ' + cI + ')" class="text-slate-500 hover:text-rose-400 px-1 font-bold">×</button>' +
+                  '</div>';
+                }).join('') +
+              '</div>' +
+            '</div>';
+          }
+          // 5. TABLE BUILDER
+          else if (b.type === 'table') {
+            var headers = b.headers || ['Feature', 'Option A', 'Option B'];
+            var rows = b.rows || [['Performance', '100 / 100', '72 / 100']];
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="flex items-center justify-between gap-2">' +
+                '<input type="text" value="' + (b.caption || '').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.caption=this.value;" placeholder="Table Title / Caption" class="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-semibold" />' +
+                '<div class="flex items-center gap-1.5">' +
+                  '<button type="button" onclick="addTableCol(' + idx + ')" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 text-[11px] font-semibold text-orange-400">+ Col</button>' +
+                  '<button type="button" onclick="addTableRow(' + idx + ')" class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 text-[11px] font-semibold text-orange-400">+ Row</button>' +
+                '</div>' +
+              '</div>' +
+              '<div class="overflow-x-auto text-xs rounded-xl border border-slate-800">' +
+                '<table class="w-full text-left border-collapse">' +
+                  '<thead><tr class="bg-slate-900">' +
+                    headers.map(function(h, hI) {
+                      return '<th class="p-2 border-b border-r border-slate-800">' +
+                        '<div class="flex items-center gap-1">' +
+                          '<input type="text" value="' + h.replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.headers[' + hI + ']=this.value;" class="w-full bg-transparent font-bold text-orange-400 focus:outline-none" />' +
+                          (headers.length > 1 ? '<button type="button" onclick="removeTableCol(' + idx + ', ' + hI + ')" class="text-slate-500 hover:text-rose-400 text-xs px-1 font-bold">×</button>' : '') +
+                        '</div>' +
+                      '</th>';
+                    }).join('') +
+                    '<th class="p-2 w-8 border-b border-slate-800 text-center text-slate-500">#</th>' +
+                  '</tr></thead>' +
+                  '<tbody>' +
+                    rows.map(function(row, rI) {
+                      return '<tr class="hover:bg-slate-900/40 border-b border-slate-800/60">' +
+                        row.map(function(cell, cI) {
+                          return '<td class="p-2 border-r border-slate-800">' +
+                            '<input type="text" value="' + cell.replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.rows[' + rI + '][' + cI + ']=this.value;" class="w-full bg-transparent text-slate-300 focus:outline-none" />' +
+                          '</td>';
+                        }).join('') +
+                        '<td class="p-2 text-center">' +
+                          (rows.length > 1 ? '<button type="button" onclick="removeTableRow(' + idx + ', ' + rI + ')" class="text-slate-500 hover:text-rose-400 text-xs px-1 font-bold">×</button>' : '') +
+                        '</td>' +
+                      '</tr>';
+                    }).join('') +
+                  '</tbody>' +
+                '</table>' +
+              '</div>' +
+            '</div>';
+          }
+          // 6. FAQ ACCORDION
+          else if (b.type === 'faq') {
+            var items = b.items || [{ id: 'f1', question: 'How does it work?', answer: 'It renders fast at Cloudflare edge.' }];
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="flex items-center justify-between">' +
+                '<span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">FAQ Questions & Answers</span>' +
+                '<button type="button" onclick="addFaqItem(' + idx + ')" class="text-xs text-orange-400 hover:underline">+ Add Q&A</button>' +
+              '</div>' +
+              items.map(function(faq, fI) {
+                return '<div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800 space-y-2">' +
+                  '<div class="flex items-center justify-between">' +
+                    '<input type="text" value="' + (faq.question || '').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.items[' + fI + '].question=this.value;" placeholder="Question?" class="w-full bg-transparent font-semibold text-xs text-white outline-none" />' +
+                    '<button type="button" onclick="removeFaqItem(' + idx + ', ' + fI + ')" class="text-slate-500 hover:text-rose-400 text-xs ml-2 font-bold">×</button>' +
+                  '</div>' +
+                  '<textarea rows="2" oninput="currentEditorItems[' + idx + '].block.items[' + fI + '].answer=this.value;" placeholder="Answer..." class="w-full p-2 rounded bg-slate-950 border border-slate-800 text-xs text-slate-300">' + (faq.answer || '') + '</textarea>' +
+                '</div>';
+              }).join('') +
+            '</div>';
+          }
+          // 7. KEY TAKEAWAYS
+          else if (b.type === 'takeaways') {
+            var tItems = b.items || ['Actionable takeaway 1', 'Practical application tip 2'];
+            html += '<div class="space-y-3 pt-1">' +
+              '<input type="text" value="' + (b.title || 'Key Takeaways').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.title=this.value;" placeholder="Takeaways Title" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-bold" />' +
+              '<div class="space-y-1.5">' +
+                tItems.map(function(takeaway, tI) {
+                  return '<div class="flex items-center gap-2">' +
+                    '<span class="text-orange-400 font-bold">•</span>' +
+                    '<input type="text" value="' + takeaway.replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.items[' + tI + ']=this.value;" class="flex-1 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                    '<button type="button" onclick="removeTakeawayItem(' + idx + ', ' + tI + ')" class="text-slate-500 hover:text-rose-400 text-xs font-bold">×</button>' +
+                  '</div>';
+                }).join('') +
+                '<button type="button" onclick="addTakeawayItem(' + idx + ')" class="text-xs text-orange-400 hover:underline pt-1 block">+ Add Bullet</button>' +
+              '</div>' +
+            '</div>';
+          }
+          // 8. CALL TO ACTION (CTA)
+          else if (b.type === 'cta') {
+            html += '<div class="space-y-3 pt-1">' +
+              '<input type="text" value="' + (b.title || 'CTA Title').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.title=this.value;" placeholder="CTA Headline" class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-bold" />' +
+              '<textarea rows="2" oninput="currentEditorItems[' + idx + '].block.description=this.value;" placeholder="CTA Description..." class="w-full p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300">' + (b.description || '') + '</textarea>' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+                '<input type="text" value="' + (b.buttonText || 'Learn More').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.buttonText=this.value;" placeholder="Button Label" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                '<input type="text" value="' + (b.buttonUrl || '/contact').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.buttonUrl=this.value;" placeholder="Button Destination URL" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+              '</div>' +
+            '</div>';
+          }
+          // 9. INLINE IMAGE
+          else if (b.type === 'image') {
+            html += '<div class="space-y-3 pt-1">' +
+              '<div class="flex items-center gap-2">' +
+                '<input type="text" value="' + (b.url || '') + '" oninput="currentEditorItems[' + idx + '].block.url=this.value;var img=document.getElementById(\'img_prev_' + idx + '\');if(img)img.src=this.value;" placeholder="Image URL..." class="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-mono" />' +
+                '<button type="button" onclick="triggerInlineImagePicker(' + idx + ')" class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold whitespace-nowrap">📁 Upload PC File</button>' +
+                '<input type="file" id="inline_img_picker_' + idx + '" accept="image/*" class="hidden" onchange="handleInlineBlockImageUpload(' + idx + ', this)" />' +
+              '</div>' +
+              '<div class="flex items-center gap-2 overflow-x-auto text-[10px]">' +
+                '<span class="text-slate-400 shrink-0">Presets:</span>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Modern Flow</button>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Technology</button>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Code Terminal</button>' +
+              '</div>' +
+              '<div class="aspect-video w-full max-h-48 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">' +
+                '<img id="img_prev_' + idx + '" src="' + (b.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80') + '" class="w-full h-full object-cover" />' +
+              '</div>' +
+              '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+                '<input type="text" value="' + (b.alt || '').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.alt=this.value;" placeholder="Alt description (SEO)" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+                '<input type="text" value="' + (b.caption || '').replace(/"/g, '&quot;') + '" oninput="currentEditorItems[' + idx + '].block.caption=this.value;" placeholder="Photo Caption" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white" />' +
+              '</div>' +
+            '</div>';
+          }
+          // 10. SECTION DIVIDER
+          else if (b.type === 'divider') {
+            html += '<div class="py-2 text-center text-slate-500 font-mono text-xs">' +
+              '<div class="border-t border-slate-800 my-2 relative">' +
+                '<span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#0d1424] px-3 text-slate-500 text-[11px] tracking-widest font-mono">✦ Section Divider Line ✦</span>' +
+              '</div>' +
+            '</div>';
+          }
+          // OTHER BLOCKS FALLBACK
+          else {
+            html += '<div class="p-3 bg-slate-950 rounded-xl text-xs font-mono text-slate-300">Custom Content Element: ' + b.type + '</div>';
+          }
+
+          html += '</div>';
+        }
+
+        // Add In-Line Inserter Button Right Below Every Item!
+        html += '<div class="flex justify-center py-1">' +
+          '<button type="button" onclick="openInsertElementModal(' + idx + ')" class="px-4 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-orange-400 hover:text-white border border-dashed border-slate-700 text-xs font-bold flex items-center gap-1.5 transition-all hover:scale-105 shadow-sm">' +
+            '<span>+</span><span>Add Element Below This Line</span>' +
+          '</button>' +
+        '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    // LIST & TABLE MUTATION HELPERS
+    function addProsConsItem(idx, isPro) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (isPro) {
+          if (!it.block.pros) it.block.pros = [];
+          it.block.pros.push('New advantage');
+        } else {
+          if (!it.block.cons) it.block.cons = [];
+          it.block.cons.push('New trade-off');
+        }
+        renderEditorItemsStream();
+      }
+    }
+
+    function removeProsConsItem(idx, isPro, itemIdx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (isPro && it.block.pros) it.block.pros.splice(itemIdx, 1);
+        if (!isPro && it.block.cons) it.block.cons.splice(itemIdx, 1);
+        renderEditorItemsStream();
+      }
+    }
+
+    function addTableCol(idx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (!it.block.headers) it.block.headers = [];
+        it.block.headers.push('Col ' + (it.block.headers.length + 1));
+        if (it.block.rows) {
+          it.block.rows.forEach(function(r) { r.push(''); });
+        }
+        renderEditorItemsStream();
+      }
+    }
+
+    function removeTableCol(idx, colIdx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block && it.block.headers && it.block.headers.length > 1) {
+        it.block.headers.splice(colIdx, 1);
+        if (it.block.rows) {
+          it.block.rows.forEach(function(r) { r.splice(colIdx, 1); });
+        }
+        renderEditorItemsStream();
+      }
+    }
+
+    function addTableRow(idx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (!it.block.rows) it.block.rows = [];
+        var numCols = (it.block.headers || []).length || 2;
+        var newRow = new Array(numCols).fill('');
+        it.block.rows.push(newRow);
+        renderEditorItemsStream();
+      }
+    }
+
+    function removeTableRow(idx, rowIdx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block && it.block.rows && it.block.rows.length > 1) {
+        it.block.rows.splice(rowIdx, 1);
+        renderEditorItemsStream();
+      }
+    }
+
+    function addFaqItem(idx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (!it.block.items) it.block.items = [];
+        it.block.items.push({ id: 'faq_' + Date.now(), question: 'New Question?', answer: 'Detailed answer goes here.' });
+        renderEditorItemsStream();
+      }
+    }
+
+    function removeFaqItem(idx, itemIdx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block && it.block.items && it.block.items.length > 1) {
+        it.block.items.splice(itemIdx, 1);
+        renderEditorItemsStream();
+      }
+    }
+
+    function addTakeawayItem(idx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block) {
+        if (!it.block.items) it.block.items = [];
+        it.block.items.push('New key takeaway bullet point');
+        renderEditorItemsStream();
+      }
+    }
+
+    function removeTakeawayItem(idx, itemIdx) {
+      var it = currentEditorItems[idx];
+      if (it && it.block && it.block.items && it.block.items.length > 1) {
+        it.block.items.splice(itemIdx, 1);
+        renderEditorItemsStream();
+      }
+    }
+
+    function triggerInlineImagePicker(idx) {
+      var picker = document.getElementById('inline_img_picker_' + idx);
+      if (picker) picker.click();
+    }
+
+    function handleInlineBlockImageUpload(idx, input) {
+      if (input && input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          if (currentEditorItems[idx] && currentEditorItems[idx].block) {
+            currentEditorItems[idx].block.url = e.target.result;
+            renderEditorItemsStream();
+          }
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function setInlineImagePreset(idx, url) {
+      if (currentEditorItems[idx] && currentEditorItems[idx].block) {
+        currentEditorItems[idx].block.url = url;
+        renderEditorItemsStream();
+      }
+    }
+
+    function formatItemText(idx, before, after) {
+      var textarea = document.getElementById('item_txt_' + idx);
+      if (!textarea) return;
+      var start = textarea.selectionStart;
+      var end = textarea.selectionEnd;
+      var val = textarea.value;
+      var sel = val.substring(start, end) || 'text';
+      textarea.value = val.substring(0, start) + before + sel + after + val.substring(end);
+      currentEditorItems[idx].text = textarea.value;
+      renderEditorItemsStream();
+    }
+
+    function moveEditorItem(idx, dir) {
+      var target = idx + dir;
+      if (target < 0 || target >= currentEditorItems.length) return;
+      var temp = currentEditorItems[idx];
+      currentEditorItems[idx] = currentEditorItems[target];
+      currentEditorItems[target] = temp;
+      renderEditorItemsStream();
+    }
+
+    function removeEditorItem(idx) {
+      if (currentEditorItems.length <= 1) return;
+      currentEditorItems.splice(idx, 1);
+      renderEditorItemsStream();
+    }
+
+    function testCopyPrompt(idx, btn) {
+      var item = currentEditorItems[idx];
+      if (item && item.block && item.block.promptText) {
+        navigator.clipboard.writeText(item.block.promptText);
+        btn.innerHTML = '✓ Copied to Clipboard!';
+        btn.className = 'px-2.5 py-1 text-[11px] rounded-lg bg-emerald-600 text-white font-bold transition-all';
+        setTimeout(function() {
+          btn.innerHTML = '📋 Test Copy Button';
+          btn.className = 'px-2.5 py-1 text-[11px] rounded-lg bg-orange-600/30 hover:bg-orange-600 text-orange-200 hover:text-white font-semibold transition-all';
+        }, 2000);
+      }
+    }
+
+    function testCopyCode(idx, btn) {
+      var item = currentEditorItems[idx];
+      if (item && item.block && item.block.code) {
+        navigator.clipboard.writeText(item.block.code);
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(function() {
+          btn.innerHTML = '📋 Copy Code';
+        }, 2000);
+      }
     }
 
     function handleTitleInput(val) {
@@ -1131,26 +1658,26 @@
       var visContainer = document.getElementById('visualBlocksContainer');
       var rawContainer = document.getElementById('rawMarkdownContainer');
       var rawTextarea = document.getElementById('postRawMarkdown');
-      var visTextarea = document.getElementById('postBody');
 
       if (!visContainer || !rawContainer) return;
 
       if (mode === 'markdown') {
         if (btnVisual) btnVisual.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5';
         if (btnMarkdown) btnMarkdown.className = 'px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm';
+        if (rawTextarea) rawTextarea.value = compileEditorItemsToMarkdown();
         visContainer.classList.add('hidden');
         rawContainer.classList.remove('hidden');
-        if (rawTextarea && visTextarea) rawTextarea.value = visTextarea.value;
       } else {
         if (btnMarkdown) btnMarkdown.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5';
         if (btnVisual) btnVisual.className = 'px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm';
         rawContainer.classList.add('hidden');
         visContainer.classList.remove('hidden');
-        if (visTextarea && rawTextarea && rawTextarea.value) visTextarea.value = rawTextarea.value;
+        renderEditorItemsStream();
       }
     }
 
     function openInsertElementModal(idx) {
+      targetInsertIdx = (idx !== undefined && idx !== null) ? idx : -1;
       var modal = document.getElementById('insertElementModal');
       if (modal) modal.classList.remove('hidden');
     }
@@ -1163,31 +1690,118 @@
     function insertVisualBlockType(type) {
       closeInsertElementModal();
       if (!type) return;
-      var snippet = '';
-      if (type === 'image') {
-        snippet = '\n\n![Image description](https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80)\n*Caption: Descriptive photo caption*\n\n';
-      } else if (type === 'divider') {
-        snippet = '\n\n---\n\n';
-      } else if (type === 'prompt') {
-        snippet = '\n\n> ⚡ **AI Prompt:**\n> \x60Write a high-converting landing page headline for a SaaS product.\x60\n\n';
+
+      var newBlock = null;
+      if (type === 'prompt') {
+        newBlock = {
+          type: 'prompt',
+          id: 'blk_' + Date.now(),
+          modelTarget: 'Claude 3.7 / Gemini 2.5 / DeepSeek',
+          notes: 'Copy and paste directly into your AI prompt orchestrator.',
+          promptText: 'Act as a world-class strategist. Analyze the following scenario and provide a 3-step actionable blueprint...'
+        };
       } else if (type === 'code') {
-        snippet = '\n\n\x60\x60\x60typescript\n// Example Code Snippet\nfunction computeEdgeResponse() {\n  return new Response("OK", { status: 200 });\n}\n\x60\x60\x60\n\n';
-      } else if (type === 'callout') {
-        snippet = '\n\n> 💡 **Notice / Important Note:**\n> Here is a crucial architectural insight for engineers.\n\n';
-      } else if (type === 'proscons') {
-        snippet = '\n\n### ⚖️ Comparison: Pros & Cons\n| Pros (Advantages) | Cons (Limitations) |\n| :--- | :--- |\n| ✅ Sub-50ms Global Latency | ❌ Requires Git integration |\n| ✅ Zero Cold Starts | ❌ Free Tier Limits |\n\n';
+        newBlock = {
+          type: 'code',
+          id: 'blk_' + Date.now(),
+          language: 'typescript',
+          filename: 'index.ts',
+          code: '// Implementation snippet\nconsole.log("Edge islands initialized!");'
+        };
+      } else if (type === 'callout' || type === 'info') {
+        newBlock = {
+          type: 'info',
+          id: 'blk_' + Date.now(),
+          title: 'Architectural Insight',
+          content: 'Key advice or context for the reader placed right below this line.'
+        };
+      } else if (type === 'pros_cons') {
+        newBlock = {
+          type: 'pros_cons',
+          id: 'blk_' + Date.now(),
+          pros: ['Sub-10ms response times at edge', 'Zero server hosting costs'],
+          cons: ['Requires pre-build step for static generation']
+        };
       } else if (type === 'table') {
-        snippet = '\n\n| Feature | Starter Plan | Pro Enterprise |\n| :--- | :---: | :---: |\n| Edge Global Caching | Included | Unlimited |\n| SSL Certificate | Free | Dedicated |\n\n';
+        newBlock = {
+          type: 'table',
+          id: 'blk_' + Date.now(),
+          caption: 'Performance Comparison Table',
+          headers: ['Feature', 'Astro 5', 'Standard SPA'],
+          rows: [
+            ['JS Bundle', '0 KB baseline', '320 KB'],
+            ['Lighthouse Score', '100 / 100', '68 / 100']
+          ]
+        };
       } else if (type === 'faq') {
-        snippet = '\n\n### ❓ Frequently Asked Questions\n**Q: Is Cloudflare Pages completely free?**\nA: Yes! Cloudflare Pages offers unlimited bandwidth on the free plan.\n\n';
+        newBlock = {
+          type: 'faq',
+          id: 'blk_' + Date.now(),
+          items: [
+            { id: 'faq_' + Date.now(), question: 'How does Cloudflare edge caching work?', answer: 'HTML is stored globally across 300+ city edge nodes for sub-10ms delivery.' }
+          ]
+        };
       } else if (type === 'takeaways') {
-        snippet = '\n\n### 📋 Key Takeaways\n- **Point 1:** Fast edge delivery out of the box.\n- **Point 2:** Automatic GitHub deployment on commit.\n- **Point 3:** Full visual customization.\n\n';
+        newBlock = {
+          type: 'takeaways',
+          id: 'blk_' + Date.now(),
+          title: 'Key Takeaways',
+          items: [
+            'Zero-JavaScript baselines dramatically improve retention.',
+            'Automated AI prompts save 80% of composition time.'
+          ]
+        };
       } else if (type === 'cta') {
-        snippet = '\n\n> 🚀 **Ready to launch your Astro site?**\n> [Get Started Now on Cloudflare Pages →](https://pages.cloudflare.com)\n\n';
-      } else if (type === 'paragraph') {
-        snippet = '\n\nWrite new paragraph text here...\n\n';
+        newBlock = {
+          type: 'cta',
+          id: 'blk_' + Date.now(),
+          title: 'Ready to build with Astro & AI?',
+          description: 'Download the free production starter kit and deploy in 5 minutes.',
+          buttonText: 'Get Starter Kit',
+          buttonUrl: '/contact'
+        };
+      } else if (type === 'image') {
+        newBlock = {
+          type: 'image',
+          id: 'blk_' + Date.now(),
+          url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80',
+          alt: 'Visual element description',
+          caption: 'Descriptive photo caption'
+        };
+      } else if (type === 'divider') {
+        newBlock = {
+          type: 'divider',
+          id: 'blk_' + Date.now()
+        };
       }
-      insertRawText(snippet, '', '');
+
+      var insertPos = (targetInsertIdx === -1) ? 0 : targetInsertIdx + 1;
+
+      if (newBlock) {
+        currentEditorItems.splice(insertPos, 0, {
+          id: 'item-' + newBlock.id,
+          type: 'block',
+          block: newBlock
+        });
+      } else if (type === 'paragraph') {
+        currentEditorItems.splice(insertPos, 0, {
+          id: 'item-txt-' + Date.now(),
+          type: 'text',
+          text: ''
+        });
+      }
+
+      // Ensure text block follows if at end
+      if (insertPos === currentEditorItems.length - 1 || currentEditorItems[insertPos + 1].type !== 'text') {
+        currentEditorItems.splice(insertPos + 1, 0, {
+          id: 'item-txt-' + Date.now() + '-next',
+          type: 'text',
+          text: ''
+        });
+      }
+
+      renderEditorItemsStream();
+      showToast('Element inserted in-line!');
     }
 
     function setImgTab(tab) {
@@ -1262,7 +1876,7 @@
     }
 
     function insertRawText(before, after, defaultText) {
-      var textarea = document.getElementById('postBody');
+      var textarea = document.getElementById('postRawMarkdown');
       if (!textarea) return;
       var start = textarea.selectionStart;
       var end = textarea.selectionEnd;
@@ -1287,45 +1901,7 @@
     function formatLink() { insertRawText('[', '](https://example.com)', 'Link label'); }
 
     function insertSpecialBlock(type) {
-      if (!type) return;
-      var snippet = '';
-      if (type === 'callout') {
-        snippet = '\n> 💡 **Key Note / Insight:**\n> Here is an important takeaway or pro-tip for the reader.\n\n';
-      } else if (type === 'takeaways') {
-        snippet = '\n### ⚡ Key Takeaways\n- **Primary Finding:** Clear, actionable insight.\n- **Secondary Finding:** Practical application tip.\n\n';
-      } else if (type === 'proscons') {
-        snippet = '\n### ⚖️ Comparison: Pros & Cons\n| Advantage (Pros) | Limitation (Cons) |\n| :--- | :--- |\n| ✅ Fast performance | ❌ Requires initial setup |\n| ✅ High security | ❌ Learning curve |\n\n';
-      } else if (type === 'table') {
-        snippet = '\n| Feature | Plan A | Plan B |\n| :--- | :---: | :---: |\n| Edge Caching | Yes | Yes |\n| Custom Domain | Free | Included |\n\n';
-      } else if (type === 'cta') {
-        snippet = '\n> 🚀 **Ready to take the next step?**\n> [Click here to subscribe or get started today →](https://example.com)\n\n';
-      } else if (type === 'faq') {
-        snippet = '\n### ❓ Frequently Asked Questions\n**Q: How does this work?**\nA: It operates seamlessly on Cloudflare global edge network.\n\n';
-      }
-      insertRawText(snippet, '', '');
-    }
-
-    function setEditorMode(mode) {
-      var writeBtn = document.getElementById('tabWrite');
-      var prevBtn = document.getElementById('tabPreview');
-      var textarea = document.getElementById('postBody');
-      var preview = document.getElementById('inlinePreviewBox');
-
-      if (!writeBtn || !prevBtn || !textarea || !preview) return;
-
-      if (mode === 'preview') {
-        writeBtn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white font-medium';
-        prevBtn.className = 'px-2.5 py-1 rounded bg-orange-600 text-white font-semibold';
-        textarea.classList.add('hidden');
-        preview.classList.remove('hidden');
-        preview.innerHTML = parseMarkdownSafe(textarea.value || '');
-      } else {
-        prevBtn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white font-medium';
-        writeBtn.className = 'px-2.5 py-1 rounded bg-orange-600 text-white font-semibold';
-        preview.classList.add('hidden');
-        textarea.classList.remove('hidden');
-        textarea.focus();
-      }
+      insertVisualBlockType(type);
     }
 
     function updateLiveStats(text) {
@@ -1333,6 +1909,110 @@
       var mins = Math.max(1, Math.ceil(words / 200));
       var ind = document.getElementById('liveStatsIndicator');
       if (ind) ind.innerText = words + ' words • ' + mins + ' min read';
+    }
+
+    function renderBlockInPreviewHtml(block) {
+      if (!block) return '';
+      if (block.type === 'prompt') {
+        return '<div class="my-6 rounded-2xl border border-indigo-500/30 bg-indigo-950/20 p-5 shadow-sm">' +
+          '<div class="flex items-center justify-between pb-3 border-b border-indigo-500/20">' +
+            '<div class="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider">' +
+              '<span>⚡</span><span>AI Prompt Template</span>' +
+              (block.modelTarget ? '<span class="text-slate-400 font-normal normal-case"> · Recommended: ' + block.modelTarget + '</span>' : '') +
+            '</div>' +
+            '<button type="button" onclick="navigator.clipboard.writeText(this.getAttribute(&apos;data-prompt&apos;));this.innerHTML=&apos;✓ Copied!&apos;;var self=this;setTimeout(function(){self.innerHTML=&apos;📋 Copy Prompt&apos;;},2000);" data-prompt="' + (block.promptText || '').replace(/"/g, '&quot;') + '" class="px-2.5 py-1 text-xs font-medium rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 transition-colors">📋 Copy Prompt</button>' +
+          '</div>' +
+          '<div class="mt-3 font-mono text-xs sm:text-sm text-slate-200 whitespace-pre-wrap leading-relaxed bg-[#060910] p-4 rounded-xl border border-indigo-500/10">' + (block.promptText || '') + '</div>' +
+          (block.notes ? '<p class="mt-2 text-xs text-indigo-300/80 italic">💡 ' + block.notes + '</p>' : '') +
+        '</div>';
+      }
+      if (block.type === 'code') {
+        return '<div class="my-6 rounded-xl border border-slate-800 bg-[#070b12] overflow-hidden shadow-sm">' +
+          '<div class="flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-slate-800 text-xs text-slate-400 font-mono">' +
+            '<span class="text-slate-300 font-medium">' + (block.filename || block.language || 'code') + '</span>' +
+            '<button type="button" onclick="navigator.clipboard.writeText(this.getAttribute(&apos;data-code&apos;));this.innerHTML=&apos;✓ Copied!&apos;;var self=this;setTimeout(function(){self.innerHTML=&apos;📋 Copy&apos;;},2000);" data-code="' + (block.code || '').replace(/"/g, '&quot;') + '" class="px-2 py-0.5 rounded text-slate-400 hover:text-white">📋 Copy</button>' +
+          '</div>' +
+          '<pre class="p-4 text-xs sm:text-sm font-mono overflow-x-auto text-emerald-400 leading-relaxed"><code>' + (block.code || '') + '</code></pre>' +
+        '</div>';
+      }
+      if (block.type === 'callout' || block.type === 'info' || block.type === 'tip' || block.type === 'warning' || block.type === 'important') {
+        var borderClr = block.type === 'warning' ? 'border-amber-500 bg-amber-950/20' : block.type === 'tip' ? 'border-emerald-500 bg-emerald-950/20' : block.type === 'important' ? 'border-rose-500 bg-rose-950/20' : 'border-blue-500 bg-blue-950/20';
+        var icon = block.type === 'warning' ? '⚠️' : block.type === 'tip' ? '🚀' : block.type === 'important' ? '🛑' : '💡';
+        return '<div class="my-6 p-4 rounded-xl border-l-4 ' + borderClr + ' space-y-1">' +
+          '<div class="font-bold text-sm text-white flex items-center gap-1.5"><span>' + icon + '</span><span>' + (block.title || 'Notice') + '</span></div>' +
+          '<div class="text-xs sm:text-sm text-slate-300 leading-relaxed">' + (block.content || '') + '</div>' +
+        '</div>';
+      }
+      if (block.type === 'pros_cons') {
+        var pros = block.pros || [];
+        var cons = block.cons || [];
+        return '<div class="my-6 grid grid-cols-1 sm:grid-cols-2 gap-4">' +
+          '<div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-500/30 space-y-2">' +
+            '<div class="text-xs font-bold text-emerald-400 uppercase tracking-wider">✓ Advantages</div>' +
+            pros.map(function(p) { return '<div class="flex items-start gap-2 text-xs text-slate-200"><span class="text-emerald-400 font-bold">✓</span><span>' + p + '</span></div>'; }).join('') +
+          '</div>' +
+          '<div class="p-4 rounded-xl bg-rose-950/20 border border-rose-500/30 space-y-2">' +
+            '<div class="text-xs font-bold text-rose-400 uppercase tracking-wider">✗ Trade-offs</div>' +
+            cons.map(function(c) { return '<div class="flex items-start gap-2 text-xs text-slate-200"><span class="text-rose-400 font-bold">✗</span><span>' + c + '</span></div>'; }).join('') +
+          '</div>' +
+        '</div>';
+      }
+      if (block.type === 'table') {
+        var headers = block.headers || [];
+        var rows = block.rows || [];
+        return '<div class="my-6 overflow-x-auto rounded-xl border border-slate-800">' +
+          (block.caption ? '<div class="p-2.5 bg-slate-900 text-xs font-bold text-white border-b border-slate-800">' + block.caption + '</div>' : '') +
+          '<table class="w-full text-left text-xs border-collapse">' +
+            '<thead><tr class="bg-slate-900/80">' +
+              headers.map(function(h) { return '<th class="p-2.5 font-bold text-orange-400 border-b border-r border-slate-800">' + h + '</th>'; }).join('') +
+            '</tr></thead>' +
+            '<tbody>' +
+              rows.map(function(r) {
+                return '<tr class="border-b border-slate-800/60 hover:bg-slate-900/30">' +
+                  r.map(function(c) { return '<td class="p-2.5 border-r border-slate-800 text-slate-300">' + c + '</td>'; }).join('') +
+                '</tr>';
+              }).join('') +
+            '</tbody>' +
+          '</table>' +
+        '</div>';
+      }
+      if (block.type === 'faq') {
+        var items = block.items || [];
+        return '<div class="my-6 space-y-2">' +
+          items.map(function(it) {
+            return '<details class="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-xs cursor-pointer group">' +
+              '<summary class="font-bold text-white text-xs sm:text-sm list-none flex items-center justify-between"><span>❓ ' + it.question + '</span><span class="text-slate-500 group-open:rotate-180 transition-transform">▼</span></summary>' +
+              '<p class="mt-2.5 text-slate-300 text-xs sm:text-sm leading-relaxed border-t border-slate-800/80 pt-2">' + it.answer + '</p>' +
+            '</details>';
+          }).join('') +
+        '</div>';
+      }
+      if (block.type === 'takeaways') {
+        var tItems = block.items || [];
+        return '<div class="my-6 p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-2">' +
+          '<div class="font-bold text-xs uppercase tracking-wider text-cyan-400 flex items-center gap-1.5"><span>📌</span><span>' + (block.title || 'Key Takeaways') + '</span></div>' +
+          '<ul class="space-y-1.5 text-xs sm:text-sm text-slate-200 list-disc list-inside">' +
+            tItems.map(function(t) { return '<li>' + t + '</li>'; }).join('') +
+          '</ul>' +
+        '</div>';
+      }
+      if (block.type === 'cta') {
+        return '<div class="my-8 p-6 rounded-2xl bg-gradient-to-r from-orange-950/40 via-slate-900 to-slate-900 border border-orange-500/40 text-center space-y-3">' +
+          '<h3 class="text-base sm:text-lg font-extrabold text-white">' + (block.title || 'Ready to get started?') + '</h3>' +
+          '<p class="text-xs sm:text-sm text-slate-300 max-w-lg mx-auto">' + (block.description || '') + '</p>' +
+          '<a href="' + (block.buttonUrl || '#') + '" target="_blank" class="inline-block px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-lg transition-all">' + (block.buttonText || 'Learn More') + ' →</a>' +
+        '</div>';
+      }
+      if (block.type === 'image') {
+        return '<figure class="my-6 rounded-xl overflow-hidden border border-slate-800 bg-[#080c14]">' +
+          '<img src="' + (block.url || '') + '" alt="' + (block.alt || '') + '" class="w-full h-auto max-h-[420px] object-cover" />' +
+          (block.caption ? '<figcaption class="p-2 text-center text-xs text-slate-400 bg-slate-900/60 border-t border-slate-800">' + block.caption + '</figcaption>' : '') +
+        '</figure>';
+      }
+      if (block.type === 'divider') {
+        return '<div class="my-8 border-t border-slate-800 relative text-center"><span class="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#0b101c] px-3 text-slate-600 text-xs font-mono">✦ ✦ ✦</span></div>';
+      }
+      return '';
     }
 
     function openLivePreviewModal() {
@@ -1344,7 +2024,6 @@
       var title = document.getElementById('postTitle') ? document.getElementById('postTitle').value : 'Article Title';
       var subtitle = document.getElementById('postSubtitle') ? document.getElementById('postSubtitle').value : '';
       var image = document.getElementById('postImage') ? document.getElementById('postImage').value : '';
-      var body = document.getElementById('postBody') ? document.getElementById('postBody').value : '';
 
       heroBox.innerHTML = '<div class="space-y-4 pb-6 border-b border-slate-800">' +
         '<h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight font-display">' + title + '</h1>' +
@@ -1352,7 +2031,16 @@
         (image ? '<div class="aspect-video w-full rounded-2xl overflow-hidden bg-slate-950 mt-4"><img src="' + image + '" class="w-full h-full object-cover" /></div>' : '') +
       '</div>';
 
-      contentBox.innerHTML = parseMarkdownSafe(body || '*No content written yet.*');
+      var blocksHtml = currentEditorItems.map(function(item) {
+        if (item.type === 'text') {
+          return parseMarkdownSafe(item.text || '');
+        } else if (item.type === 'block' && item.block) {
+          return renderBlockInPreviewHtml(item.block);
+        }
+        return '';
+      }).join('\n\n');
+
+      contentBox.innerHTML = blocksHtml || '<p class="text-slate-500 italic">No content written yet.</p>';
       modal.classList.remove('hidden');
     }
 
@@ -1390,9 +2078,9 @@
       var excerpt = document.getElementById('postExcerpt') ? document.getElementById('postExcerpt').value.trim() : '';
 
       var rawTa = document.getElementById('postRawMarkdown');
-      var visTa = document.getElementById('postBody');
       var rawContainer = document.getElementById('rawMarkdownContainer');
-      var content = (rawContainer && !rawContainer.classList.contains('hidden') && rawTa) ? rawTa.value : (visTa ? visTa.value : '');
+      var content = (rawContainer && !rawContainer.classList.contains('hidden') && rawTa) ? rawTa.value : compileEditorItemsToMarkdown();
+      var blocks = extractEditorBlocks();
 
       var status = forcedStatus || (document.getElementById('postStatus') ? document.getElementById('postStatus').value : 'published');
       var authorId = document.getElementById('postAuthor') ? document.getElementById('postAuthor').value : '1';
@@ -1422,6 +2110,7 @@
           tags: tags,
           excerpt: excerpt,
           content: content,
+          blocks: blocks,
           status: status,
           authorId: authorId,
           isFeatured: isFeatured,
@@ -1448,6 +2137,7 @@
           p.tags = tags;
           p.excerpt = excerpt;
           p.content = content;
+          p.blocks = blocks;
           p.status = status;
           p.authorId = authorId;
           p.isFeatured = isFeatured;
