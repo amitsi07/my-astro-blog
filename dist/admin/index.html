@@ -578,185 +578,229 @@
       if (!main) return;
 
       main.innerHTML = '<div class="space-y-6 pb-16">' +
+        // Top Sticky Header
         '<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 -mx-3 sm:-mx-6 -mt-3 sm:-mt-6 mb-6 rounded-b-2xl border-b border-slate-800 bg-[#0b101c]/95 backdrop-blur-md sticky top-0 z-30 shadow-lg">' +
-          '<div class="flex items-center gap-3">' +
-            '<button type="button" onclick="currentEditingPostId=null;renderCurrentTab();" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors">' +
-              '<span>←</span><span>Back</span>' +
+          '<div class="flex items-center gap-2 sm:gap-3">' +
+            '<button type="button" onclick="currentEditingPostId=null;renderCurrentTab();" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-semibold flex items-center gap-1.5 transition-colors">' +
+              '<span>←</span><span>All Posts</span>' +
             '</button>' +
-            '<div>' +
-              '<h1 class="text-sm sm:text-base font-bold text-white truncate max-w-[200px] sm:max-w-md" id="editorHeaderTitle">' + (isNew ? 'Create New Article' : (post.title || 'Edit Article')) + '</h1>' +
-              '<div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono">' +
-                '<span id="liveStatsIndicator">' + wordCount + ' words • ' + readingTime + ' min read</span>' +
-              '</div>' +
+            '<div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-semibold">' +
+              '<button type="button" onclick="setEditorVisualMode(\'visual\')" id="modeBtnVisual" class="px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm"><span>🟧</span><span>Visual Blocks</span></button>' +
+              '<button type="button" onclick="setEditorVisualMode(\'markdown\')" id="modeBtnMarkdown" class="px-3 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5"><span>&lt;/&gt;</span><span>Raw Markdown</span></button>' +
             '</div>' +
           '</div>' +
 
           '<div class="flex items-center gap-2">' +
-            '<button type="button" onclick="openLivePreviewModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all">' +
-              '<span>👁️</span><span class="hidden sm:inline">Preview</span>' +
-            '</button>' +
-            '<button type="button" onclick="saveCurrentPostForm()" class="px-4 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 active:scale-95 text-white text-xs font-bold shadow-md shadow-orange-600/30 flex items-center gap-1.5 transition-all">' +
-              '<span>💾</span><span>Save Article</span>' +
+            '<span class="text-[11px] text-slate-400 font-mono hidden md:inline">Saved just now</span>' +
+            '<button type="button" onclick="saveCurrentPostForm(\'draft\')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all">Save Draft</button>' +
+            '<button type="button" onclick="openLivePreviewModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"><span>👁️</span><span>Preview</span></button>' +
+            '<button type="button" onclick="saveCurrentPostForm(\'published\')" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 active:scale-95 text-white text-xs font-extrabold shadow-lg shadow-orange-600/30 flex items-center gap-1.5 transition-all">' +
+              '<span>🚀</span><span>Publish & Deploy</span><span class="px-1.5 py-0.5 rounded text-[9px] bg-black/30 text-amber-200 uppercase tracking-widest">⚡ Auto</span>' +
             '</button>' +
           '</div>' +
         '</div>' +
 
         '<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-1">' +
-          '<div class="lg:col-span-2 space-y-4">' +
-            '<div class="space-y-1.5 pt-1">' +
-              '<label class="block text-xs font-bold uppercase tracking-wider text-slate-300">Post Title <span class="text-orange-500">*</span></label>' +
-              '<input id="postTitle" value="' + (post.title || '').replace(/"/g, '&quot;') + '" oninput="handleTitleInput(this.value)" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-base sm:text-lg focus:border-orange-500 outline-none transition-colors" placeholder="Enter an engaging headline..." />' +
+          '<div class="lg:col-span-2 space-y-5">' +
+            // Title & Subtitle inputs
+            '<div class="space-y-2">' +
+              '<input id="postTitle" value="' + (post.title || '').replace(/"/g, '&quot;') + '" oninput="handleTitleInput(this.value)" class="w-full px-4 py-3.5 rounded-2xl bg-[#0d1322] border border-slate-700/80 text-white font-extrabold text-2xl sm:text-3xl focus:border-orange-500 outline-none transition-all placeholder:text-slate-600" placeholder="Add post title..." />' +
+              '<input id="postSubtitle" value="' + (post.subtitle || '').replace(/"/g, '&quot;') + '" class="w-full px-4 py-2.5 rounded-xl bg-[#0d1322] border border-slate-800 text-slate-300 text-sm focus:border-orange-500 outline-none placeholder:text-slate-600" placeholder="Add a compelling subtitle or deck (optional)..." />' +
             '</div>' +
 
-            '<div>' +
-              '<label class="block text-xs font-medium text-slate-400 mb-1">Subtitle / Deck (Optional)</label>' +
-              '<input id="postSubtitle" value="' + (post.subtitle || '').replace(/"/g, '&quot;') + '" class="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs sm:text-sm focus:border-orange-500 outline-none" placeholder="Add a supporting deck or subtitle..." />' +
+            // Permalink line
+            '<div class="flex flex-wrap items-center gap-2 text-xs text-slate-400 font-mono bg-[#0d1322]/60 p-2.5 rounded-xl border border-slate-800/80">' +
+              '<span>Permalink: https://astroblog.dev/</span>' +
+              '<input id="postSlug" value="' + (post.slug || '') + '" class="bg-slate-900 px-2 py-0.5 rounded border border-slate-700 text-orange-400 font-mono text-xs outline-none" placeholder="untitled-post" />' +
+              '<button type="button" onclick="document.getElementById(\'postSlug\').focus()" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-sans">Edit</button>' +
+              '<button type="button" onclick="regenerateSlugFromTitle()" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-sans">Regenerate</button>' +
             '</div>' +
 
-            '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">' +
+            // Metrics & Badges Row
+            '<div class="flex flex-wrap items-center gap-2.5 text-xs font-mono">' +
+              '<span class="px-3 py-1 rounded-full bg-slate-800/80 text-slate-300 border border-slate-700/60 flex items-center gap-1.5">' +
+                '<span>⏱️</span><span id="readTimeBadge">' + readingTime + ' min read</span>' +
+              '</span>' +
+              '<span class="px-3 py-1 rounded-full bg-slate-800/80 text-slate-300 border border-slate-700/60 flex items-center gap-1.5">' +
+                '<span>📝</span><span id="wordCountBadge">' + wordCount + ' words</span>' +
+              '</span>' +
+              '<span class="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 font-bold">' +
+                '<span>📊</span><span>Readability: Easy to Read</span>' +
+              '</span>' +
+              '<span id="seoScoreBadgeContainer" class="px-3 py-1 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1.5 font-bold">' +
+                '<span>🎯</span><span id="seoScoreBadgeText">SEO Score: 85%</span>' +
+              '</span>' +
+            '</div>' +
+
+            // WordPress / Blogger Banner
+            '<div class="p-3.5 rounded-2xl bg-gradient-to-r from-orange-950/30 via-slate-900 to-amber-950/20 border border-orange-500/30 text-xs text-slate-300 flex items-start gap-2.5 shadow-sm">' +
+              '<span class="text-base">⚡</span>' +
               '<div>' +
-                '<label class="block text-xs font-medium text-slate-400 mb-1">Permalink Slug (/slug)</label>' +
-                '<input id="postSlug" value="' + (post.slug || '') + '" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-orange-400 font-mono text-xs focus:border-orange-500 outline-none" placeholder="clean-article-slug" />' +
-              '</div>' +
-              '<div>' +
-                '<label class="block text-xs font-medium text-slate-400 mb-1">Category</label>' +
-                '<select id="postCat" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">' + catOptions + '</select>' +
+                '<strong class="text-orange-400 font-bold">In-Line Element Insertion (WordPress & Blogger Style):</strong> Click any <code class="px-1.5 py-0.5 bg-orange-500/20 text-orange-300 rounded font-bold">+ Add Element Below This Line</code> button to insert an AI Prompt Box, Code Snippet, Notice, Table, or FAQ right below that exact line. You can move items Up or Down at any time.' +
               '</div>' +
             '</div>' +
 
-            '<div>' +
-              '<label class="block text-xs font-medium text-slate-400 mb-1">Tags (Comma-separated)</label>' +
-              '<input id="postTags" value="' + (post.tags || []).join(', ') + '" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:border-orange-500 outline-none" placeholder="technology, webdev, tutorials" />' +
+            // Top Insert Button
+            '<div class="flex justify-center py-1">' +
+              '<button type="button" onclick="openInsertElementModal(-1)" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-semibold flex items-center gap-2 transition-all shadow-sm hover:border-orange-500/50">' +
+                '<span>+</span><span>Insert Element at Top of Article</span>' +
+              '</button>' +
             '</div>' +
 
-            '<div>' +
-              '<div class="flex items-center justify-between mb-1">' +
-                '<label class="text-xs font-medium text-slate-400">Excerpt / Summary</label>' +
-                '<span id="excerptCount" class="text-[10px] text-slate-500 font-mono">' + (post.excerpt || '').length + '/200</span>' +
-              '</div>' +
-              '<textarea id="postExcerpt" rows="2" oninput="document.getElementById(\'excerptCount\').innerText=this.value.length+\'/200\';" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:border-orange-500 outline-none" placeholder="A compelling 1-2 sentence summary...">' + (post.excerpt || '') + '</textarea>' +
-            '</div>' +
-
-            '<div class="rounded-xl border border-slate-700 bg-slate-900 overflow-hidden">' +
-              '<div class="p-2 bg-slate-950/80 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">' +
-                '<div class="flex bg-slate-900 p-0.5 rounded-lg border border-slate-800 text-xs">' +
-                  '<button type="button" onclick="setEditorMode(\'write\')" id="tabWrite" class="px-2.5 py-1 rounded bg-orange-600 text-white font-semibold">Write (Markdown)</button>' +
-                  '<button type="button" onclick="setEditorMode(\'preview\')" id="tabPreview" class="px-2.5 py-1 rounded text-slate-400 hover:text-white font-medium">Split Preview</button>' +
+            // Editor Area: Visual Blocks vs Raw Markdown
+            '<div class="rounded-2xl border border-slate-800 bg-[#0d1322] overflow-hidden shadow-md">' +
+              '<div id="visualBlocksContainer" class="p-4 space-y-3">' +
+                '<div class="p-2 bg-slate-950/80 border-b border-slate-800 flex items-center justify-between gap-2 rounded-xl mb-2">' +
+                  '<div class="flex items-center gap-1">' +
+                    '<button type="button" onclick="formatBold()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs" title="Bold">B</button>' +
+                    '<button type="button" onclick="formatItalic()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 italic text-xs" title="Italic">I</button>' +
+                    '<button type="button" onclick="formatH2()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H2</button>' +
+                    '<button type="button" onclick="formatH3()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H3</button>' +
+                    '<button type="button" onclick="formatList()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs">• List</button>' +
+                    '<button type="button" onclick="formatQuote()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs"> Quote</button>' +
+                  '</div>' +
+                  '<span class="text-[10px] text-slate-500 font-mono">WordPress Visual Editor Active</span>' +
                 '</div>' +
 
-                '<div class="flex flex-wrap items-center gap-1 overflow-x-auto py-0.5">' +
-                  '<button type="button" onclick="formatBold()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs" title="Bold">B</button>' +
-                  '<button type="button" onclick="formatItalic()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 italic text-xs" title="Italic">I</button>' +
-                  '<button type="button" onclick="formatStrike()" class="p-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 line-through text-xs" title="Strikethrough">S</button>' +
-                  '<span class="text-slate-700">|</span>' +
-                  '<button type="button" onclick="formatH2()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H2</button>' +
-                  '<button type="button" onclick="formatH3()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs">H3</button>' +
-                  '<span class="text-slate-700">|</span>' +
-                  '<button type="button" onclick="formatQuote()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="Quote">”</button>' +
-                  '<button type="button" onclick="formatCode()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs" title="Code Block">&lt;/&gt;</button>' +
-                  '<button type="button" onclick="formatList()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="Bullet List">• List</button>' +
-                  '<button type="button" onclick="formatNumList()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="Numbered List">1. List</button>' +
-                  '<button type="button" onclick="formatDivider()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="Divider">—</button>' +
-                  '<button type="button" onclick="formatLink()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs" title="Insert Link">🔗</button>' +
-
-                  '<select onchange="insertSpecialBlock(this.value);this.selectedIndex=0;" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs outline-none cursor-pointer">' +
-                    '<option value="">+ Special Block</option>' +
-                    '<option value="callout">💡 Callout Box</option>' +
-                    '<option value="takeaways">⚡ Key Takeaways</option>' +
-                    '<option value="proscons">⚖️ Pros & Cons</option>' +
-                    '<option value="table">📊 Comparison Table</option>' +
-                    '<option value="cta">🚀 CTA Banner</option>' +
-                    '<option value="faq">❓ FAQ Block</option>' +
-                  '</select>' +
-                '</div>' +
+                '<textarea id="postBody" rows="16" oninput="updateLiveStats(this.value)" class="w-full bg-transparent border-0 text-slate-100 font-sans text-sm sm:text-base focus:ring-0 outline-none leading-relaxed resize-y" placeholder="Write paragraph or heading text here...">' + (post.content || '') + '</textarea>' +
               '</div>' +
 
-              '<div class="p-3">' +
-                '<textarea id="postBody" rows="18" oninput="updateLiveStats(this.value)" class="w-full bg-transparent border-0 text-slate-100 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y" placeholder="Type article content in Markdown here...">' + (post.content || '') + '</textarea>' +
-                '<div id="inlinePreviewBox" class="hidden min-h-[350px] p-4 rounded-xl bg-slate-950 border border-slate-800 prose-dark text-slate-200 overflow-y-auto"></div>' +
+              '<div id="rawMarkdownContainer" class="hidden p-4 bg-slate-950 space-y-2">' +
+                '<div class="text-xs text-orange-400 font-mono font-semibold">Markdown Source Code</div>' +
+                '<textarea id="postRawMarkdown" rows="18" oninput="document.getElementById(\'postBody\').value=this.value;updateLiveStats(this.value);" class="w-full bg-transparent border-0 text-amber-300 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y"></textarea>' +
               '</div>' +
+            '</div>' +
+
+            // Bottom In-Line Insert Button
+            '<div class="flex justify-center py-1">' +
+              '<button type="button" onclick="openInsertElementModal(999)" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-orange-400 border border-slate-700 text-xs font-bold flex items-center gap-2 shadow-sm transition-all hover:border-orange-500">' +
+                '<span>+</span><span>Add Element Below This Line</span>' +
+              '</button>' +
+            '</div>' +
+
+            // Excerpt & Summary
+            '<div class="p-4 rounded-2xl bg-[#0d1322] border border-slate-800 space-y-2">' +
+              '<div class="flex items-center justify-between">' +
+                '<label class="text-xs font-bold text-slate-300 uppercase tracking-wider">Excerpt / Summary</label>' +
+                '<span id="excerptCount" class="text-[10px] text-slate-500 font-mono">' + (post.excerpt || '').length + '/200 chars</span>' +
+              '</div>' +
+              '<textarea id="postExcerpt" rows="2" oninput="document.getElementById(\'excerptCount\').innerText=this.value.length+\'/200 chars\';" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:border-orange-500 outline-none" placeholder="A compelling 1-2 sentence summary for social media and search engines...">' + (post.excerpt || '') + '</textarea>' +
             '</div>' +
           '</div>' +
 
-          '<div class="space-y-4">' +
-            '<div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">' +
-              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>📌</span><span>Publish & Visibility</span></h3>' +
+          // Sidebar Inspector (Right Column)
+          '<div class="space-y-5">' +
+            // Category & Tags
+            '<div class="p-4.5 rounded-2xl bg-[#0d1322] border border-slate-800 space-y-3.5">' +
+              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>📁</span><span>Category & Tags</span></h3>' +
               '<div>' +
-                '<label class="block text-[11px] text-slate-400 mb-1">Status</label>' +
-                '<select id="postStatus" class="w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs">' +
-                  '<option value="published" ' + (post.status === 'published' ? 'selected' : '') + '>Published (Live)</option>' +
-                  '<option value="draft" ' + (post.status === 'draft' ? 'selected' : '') + '>Draft (Private)</option>' +
-                  '<option value="scheduled" ' + (post.status === 'scheduled' ? 'selected' : '') + '>Scheduled</option>' +
+                '<label class="block text-[11px] font-semibold text-slate-400 mb-1">Category</label>' +
+                '<select id="postCat" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">' + catOptions + '</select>' +
+              '</div>' +
+              '<div>' +
+                '<label class="block text-[11px] font-semibold text-slate-400 mb-1">Tags (Comma-separated)</label>' +
+                '<input id="postTags" value="' + (post.tags || []).join(', ') + '" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs focus:border-orange-500 outline-none" placeholder="technology, webdev, tutorials" />' +
+              '</div>' +
+            '</div>' +
+
+            // Featured Hero Image with Tabs
+            '<div class="p-4.5 rounded-2xl bg-[#0d1322] border border-slate-800 space-y-3.5">' +
+              '<div class="flex items-center justify-between">' +
+                '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>🖼️</span><span>Featured Image</span></h3>' +
+                '<span class="px-2 py-0.5 rounded text-[9px] bg-orange-500/20 text-orange-400 font-mono font-bold uppercase">Hero Banner</span>' +
+              '</div>' +
+
+              // Image Uploader Tabs
+              '<div class="flex bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-[11px] font-medium overflow-x-auto">' +
+                '<button type="button" onclick="setImgTab(\'upload\')" id="imgTabUpload" class="flex-1 py-1.5 px-2 rounded-lg bg-orange-600 text-white font-bold text-center transition-all">Upload File</button>' +
+                '<button type="button" onclick="setImgTab(\'presets\')" id="imgTabPresets" class="flex-1 py-1.5 px-2 rounded-lg text-slate-400 hover:text-white text-center transition-all">Stock Presets</button>' +
+                '<button type="button" onclick="setImgTab(\'library\')" id="imgTabLibrary" class="flex-1 py-1.5 px-2 rounded-lg text-slate-400 hover:text-white text-center transition-all">Library (4)</button>' +
+                '<button type="button" onclick="setImgTab(\'url\')" id="imgTabUrl" class="flex-1 py-1.5 px-2 rounded-lg text-slate-400 hover:text-white text-center transition-all">Paste URL</button>' +
+              '</div>' +
+
+              // Drag and drop container
+              '<div id="imgUploadBox" class="border-2 border-dashed border-slate-700 hover:border-orange-500/80 rounded-2xl p-6 bg-slate-900/60 text-center transition-all cursor-pointer space-y-2">' +
+                '<div class="w-10 h-10 rounded-2xl bg-orange-500/10 text-orange-400 flex items-center justify-center mx-auto text-lg font-bold">📤</div>' +
+                '<div class="text-xs font-bold text-white">Drop your featured image here</div>' +
+                '<div class="text-[11px] text-slate-400">or <span class="text-orange-400 font-bold hover:underline" onclick="triggerImageFilePicker()">browse files</span> from your computer</div>' +
+                '<div class="text-[10px] text-slate-500 font-mono">PNG, JPG, WebP, GIF, SVG • Max 10MB</div>' +
+                '<input type="file" id="localImgFilePicker" accept="image/*" class="hidden" onchange="handleLocalImageUpload(this)" />' +
+              '</div>' +
+
+              '<div>' +
+                '<input id="postImage" value="' + (post.featuredImage || '') + '" oninput="document.getElementById(\'postImagePreview\').src=this.value;" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-mono text-xs outline-none" placeholder="Image URL..." />' +
+              '</div>' +
+
+              '<div class="aspect-video w-full rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">' +
+                '<img id="postImagePreview" src="' + (post.featuredImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80') + '" class="w-full h-full object-cover" />' +
+              '</div>' +
+
+              '<div class="grid grid-cols-2 gap-2">' +
+                '<div>' +
+                  '<label class="block text-[10px] text-slate-400 mb-0.5">Alt Text (SEO)</label>' +
+                  '<input id="postImageAlt" value="' + (post.featuredImageAlt || '') + '" class="w-full px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-xs" placeholder="Alt description" />' +
+                '</div>' +
+                '<div>' +
+                  '<label class="block text-[10px] text-slate-400 mb-0.5">Photo Credit</label>' +
+                  '<input id="postImageCredit" value="' + (post.featuredImageCredit || '') + '" class="w-full px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-200 text-xs" placeholder="Photographer" />' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+
+            // Status & Visibility
+            '<div class="p-4.5 rounded-2xl bg-[#0d1322] border border-slate-800 space-y-3.5">' +
+              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>📌</span><span>Status & Visibility</span></h3>' +
+              '<div>' +
+                '<label class="block text-[11px] text-slate-400 mb-1">Post Status</label>' +
+                '<select id="postStatus" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">' +
+                  '<option value="published" ' + (post.status === 'published' ? 'selected' : '') + '>Published (Live Website)</option>' +
+                  '<option value="draft" ' + (post.status === 'draft' ? 'selected' : '') + '>Draft (Private to Authors)</option>' +
+                  '<option value="scheduled" ' + (post.status === 'scheduled' ? 'selected' : '') + '>Scheduled Publication</option>' +
                 '</select>' +
               '</div>' +
               '<div>' +
                 '<label class="block text-[11px] text-slate-400 mb-1">Author</label>' +
-                '<select id="postAuthor" class="w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs">' + authorOptions + '</select>' +
+                '<select id="postAuthor" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:border-orange-500 outline-none">' + authorOptions + '</select>' +
+              '</div>' +
+              '<div class="pt-1 border-t border-slate-800/80 space-y-2">' +
+                '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
+                  '<input type="checkbox" id="postIsFeatured" ' + (post.isFeatured ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-900 border-slate-700" />' +
+                  '<span>⭐ Featured on Homepage Grid</span>' +
+                '</label>' +
+                '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
+                  '<input type="checkbox" id="postIsTrending" ' + (post.isTrending ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-900 border-slate-700" />' +
+                  '<span>🔥 Trending Now Badge</span>' +
+                '</label>' +
+                '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
+                  '<input type="checkbox" id="postAllowComments" ' + (post.allowComments !== false ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-900 border-slate-700" />' +
+                  '<span>💬 Allow Reader Comments</span>' +
+                '</label>' +
+                '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
+                  '<input type="checkbox" id="postShowHeroInHeader" ' + (post.showFeaturedImageInPost !== false ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-900 border-slate-700" />' +
+                  '<span>🖼️ Show Hero Image in Post Top</span>' +
+                '</label>' +
               '</div>' +
             '</div>' +
 
-            '<div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2.5">' +
-              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>⚙️</span><span>Feature Flags & Badges</span></h3>' +
-              '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
-                '<input type="checkbox" id="postIsFeatured" ' + (post.isFeatured ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-800 border-slate-700" />' +
-                '<span>⭐ Featured on Homepage</span>' +
-              '</label>' +
-              '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
-                '<input type="checkbox" id="postIsTrending" ' + (post.isTrending ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-800 border-slate-700" />' +
-                '<span>🔥 Trending Now Badge</span>' +
-              '</label>' +
-              '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
-                '<input type="checkbox" id="postAllowComments" ' + (post.allowComments !== false ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-800 border-slate-700" />' +
-                '<span>💬 Allow Reader Comments</span>' +
-              '</label>' +
-              '<label class="flex items-center gap-2 cursor-pointer text-xs text-slate-300 hover:text-white">' +
-                '<input type="checkbox" id="postShowHeroInHeader" ' + (post.showFeaturedImageInPost !== false ? 'checked' : '') + ' class="w-4 h-4 rounded text-orange-600 bg-slate-800 border-slate-700" />' +
-                '<span>🖼️ Show Hero Image in Article Header</span>' +
-              '</label>' +
-            '</div>' +
-
-            '<div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">' +
-              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>🖼️</span><span>Featured Hero Image</span></h3>' +
+            // SEO & Social Search Preview
+            '<div class="p-4.5 rounded-2xl bg-[#0d1322] border border-slate-800 space-y-3.5">' +
+              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>🔍</span><span>SEO Meta & Snippet</span></h3>' +
               '<div>' +
-                '<input id="postImage" value="' + (post.featuredImage || '') + '" oninput="document.getElementById(\'postImagePreview\').src=this.value;" class="w-full px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs outline-none" placeholder="https://images.unsplash.com/..." />' +
-              '</div>' +
-              '<div class="aspect-video w-full rounded-lg bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">' +
-                '<img id="postImagePreview" src="' + (post.featuredImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80') + '" class="w-full h-full object-cover" />' +
-              '</div>' +
-              '<div>' +
-                '<label class="block text-[10px] text-slate-400 mb-0.5">Image Alt Text (SEO)</label>' +
-                '<input id="postImageAlt" value="' + (post.featuredImageAlt || '') + '" class="w-full px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-200 text-xs" placeholder="Descriptive alternative text" />' +
-              '</div>' +
-              '<div class="grid grid-cols-2 gap-2">' +
-                '<div>' +
-                  '<label class="block text-[10px] text-slate-400 mb-0.5">Caption</label>' +
-                  '<input id="postImageCaption" value="' + (post.featuredImageCaption || '') + '" class="w-full px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-200 text-xs" placeholder="Caption" />' +
-                '</div>' +
-                '<div>' +
-                  '<label class="block text-[10px] text-slate-400 mb-0.5">Credit</label>' +
-                  '<input id="postImageCredit" value="' + (post.featuredImageCredit || '') + '" class="w-full px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-200 text-xs" placeholder="Photographer" />' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-
-            '<div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">' +
-              '<h3 class="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-1.5"><span>🔍</span><span>SEO & Google Preview</span></h3>' +
-              '<div>' +
-                '<div class="flex items-center justify-between mb-0.5">' +
+                '<div class="flex items-center justify-between mb-1">' +
                   '<label class="text-[11px] text-slate-400">SEO Meta Title</label>' +
                   '<span id="seoTitleCount" class="text-[10px] text-slate-500 font-mono">' + (post.seoTitle || post.title || '').length + '/60</span>' +
                 '</div>' +
-                '<input id="postSeoTitle" value="' + (post.seoTitle || '').replace(/"/g, '&quot;') + '" oninput="updateSerpPreview()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-white text-xs outline-none" placeholder="Recommended: 50-60 chars" />' +
+                '<input id="postSeoTitle" value="' + (post.seoTitle || '').replace(/"/g, '&quot;') + '" oninput="updateSerpPreview()" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500" placeholder="Recommended: 50-60 chars" />' +
               '</div>' +
               '<div>' +
-                '<div class="flex items-center justify-between mb-0.5">' +
+                '<div class="flex items-center justify-between mb-1">' +
                   '<label class="text-[11px] text-slate-400">SEO Meta Description</label>' +
                   '<span id="seoDescCount" class="text-[10px] text-slate-500 font-mono">' + (post.metaDescription || post.excerpt || '').length + '/160</span>' +
                 '</div>' +
-                '<textarea id="postSeoDesc" rows="2" oninput="updateSerpPreview()" class="w-full px-2.5 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-slate-200 text-xs outline-none" placeholder="Recommended: 120-160 chars">' + (post.metaDescription || '') + '</textarea>' +
+                '<textarea id="postSeoDesc" rows="2" oninput="updateSerpPreview()" class="w-full px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-xs outline-none focus:border-orange-500" placeholder="Recommended: 120-160 chars">' + (post.metaDescription || '') + '</textarea>' +
               '</div>' +
 
-              '<div class="p-3 rounded-lg bg-white text-slate-900 border border-slate-300 space-y-1 text-xs">' +
+              '<div class="p-3.5 rounded-xl bg-white text-slate-900 border border-slate-300 space-y-1 text-xs shadow-inner">' +
                 '<div class="flex items-center gap-1.5 text-[10px] text-slate-600 truncate">' +
                   '<span class="w-3.5 h-3.5 rounded-full bg-slate-200 flex items-center justify-center font-bold text-[8px]">🌐</span>' +
                   '<span class="font-medium truncate">' + (APP_DATA.settings && APP_DATA.settings.siteName ? APP_DATA.settings.siteName : 'Blog') + '</span>' +
@@ -767,6 +811,106 @@
                 '<div id="serpDescPreview" class="text-slate-600 text-[11px] line-clamp-2 leading-relaxed">' + (post.metaDescription || post.excerpt || 'Article summary preview will appear here on Google and social search results.') + '</div>' +
               '</div>' +
             '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // INSERT ELEMENT RIGHT BELOW MODAL POPOVER (Exact Screenshot 1)
+      '<div id="insertElementModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">' +
+        '<div class="relative w-full max-w-md bg-[#0b101c] border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4 text-slate-200 max-h-[90vh] overflow-y-auto">' +
+          '<div class="flex items-center justify-between pb-3 border-b border-slate-800">' +
+            '<h3 class="text-xs font-bold uppercase tracking-wider text-white">INSERT ELEMENT RIGHT BELOW</h3>' +
+            '<button type="button" onclick="closeInsertElementModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold text-sm">✕</button>' +
+          '</div>' +
+
+          '<div class="space-y-2">' +
+            '<button type="button" onclick="insertVisualBlockType(\'image\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg font-bold shrink-0">🖼️</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Image / Photo Element</div>' +
+                '<div class="text-[11px] text-slate-400">Upload file from computer or pick preset</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'divider\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg font-bold shrink-0">➖</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Section Divider Line</div>' +
+                '<div class="text-[11px] text-slate-400">Decorative break between paragraphs</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'prompt\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg font-bold shrink-0">⚡</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">AI Prompt Box</div>' +
+                '<div class="text-[11px] text-slate-400">Prompt with 1-click copy button</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'code\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg font-bold shrink-0">&lt;/&gt;</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Code Block</div>' +
+                '<div class="text-[11px] text-slate-400">Syntax highlighted + filename</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'callout\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg font-bold shrink-0">ℹ️</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Notice / Callout Box</div>' +
+                '<div class="text-[11px] text-slate-400">Info, Tip, or Warning banner</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'proscons\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-lg font-bold shrink-0">⚖️</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Pros & Cons Columns</div>' +
+                '<div class="text-[11px] text-slate-400">Comparison list with checks & crosses</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'table\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center text-lg font-bold shrink-0">📊</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Table Builder</div>' +
+                '<div class="text-[11px] text-slate-400">Structured rows & columns</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'faq\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg font-bold shrink-0">❓</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">FAQ Accordion</div>' +
+                '<div class="text-[11px] text-slate-400">Collapsible Q&A accordion</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'takeaways\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg font-bold shrink-0">📋</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Key Takeaways Box</div>' +
+                '<div class="text-[11px] text-slate-400">Highlighted bullet summary list</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'cta\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg font-bold shrink-0">🚀</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">Call to Action (CTA)</div>' +
+                '<div class="text-[11px] text-slate-400">Banner with title, copy & button</div>' +
+              '</div>' +
+            '</button>' +
+
+            '<button type="button" onclick="insertVisualBlockType(\'paragraph\')" class="w-full p-3 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800/80 hover:border-orange-500/50 text-left flex items-center gap-3.5 transition-all group">' +
+              '<div class="w-9 h-9 rounded-xl bg-slate-700/50 text-slate-300 flex items-center justify-center text-lg font-bold shrink-0">✍️</div>' +
+              '<div>' +
+                '<div class="text-xs font-bold text-white group-hover:text-orange-400">New Text Paragraph</div>' +
+                '<div class="text-[11px] text-slate-400">Add an empty writing section</div>' +
+              '</div>' +
+            '</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -781,6 +925,184 @@
         if (serpSlug) serpSlug.innerText = slug || 'article';
       }
       updateSerpPreview();
+    }
+
+    function regenerateSlugFromTitle() {
+      var titleEl = document.getElementById('postTitle');
+      var slugEl = document.getElementById('postSlug');
+      if (titleEl && slugEl) {
+        var newSlug = (titleEl.value || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled-post';
+        slugEl.value = newSlug;
+        var serpSlug = document.getElementById('serpSlugPreview');
+        if (serpSlug) serpSlug.innerText = newSlug;
+      }
+    }
+
+    function setEditorVisualMode(mode) {
+      var btnVisual = document.getElementById('modeBtnVisual');
+      var btnMarkdown = document.getElementById('modeBtnMarkdown');
+      var visContainer = document.getElementById('visualBlocksContainer');
+      var rawContainer = document.getElementById('rawMarkdownContainer');
+      var rawTextarea = document.getElementById('postRawMarkdown');
+      var visTextarea = document.getElementById('postBody');
+
+      if (!visContainer || !rawContainer) return;
+
+      if (mode === 'markdown') {
+        if (btnVisual) btnVisual.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5';
+        if (btnMarkdown) btnMarkdown.className = 'px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm';
+        visContainer.classList.add('hidden');
+        rawContainer.classList.remove('hidden');
+        if (rawTextarea && visTextarea) rawTextarea.value = visTextarea.value;
+      } else {
+        if (btnMarkdown) btnMarkdown.className = 'px-3 py-1 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5';
+        if (btnVisual) btnVisual.className = 'px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm';
+        rawContainer.classList.add('hidden');
+        visContainer.classList.remove('hidden');
+        if (visTextarea && rawTextarea && rawTextarea.value) visTextarea.value = rawTextarea.value;
+      }
+    }
+
+    function openInsertElementModal(idx) {
+      var modal = document.getElementById('insertElementModal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeInsertElementModal() {
+      var modal = document.getElementById('insertElementModal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function insertVisualBlockType(type) {
+      closeInsertElementModal();
+      if (!type) return;
+      var snippet = '';
+      if (type === 'image') {
+        snippet = '
+
+![Image description](https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80)
+*Caption: Descriptive photo caption*
+
+';
+      } else if (type === 'divider') {
+        snippet = '
+
+---
+
+';
+      } else if (type === 'prompt') {
+        snippet = '\n\n> ⚡ **AI Prompt:**\n> \x60Write a high-converting landing page headline for a SaaS product.\x60\n\n';
+      } else if (type === 'code') {
+        snippet = '\n\n\x60\x60\x60typescript\n// Example Code Snippet\nfunction computeEdgeResponse() {\n  return new Response("OK", { status: 200 });\n}\n\x60\x60\x60\n\n';
+      } else if (type === 'callout') {
+        snippet = '
+
+> 💡 **Notice / Important Note:**
+> Here is a crucial architectural insight for engineers.
+
+';
+      } else if (type === 'proscons') {
+        snippet = '
+
+### ⚖️ Comparison: Pros & Cons
+| Pros (Advantages) | Cons (Limitations) |
+| :--- | :--- |
+| ✅ Sub-50ms Global Latency | ❌ Requires Git integration |
+| ✅ Zero Cold Starts | ❌ Free Tier Limits |
+
+';
+      } else if (type === 'table') {
+        snippet = '
+
+| Feature | Starter Plan | Pro Enterprise |
+| :--- | :---: | :---: |
+| Edge Global Caching | Included | Unlimited |
+| SSL Certificate | Free | Dedicated |
+
+';
+      } else if (type === 'faq') {
+        snippet = '
+
+### ❓ Frequently Asked Questions
+**Q: Is Cloudflare Pages completely free?**
+A: Yes! Cloudflare Pages offers unlimited bandwidth on the free plan.
+
+';
+      } else if (type === 'takeaways') {
+        snippet = '
+
+### 📋 Key Takeaways
+- **Point 1:** Fast edge delivery out of the box.
+- **Point 2:** Automatic GitHub deployment on commit.
+- **Point 3:** Full visual customization.
+
+';
+      } else if (type === 'cta') {
+        snippet = '
+
+> 🚀 **Ready to launch your Astro site?**
+> [Get Started Now on Cloudflare Pages →](https://pages.cloudflare.com)
+
+';
+      } else if (type === 'paragraph') {
+        snippet = '
+
+Write new paragraph text here...
+
+';
+      }
+      insertRawText(snippet, '', '');
+    }
+
+    function setImgTab(tab) {
+      var btnUp = document.getElementById('imgTabUpload');
+      var btnPre = document.getElementById('imgTabPresets');
+      var btnLib = document.getElementById('imgTabLibrary');
+      var btnUrl = document.getElementById('imgTabUrl');
+      var uploadBox = document.getElementById('imgUploadBox');
+
+      var allBtns = [btnUp, btnPre, btnLib, btnUrl];
+      allBtns.forEach(function(b) {
+        if (b) b.className = 'flex-1 py-1.5 px-2 rounded-lg text-slate-400 hover:text-white text-center transition-all';
+      });
+
+      if (tab === 'upload' && btnUp) {
+        btnUp.className = 'flex-1 py-1.5 px-2 rounded-lg bg-orange-600 text-white font-bold text-center transition-all';
+        if (uploadBox) uploadBox.classList.remove('hidden');
+      } else if (tab === 'presets' && btnPre) {
+        btnPre.className = 'flex-1 py-1.5 px-2 rounded-lg bg-orange-600 text-white font-bold text-center transition-all';
+        var postImg = document.getElementById('postImage');
+        if (postImg) {
+          postImg.value = 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80';
+          var imgPrev = document.getElementById('postImagePreview');
+          if (imgPrev) imgPrev.src = postImg.value;
+        }
+      } else if (tab === 'library' && btnLib) {
+        btnLib.className = 'flex-1 py-1.5 px-2 rounded-lg bg-orange-600 text-white font-bold text-center transition-all';
+      } else if (tab === 'url' && btnUrl) {
+        btnUrl.className = 'flex-1 py-1.5 px-2 rounded-lg bg-orange-600 text-white font-bold text-center transition-all';
+        var postImgInput = document.getElementById('postImage');
+        if (postImgInput) postImgInput.focus();
+      }
+    }
+
+    function triggerImageFilePicker() {
+      var picker = document.getElementById('localImgFilePicker');
+      if (picker) picker.click();
+    }
+
+    function handleLocalImageUpload(input) {
+      if (input && input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var dataUrl = e.target.result;
+          var postImg = document.getElementById('postImage');
+          var imgPrev = document.getElementById('postImagePreview');
+          if (postImg) postImg.value = dataUrl;
+          if (imgPrev) imgPrev.src = dataUrl;
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
     }
 
     function updateSerpPreview() {
@@ -1099,12 +1421,12 @@
         '</div>' +
 
         '<div class="flex items-center gap-1.5 overflow-x-auto pb-1 border-b border-slate-800 text-xs font-semibold">' +
-          '<button type="button" onclick="switchFooterSubTab(\'brand\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'brand' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🏢 Brand & Logo</button>' +
-          '<button type="button" onclick="switchFooterSubTab(\'links\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'links' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🔗 Links Builder (' + links.length + ')</button>' +
-          '<button type="button" onclick="switchFooterSubTab(\'colors\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'colors' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🎨 Colors & Themes</button>' +
-          '<button type="button" onclick="switchFooterSubTab(\'columns\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'columns' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">📐 Columns & Newsletter</button>' +
-          '<button type="button" onclick="switchFooterSubTab(\'bottom\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'bottom' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">⚖️ Bottom Bar</button>' +
-          '<button type="button" onclick="switchFooterSubTab(\'social\')" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'social' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🌐 Social Profiles</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;brand&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'brand' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🏢 Brand & Logo</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;links&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'links' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🔗 Links Builder (' + links.length + ')</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;colors&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'colors' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🎨 Colors & Themes</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;columns&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'columns' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">📐 Columns & Newsletter</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;bottom&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'bottom' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">⚖️ Bottom Bar</button>' +
+          '<button type="button" onclick="switchFooterSubTab(&apos;social&apos;)" class="px-3 py-1.5 rounded-lg whitespace-nowrap ' + (activeTab === 'social' ? 'bg-orange-600 text-white' : 'text-slate-400 hover:text-white hover:bg-slate-800/60') + '">🌐 Social Profiles</button>' +
         '</div>';
 
       // TAB 1: Brand & Logo
@@ -1122,7 +1444,7 @@
                 '<input id="ftBrandEmoji" value="' + (f.brandEmoji || '🔥').replace(/"/g, '&quot;') + '" class="w-16 px-3 py-2 text-center text-lg rounded-xl bg-slate-900 border border-slate-700 text-white outline-none" />' +
                 '<div class="flex items-center gap-1 flex-wrap">' +
                   ['🔥', '🚀', '⚡', '💡', '💻', '📚', '🌐', '🎯', '✨'].map(function(em) {
-                    return '<button type="button" onclick="document.getElementById(\'ftBrandEmoji\').value=\'' + em + '\';" class="px-2 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-white">' + em + '</button>';
+                    return '<button type="button" onclick="document.getElementById(&apos;ftBrandEmoji&apos;).value=&apos;' + em + '&apos;;" class="px-2 py-1 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-white">' + em + '</button>';
                   }).join('') +
                 '</div>' +
               '</div>' +
@@ -1199,9 +1521,9 @@
               '</div>' +
             '</div>' +
             '<div class="flex items-center gap-1">' +
-              '<button type="button" onclick="moveFooterLinkInAdmin(\'' + l.id + '\', \'up\')" ' + (idx === 0 ? 'disabled' : '') + ' class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30">↑</button>' +
-              '<button type="button" onclick="moveFooterLinkInAdmin(\'' + l.id + '\', \'down\')" ' + (idx === links.length - 1 ? 'disabled' : '') + ' class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30">↓</button>' +
-              '<button type="button" onclick="deleteFooterLinkFromAdmin(\'' + l.id + '\')" class="p-1 rounded bg-rose-950/40 text-rose-400 hover:text-rose-300">✕</button>' +
+              '<button type="button" onclick="moveFooterLinkInAdmin(&apos;' + l.id + '&apos;, &apos;up&apos;)" ' + (idx === 0 ? 'disabled' : '') + ' class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30">↑</button>' +
+              '<button type="button" onclick="moveFooterLinkInAdmin(&apos;' + l.id + '&apos;, &apos;down&apos;)" ' + (idx === links.length - 1 ? 'disabled' : '') + ' class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 disabled:opacity-30">↓</button>' +
+              '<button type="button" onclick="deleteFooterLinkFromAdmin(&apos;' + l.id + '&apos;)" class="p-1 rounded bg-rose-950/40 text-rose-400 hover:text-rose-300">✕</button>' +
             '</div>' +
           '</div>';
         });
@@ -1215,11 +1537,11 @@
           '<div class="space-y-2">' +
             '<label class="block text-xs font-bold uppercase tracking-wider text-slate-300">1-Click Theme Presets</label>' +
             '<div class="grid grid-cols-2 sm:grid-cols-5 gap-2">' +
-              '<button type="button" onclick="applyColorPresetInAdmin(\'#060910\', \'#94a3b8\', \'#ffffff\', \'#ea580c\', \'#1e293b\')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Obsidian Night</button>' +
-              '<button type="button" onclick="applyColorPresetInAdmin(\'#0b1120\', \'#94a3b8\', \'#f8fafc\', \'#38bdf8\', \'#1e293b\')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Midnight Navy</button>' +
-              '<button type="button" onclick="applyColorPresetInAdmin(\'#051b14\', \'#a7f3d0\', \'#ffffff\', \'#10b981\', \'#064e3b\')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Emerald Forest</button>' +
-              '<button type="button" onclick="applyColorPresetInAdmin(\'#0f0c20\', \'#cbd5e1\', \'#f1f5f9\', \'#a855f7\', \'#2e1065\')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Royal Purple</button>' +
-              '<button type="button" onclick="applyColorPresetInAdmin(\'#000000\', \'#a1a1aa\', \'#ffffff\', \'#f59e0b\', \'#27272a\')" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Pitch Black</button>' +
+              '<button type="button" onclick="applyColorPresetInAdmin(&apos;#060910&apos;, &apos;#94a3b8&apos;, &apos;#ffffff&apos;, &apos;#ea580c&apos;, &apos;#1e293b&apos;)" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Obsidian Night</button>' +
+              '<button type="button" onclick="applyColorPresetInAdmin(&apos;#0b1120&apos;, &apos;#94a3b8&apos;, &apos;#f8fafc&apos;, &apos;#38bdf8&apos;, &apos;#1e293b&apos;)" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Midnight Navy</button>' +
+              '<button type="button" onclick="applyColorPresetInAdmin(&apos;#051b14&apos;, &apos;#a7f3d0&apos;, &apos;#ffffff&apos;, &apos;#10b981&apos;, &apos;#064e3b&apos;)" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Emerald Forest</button>' +
+              '<button type="button" onclick="applyColorPresetInAdmin(&apos;#0f0c20&apos;, &apos;#cbd5e1&apos;, &apos;#f1f5f9&apos;, &apos;#a855f7&apos;, &apos;#2e1065&apos;)" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Royal Purple</button>' +
+              '<button type="button" onclick="applyColorPresetInAdmin(&apos;#000000&apos;, &apos;#a1a1aa&apos;, &apos;#ffffff&apos;, &apos;#f59e0b&apos;, &apos;#27272a&apos;)" class="p-2.5 rounded-xl border border-slate-800 bg-slate-900 hover:border-orange-500 text-xs text-white">Pitch Black</button>' +
             '</div>' +
           '</div>' +
 
@@ -1228,35 +1550,35 @@
               '<label class="block text-xs font-semibold text-slate-300 mb-1">Footer Background Color</label>' +
               '<div class="flex items-center gap-2">' +
                 '<input id="ftBgColor" type="color" value="' + (f.backgroundColor || '#060910') + '" class="w-9 h-9 rounded-lg bg-transparent border border-slate-700 cursor-pointer" />' +
-                '<input id="ftBgColorHex" value="' + (f.backgroundColor || '#060910') + '" onchange="document.getElementById(\'ftBgColor\').value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
+                '<input id="ftBgColorHex" value="' + (f.backgroundColor || '#060910') + '" onchange="document.getElementById(&apos;ftBgColor&apos;).value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
               '</div>' +
             '</div>' +
             '<div>' +
               '<label class="block text-xs font-semibold text-slate-300 mb-1">Footer Text Color</label>' +
               '<div class="flex items-center gap-2">' +
                 '<input id="ftTextColor" type="color" value="' + (f.textColor || '#94a3b8') + '" class="w-9 h-9 rounded-lg bg-transparent border border-slate-700 cursor-pointer" />' +
-                '<input id="ftTextColorHex" value="' + (f.textColor || '#94a3b8') + '" onchange="document.getElementById(\'ftTextColor\').value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
+                '<input id="ftTextColorHex" value="' + (f.textColor || '#94a3b8') + '" onchange="document.getElementById(&apos;ftTextColor&apos;).value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
               '</div>' +
             '</div>' +
             '<div>' +
               '<label class="block text-xs font-semibold text-slate-300 mb-1">Column Headings Color</label>' +
               '<div class="flex items-center gap-2">' +
                 '<input id="ftHeadColor" type="color" value="' + (f.headingColor || '#ffffff') + '" class="w-9 h-9 rounded-lg bg-transparent border border-slate-700 cursor-pointer" />' +
-                '<input id="ftHeadColorHex" value="' + (f.headingColor || '#ffffff') + '" onchange="document.getElementById(\'ftHeadColor\').value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
+                '<input id="ftHeadColorHex" value="' + (f.headingColor || '#ffffff') + '" onchange="document.getElementById(&apos;ftHeadColor&apos;).value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
               '</div>' +
             '</div>' +
             '<div>' +
               '<label class="block text-xs font-semibold text-slate-300 mb-1">Accent & Button Color</label>' +
               '<div class="flex items-center gap-2">' +
                 '<input id="ftAccentColor" type="color" value="' + (f.accentColor || '#ea580c') + '" class="w-9 h-9 rounded-lg bg-transparent border border-slate-700 cursor-pointer" />' +
-                '<input id="ftAccentColorHex" value="' + (f.accentColor || '#ea580c') + '" onchange="document.getElementById(\'ftAccentColor\').value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
+                '<input id="ftAccentColorHex" value="' + (f.accentColor || '#ea580c') + '" onchange="document.getElementById(&apos;ftAccentColor&apos;).value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
               '</div>' +
             '</div>' +
             '<div>' +
               '<label class="block text-xs font-semibold text-slate-300 mb-1">Border Color</label>' +
               '<div class="flex items-center gap-2">' +
                 '<input id="ftBorderColor" type="color" value="' + (f.borderColor || '#1e293b') + '" class="w-9 h-9 rounded-lg bg-transparent border border-slate-700 cursor-pointer" />' +
-                '<input id="ftBorderColorHex" value="' + (f.borderColor || '#1e293b') + '" onchange="document.getElementById(\'ftBorderColor\').value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
+                '<input id="ftBorderColorHex" value="' + (f.borderColor || '#1e293b') + '" onchange="document.getElementById(&apos;ftBorderColor&apos;).value=this.value" class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white font-mono" />' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -1490,7 +1812,7 @@
           '<td class="p-3.5 font-semibold text-white">' + (c.name || 'Unnamed') + '</td>' +
           '<td class="p-3.5 font-mono text-slate-400">/category/' + (c.slug || '') + '</td>' +
           '<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[10px] font-mono text-white" style="background-color: ' + (c.color || '#f97316') + '">' + (c.color || '#f97316') + '</span></td>' +
-          '<td class="p-3.5 text-right"><button type="button" onclick="deleteCatById(\'' + c.id + '\')" class="text-rose-400 hover:underline">Remove</button></td>' +
+          '<td class="p-3.5 text-right"><button type="button" onclick="deleteCatById(&apos;' + c.id + '&apos;)" class="text-rose-400 hover:underline">Remove</button></td>' +
         '</tr>';
       }).join('');
 
@@ -1560,7 +1882,7 @@
           '<img src="' + p.featuredImage + '" class="w-full h-full object-cover" />' +
           '<div class="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity p-2 sm:p-3 flex flex-col justify-between">' +
             '<span class="text-[10px] text-white font-semibold truncate">' + (p.title || 'Image') + '</span>' +
-            '<button type="button" onclick="navigator.clipboard.writeText(\'' + p.featuredImage + '\');showToast(\'Image URL copied!\');" class="w-full py-1 rounded bg-orange-600 text-[10px] text-white font-bold">Copy URL</button>' +
+            '<button type="button" onclick="navigator.clipboard.writeText(&apos;' + p.featuredImage + '&apos;);showToast(&apos;Image URL copied!&apos;);" class="w-full py-1 rounded bg-orange-600 text-[10px] text-white font-bold">Copy URL</button>' +
           '</div>' +
         '</div>';
       }).join('');
@@ -1590,11 +1912,11 @@
       var rows = (APP_DATA.pages || []).map(function(pg) {
         return '<tr class="hover:bg-slate-800/30">' +
           '<td class="p-3.5 sm:p-4 font-semibold text-white">' + (pg.title || 'Untitled') + '</td>' +
-          '<td class="p-3.5 sm:p-4 font-mono text-slate-400">/' + (pg.slug || '').replace(/^\//, '') + '</td>' +
+          '<td class="p-3.5 sm:p-4 font-mono text-slate-400">/' + (pg.slug || '').replace(/^[\/]/, '') + '</td>' +
           '<td class="p-3.5 sm:p-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono">PUBLISHED</span></td>' +
           '<td class="p-3.5 sm:p-4 text-right whitespace-nowrap">' +
-            '<button type="button" onclick="editPageContent(\'' + pg.id + '\')" class="text-orange-400 hover:underline font-semibold mr-3">Edit</button>' +
-            '<button type="button" onclick="deletePageById(\'' + pg.id + '\')" class="text-rose-400 hover:underline">Delete</button>' +
+            '<button type="button" onclick="editPageContent(&apos;' + pg.id + '&apos;)" class="text-orange-400 hover:underline font-semibold mr-3">Edit</button>' +
+            '<button type="button" onclick="deletePageById(&apos;' + pg.id + '&apos;)" class="text-rose-400 hover:underline">Delete</button>' +
           '</td>' +
         '</tr>';
       }).join('');
@@ -1665,7 +1987,7 @@
               '<div class="text-[11px] font-mono text-slate-400">' + (m.url || '/') + '</div>' +
             '</div>' +
           '</div>' +
-          '<button type="button" onclick="deleteMenuById(\'' + (m.id || idx) + '\')" class="text-xs text-rose-400 hover:underline">Remove</button>' +
+          '<button type="button" onclick="deleteMenuById(&apos;' + (m.id || idx) + '&apos;)" class="text-xs text-rose-400 hover:underline">Remove</button>' +
         '</div>';
       }).join('');
 
@@ -1750,7 +2072,7 @@
           '<td class="p-3 sm:p-4 font-mono text-orange-400">' + (r.fromPath || '/') + '</td>' +
           '<td class="p-3 sm:p-4 font-mono text-slate-300">' + (r.toPath || '/') + '</td>' +
           '<td class="p-3 sm:p-4"><span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300 font-mono">' + (r.type || 301) + '</span></td>' +
-          '<td class="p-3 sm:p-4 text-right"><button type="button" onclick="deleteRedirectById(\'' + r.id + '\')" class="text-rose-400 hover:underline">Remove</button></td>' +
+          '<td class="p-3 sm:p-4 text-right"><button type="button" onclick="deleteRedirectById(&apos;' + r.id + '&apos;)" class="text-rose-400 hover:underline">Remove</button></td>' +
         '</tr>';
       }).join('');
 
