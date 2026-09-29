@@ -11,8 +11,21 @@
     <style>
       :root { --sveltia-cms-font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; }
       body { margin: 0; background-color: #080d1a; color: #f1f5f9; font-family: var(--sveltia-cms-font-family); }
+      #sveltia-fallback {
+        padding: 2.5rem 2rem; max-width: 550px; margin: 4rem auto; border-radius: 1.25rem;
+        background: #0f172a; border: 1px solid #1e293b; text-align: center;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@sveltia/cms@0.47.0/dist/sveltia-cms.js" type="module"></script>
   </head>
-  <body></body>
+  <body>
+    <div id="sveltia-fallback">
+      <h2 style="margin-top: 0; color: #ea580c; font-size: 1.5rem; font-weight: 800;">🔥 Sveltia CMS</h2>
+      <p style="color: #94a3b8; font-size: 0.875rem; line-height: 1.6;">Connecting to your GitHub repository and initializing Decap Git schema from <code>config.yml</code>...</p>
+      <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid #1e293b;">
+        <a href="/admin/index.html" style="color: #fb923c; text-decoration: none; font-weight: 700; font-size: 0.875rem;">← Back to Visual Studio Admin Panel</a>
+      </div>
+    </div>
+  </body>
 </html>
