@@ -1,0 +1,71 @@
+{
+  "aboutTitle": "Astro Blog CMS",
+  "aboutText": "Production-ready blogging platform pairing an ultra-fast Astro public site with a rich CMS, Cloudflare D1 storage, and prompt engineering toolsets.",
+  "brandEmoji": "🔥",
+  "brandLogoUrl": "",
+  "brandLogoBgColor": "#ea580c",
+  "showBlueprintBadge": true,
+  "blueprintBadgeEmoji": "✨",
+  "blueprintBadgeText": "Inspect Architecture Blueprint & Cloudflare Setup",
+  "blueprintBadgeAction": "open_spec",
+  "blueprintBadgeUrl": "",
+  "showCategories": true,
+  "categoriesTitle": "Categories",
+  "showQuickLinks": true,
+  "quickLinksTitle": "Information & Pages",
+  "quickLinks": [
+    {
+      "id": "fl-1",
+      "label": "About Us",
+      "url": "/about",
+      "emoji": "👥"
+    },
+    {
+      "id": "fl-2",
+      "label": "Contact Us",
+      "url": "/contact",
+      "emoji": "✉️"
+    },
+    {
+      "id": "fl-3",
+      "label": "Privacy Policy",
+      "url": "/privacy-policy",
+      "emoji": "🔒"
+    },
+    {
+      "id": "fl-4",
+      "label": "Terms of Service",
+      "url": "/terms",
+      "emoji": "📜"
+    },
+    {
+      "id": "fl-5",
+      "label": "Disclaimer",
+      "url": "/disclaimer",
+      "emoji": "⚖️"
+    }
+  ],
+  "showNewsletter": true,
+  "newsletterTitle": "Weekly Edge Digest",
+  "newsletterDesc": "Curated blueprints, Astro patterns, and zero-cost cloud architecture recipes.",
+  "newsletterPlaceholder": "reader@domain.com",
+  "newsletterButtonText": "Subscribe",
+  "newsletterButtonColor": "#ea580c",
+  "newsletterSuccessMsg": "You are subscribed to weekly updates!",
+  "showCustomColumn": false,
+  "customColumnTitle": "Resources",
+  "customColumnContent": "Curated blueprints and zero-cost cloud patterns.",
+  "customColumnLinks": [],
+  "backgroundColor": "#060910",
+  "textColor": "#94a3b8",
+  "headingColor": "#ffffff",
+  "accentColor": "#ea580c",
+  "borderColor": "#1e293b",
+  "copyrightText": "© 2026 Astro Blog CMS. All rights reserved.",
+  "showBottomBar": true,
+  "customDisclaimer": "Cloudflare D1 + Pages Global Edge",
+  "disclaimerEmoji": "☁️",
+  "secondaryBadgeText": "Sub-50ms Fast Baseline",
+  "showSecondaryBadge": true,
+  "showSocials": true
+}

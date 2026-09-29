@@ -102,6 +102,52 @@ collections:
           - { label: "Newsletter Headline", name: "newsletterHeadline", widget: "string", default: "Subscribe to our Dispatch" }
           - { label: "Newsletter Subtext", name: "newsletterSubtext", widget: "text", default: "Weekly curated intelligence delivered straight to your inbox." }
 
+  - name: "footer"
+    label: "Footer & Theme Customizer"
+    files:
+      - label: "Footer Layout & Colors"
+        name: "footer_settings"
+        file: "src/data/footer.json"
+        fields:
+          - { label: "Footer Brand Title", name: "aboutTitle", widget: "string" }
+          - { label: "Brand Emoji / Icon", name: "brandEmoji", widget: "string", default: "🔥" }
+          - { label: "Custom Logo Image URL", name: "brandLogoUrl", widget: "image", required: false }
+          - { label: "Logo Icon Background Color", name: "brandLogoBgColor", widget: "color", default: "#ea580c" }
+          - { label: "Footer Mission Statement", name: "aboutText", widget: "text" }
+          - { label: "Show Architecture Pill Badge", name: "showBlueprintBadge", widget: "boolean", default: true }
+          - { label: "Badge Emoji", name: "blueprintBadgeEmoji", widget: "string", default: "✨" }
+          - { label: "Badge Text", name: "blueprintBadgeText", widget: "string", default: "Inspect Architecture Blueprint & Cloudflare Setup" }
+          - { label: "Footer Background Color", name: "backgroundColor", widget: "color", default: "#060910" }
+          - { label: "Footer Text Color", name: "textColor", widget: "color", default: "#94a3b8" }
+          - { label: "Heading Color", name: "headingColor", widget: "color", default: "#ffffff" }
+          - { label: "Accent & Button Color", name: "accentColor", widget: "color", default: "#ea580c" }
+          - { label: "Border Color", name: "borderColor", widget: "color", default: "#1e293b" }
+          - { label: "Show Newsletter Box", name: "showNewsletter", widget: "boolean", default: true }
+          - { label: "Show Categories Column", name: "showCategories", widget: "boolean", default: true }
+          - { label: "Show Quick Links Column", name: "showQuickLinks", widget: "boolean", default: true }
+          - { label: "Show Social Icons", name: "showSocials", widget: "boolean", default: true }
+          - { label: "Categories Column Title", name: "categoriesTitle", widget: "string", default: "Categories" }
+          - { label: "Quick Links Column Title", name: "quickLinksTitle", widget: "string", default: "Information & Pages" }
+          - { label: "Enable 5th Custom Column", name: "showCustomColumn", widget: "boolean", default: false }
+          - { label: "Custom Column Title", name: "customColumnTitle", widget: "string", default: "Resources" }
+          - { label: "Custom Column Content", name: "customColumnContent", widget: "text", required: false }
+          - { label: "Newsletter Box Title", name: "newsletterTitle", widget: "string", default: "Weekly Edge Digest" }
+          - { label: "Newsletter Button Text", name: "newsletterButtonText", widget: "string", default: "Subscribe" }
+          - { label: "Newsletter Description", name: "newsletterDesc", widget: "text", required: false }
+          - { label: "Copyright Notice Text", name: "copyrightText", widget: "string" }
+          - { label: "Disclaimer Emoji", name: "disclaimerEmoji", widget: "string", default: "☁️" }
+          - { label: "Custom Disclaimer", name: "customDisclaimer", widget: "string", default: "Cloudflare D1 + Pages Global Edge" }
+          - { label: "Show Secondary Badge", name: "showSecondaryBadge", widget: "boolean", default: true }
+          - { label: "Secondary Badge Text", name: "secondaryBadgeText", widget: "string", default: "Sub-50ms Fast Baseline" }
+          - label: "Quick Links Builder"
+            name: "quickLinks"
+            widget: "list"
+            fields:
+              - { label: "Link Label", name: "label", widget: "string" }
+              - { label: "URL", name: "url", widget: "string" }
+              - { label: "Emoji", name: "emoji", widget: "string", required: false }
+              - { label: "Open in New Tab", name: "targetNewTab", widget: "boolean", default: false }
+
   - name: "menus"
     label: "Navigation Menus"
     files:
