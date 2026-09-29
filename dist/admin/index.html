@@ -188,9 +188,27 @@
       githubRepo: ""
     };
 
+    function decodeBase64Utf8(base64) {
+      if (!base64) return '';
+      try {
+        var binary = atob(base64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) {
+          bytes[i] = binary.charCodeAt(i);
+        }
+        return new TextDecoder('utf-8').decode(bytes);
+      } catch (e) {
+        try {
+          return decodeURIComponent(escape(atob(base64)));
+        } catch (e2) {
+          return atob(base64);
+        }
+      }
+    }
+
     try {
       if (RAW_BASE64) {
-        var jsonStr = decodeURIComponent(escape(atob(RAW_BASE64)));
+        var jsonStr = decodeBase64Utf8(RAW_BASE64);
         var parsed = JSON.parse(jsonStr);
         if (parsed && typeof parsed === 'object') {
           APP_DATA = parsed;
@@ -2390,9 +2408,21 @@ Write new paragraph text here...
       }
     }
 
-    // Direct Instant Initialization without intermediate loaders
-    renderNavbars();
-    switchTab('dashboard');
+    // Direct Instant Initialization with DOM safeguard
+    function initStudio() {
+      try {
+        renderNavbars();
+        switchTab('dashboard');
+      } catch (e) {
+        console.error('Studio init error:', e);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initStudio);
+    } else {
+      initStudio();
+    }
   </script>
 </body>
 </html>
