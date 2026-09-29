@@ -1109,41 +1109,115 @@
       var rawContent = (post && post.content) || '';
       var rawBlocks = (post && post.blocks) || [];
       currentEditorItems = [];
+      var usedBlockIds = {};
 
-      if (rawContent.indexOf('<!-- block:') !== -1) {
-        var parts = rawContent.split(/(<!--\s*block:[a-zA-Z0-9_-]+\s*-->)/g);
-        var usedBlockIds = {};
+      var parts = rawContent.split(/(<!--\s*block:[a-zA-Z0-9_-]+\s*-->)/g);
 
-        parts.forEach(function(part, idx) {
-          var trimmed = (part || '').trim();
+      parts.forEach(function(part, partIdx) {
+        var trimmedPart = (part || '').trim();
+        if (!trimmedPart) return;
+
+        var match = trimmedPart.match(/<!--\s*block:([a-zA-Z0-9_-]+)\s*-->/);
+        if (match) {
+          var blkId = match[1];
+          var found = rawBlocks.find(function(b) { return b.id === blkId; });
+          if (found) {
+            currentEditorItems.push({ id: 'item-' + blkId, type: 'block', block: found });
+            usedBlockIds[blkId] = true;
+            return;
+          }
+        }
+
+        var paragraphs = part.split(/\n\n+/);
+        paragraphs.forEach(function(p, pIdx) {
+          var trimmed = (p || '').trim();
           if (!trimmed) return;
 
-          var match = trimmed.match(/<!--\s*block:([a-zA-Z0-9_-]+)\s*-->/);
-          if (match) {
-            var blkId = match[1];
-            var found = rawBlocks.find(function(b) { return b.id === blkId; });
-            if (found) {
-              currentEditorItems.push({ id: 'item-' + blkId, type: 'block', block: found });
-              usedBlockIds[blkId] = true;
-              return;
-            }
+          // AI Prompt
+          if (trimmed.indexOf('> ⚡') === 0 || trimmed.indexOf('⚡') === 0 || trimmed.indexOf('> **AI Prompt') === 0 || trimmed.indexOf('**AI Prompt:**') !== -1 || trimmed.indexOf('AI Prompt:') !== -1) {
+            var bt = String.fromCharCode(96);
+            var cleanPrompt = trimmed
+              .replace(/^>\s*/gm, '')
+              .replace(/⚡\s*/g, '')
+              .replace(/\*\*AI Prompt:?\*\*/gi, '')
+              .replace(/AI Prompt:?/gi, '');
+            while (cleanPrompt.indexOf(bt) === 0) cleanPrompt = cleanPrompt.substring(1);
+            while (cleanPrompt.lastIndexOf(bt) === cleanPrompt.length - 1 && cleanPrompt.length > 0) cleanPrompt = cleanPrompt.substring(0, cleanPrompt.length - 1);
+            cleanPrompt = cleanPrompt.trim();
+
+            var promptBlock = {
+              type: 'prompt',
+              id: 'blk-' + Date.now() + '-' + partIdx + '-' + pIdx,
+              promptText: cleanPrompt || 'Write your AI prompt here...',
+              modelTarget: 'Claude 3.7 / Gemini 2.5 / DeepSeek',
+              notes: 'Click copy to paste directly into your AI orchestrator'
+            };
+            currentEditorItems.push({ id: 'item-' + promptBlock.id, type: 'block', block: promptBlock });
+            return;
           }
 
+          // Callout / Notice
+          if (trimmed.indexOf('> 💡') === 0 || trimmed.indexOf('💡') === 0 || trimmed.indexOf('> ℹ️') === 0 || trimmed.indexOf('ℹ️') === 0 || trimmed.indexOf('> ⚠️') === 0 || trimmed.indexOf('⚠️') === 0 || trimmed.indexOf('> 🚀') === 0 || trimmed.indexOf('🚀') === 0 || trimmed.indexOf('> **Notice') === 0 || trimmed.indexOf('**Notice') === 0 || trimmed.indexOf('**Important') !== -1) {
+            var lines = trimmed.replace(/^>\s*/gm, '').split('\n');
+            var firstLine = lines[0] || '';
+            var title = firstLine.replace(/\*\*/g, '').replace(/[💡ℹ️⚠️🚀]/g, '').replace(/:$/, '').trim();
+            var text = lines.slice(1).join('\n').replace(/^>\s*/gm, '').trim() || title;
+            var calloutType = trimmed.indexOf('⚠️') !== -1 ? 'warning' : trimmed.indexOf('🚀') !== -1 ? 'tip' : trimmed.indexOf('Important') !== -1 ? 'important' : 'info';
+            var calloutBlock = {
+              type: calloutType,
+              id: 'blk-' + Date.now() + '-' + partIdx + '-' + pIdx,
+              title: title || 'Notice & Key Insight',
+              content: text
+            };
+            currentEditorItems.push({ id: 'item-' + calloutBlock.id, type: 'block', block: calloutBlock });
+            return;
+          }
+
+          // Code
+          var bt3 = String.fromCharCode(96) + String.fromCharCode(96) + String.fromCharCode(96);
+          if (trimmed.indexOf(bt3) === 0) {
+            var cLines = trimmed.split('\n');
+            var firstCLine = cLines[0] || '';
+            var lang = firstCLine.replace(bt3, '').trim() || 'typescript';
+            var lastIsBt3 = (cLines[cLines.length - 1] || '').indexOf(bt3) === 0;
+            var codeContent = cLines.slice(1, lastIsBt3 ? -1 : undefined).join('\n');
+            var codeBlock = {
+              type: 'code',
+              id: 'blk-' + Date.now() + '-' + partIdx + '-' + pIdx,
+              language: lang || 'typescript',
+              filename: 'snippet.' + (lang === 'typescript' ? 'ts' : lang === 'javascript' ? 'js' : lang || 'txt'),
+              code: codeContent
+            };
+            currentEditorItems.push({ id: 'item-' + codeBlock.id, type: 'block', block: codeBlock });
+            return;
+          }
+
+          // Divider
+          if (trimmed === '---' || trimmed === '***' || trimmed === '___') {
+            var dividerBlock = {
+              type: 'divider',
+              id: 'blk-' + Date.now() + '-' + partIdx + '-' + pIdx
+            };
+            currentEditorItems.push({ id: 'item-' + dividerBlock.id, type: 'block', block: dividerBlock });
+            return;
+          }
+
+          // Standard paragraph
           currentEditorItems.push({
-            id: 'item-txt-' + idx + '-' + Date.now(),
+            id: 'item-txt-' + partIdx + '-' + pIdx + '-' + Date.now(),
             type: 'text',
-            text: part
+            text: p
           });
         });
+      });
 
-        rawBlocks.forEach(function(b) {
-          if (!usedBlockIds[b.id]) {
-            currentEditorItems.push({ id: 'item-' + b.id, type: 'block', block: b });
-          }
-        });
-      } else if (rawContent.trim()) {
-        currentEditorItems = [{ id: 'txt-1', type: 'text', text: rawContent }];
-      } else {
+      rawBlocks.forEach(function(b) {
+        if (!usedBlockIds[b.id]) {
+          currentEditorItems.push({ id: 'item-' + b.id, type: 'block', block: b });
+        }
+      });
+
+      if (currentEditorItems.length === 0) {
         currentEditorItems = [{ id: 'txt-1', type: 'text', text: '' }];
       }
 
@@ -1177,12 +1251,12 @@
           html += '<div class="group relative rounded-2xl border border-slate-800/80 hover:border-slate-700 bg-slate-900/30 p-3.5 transition-all">' +
             '<div class="flex items-center justify-between mb-2 text-xs text-slate-400">' +
               '<div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'**\', \'**\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold" title="Bold">B</button>' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'*\', \'*\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 italic" title="Italic">I</button>' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'## \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H2</button>' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'### \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H3</button>' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'- \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">• List</button>' +
-                '<button type="button" onclick="formatItemText(' + idx + ', \'> \', \'\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">Quote</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;**&apos;, &apos;**&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold" title="Bold">B</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;*&apos;, &apos;*&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 italic" title="Italic">I</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;## &apos;, &apos;&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H2</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;### &apos;, &apos;&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold">H3</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;- &apos;, &apos;&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">• List</button>' +
+                '<button type="button" onclick="formatItemText(' + idx + ', &apos;> &apos;, &apos;&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-200">Quote</button>' +
               '</div>' +
               '<div class="flex items-center gap-1.5">' +
                 (idx > 0 ? '<button type="button" onclick="moveEditorItem(' + idx + ', -1)" class="p-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white" title="Move Up">↑</button>' : '') +
@@ -1408,15 +1482,15 @@
           else if (b.type === 'image') {
             html += '<div class="space-y-3 pt-1">' +
               '<div class="flex items-center gap-2">' +
-                '<input type="text" value="' + (b.url || '') + '" oninput="currentEditorItems[' + idx + '].block.url=this.value;var img=document.getElementById(\'img_prev_' + idx + '\');if(img)img.src=this.value;" placeholder="Image URL..." class="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-mono" />' +
+                '<input type="text" value="' + (b.url || '') + '" oninput="currentEditorItems[' + idx + '].block.url=this.value;var img=document.getElementById(&apos;img_prev_' + idx + '&apos;);if(img)img.src=this.value;" placeholder="Image URL..." class="flex-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-white font-mono" />' +
                 '<button type="button" onclick="triggerInlineImagePicker(' + idx + ')" class="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold whitespace-nowrap">📁 Upload PC File</button>' +
                 '<input type="file" id="inline_img_picker_' + idx + '" accept="image/*" class="hidden" onchange="handleInlineBlockImageUpload(' + idx + ', this)" />' +
               '</div>' +
               '<div class="flex items-center gap-2 overflow-x-auto text-[10px]">' +
                 '<span class="text-slate-400 shrink-0">Presets:</span>' +
-                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Modern Flow</button>' +
-                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Technology</button>' +
-                '<button type="button" onclick="setInlineImagePreset(' + idx + ', \'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80\')" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Code Terminal</button>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', &apos;https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Modern Flow</button>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', &apos;https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Technology</button>' +
+                '<button type="button" onclick="setInlineImagePreset(' + idx + ', &apos;https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80&apos;)" class="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300">Code Terminal</button>' +
               '</div>' +
               '<div class="aspect-video w-full max-h-48 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden flex items-center justify-center">' +
                 '<img id="img_prev_' + idx + '" src="' + (b.url || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80') + '" class="w-full h-full object-cover" />' +
@@ -1672,7 +1746,11 @@
         if (btnVisual) btnVisual.className = 'px-3 py-1 rounded-lg bg-orange-600 text-white font-bold flex items-center gap-1.5 shadow-sm';
         rawContainer.classList.add('hidden');
         visContainer.classList.remove('hidden');
-        renderEditorItemsStream();
+        if (rawTextarea) {
+          initPostEditorItems({ content: rawTextarea.value, blocks: extractEditorBlocks() });
+        } else {
+          renderEditorItemsStream();
+        }
       }
     }
 
