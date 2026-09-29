@@ -319,7 +319,7 @@
       var mobile = document.getElementById('mobileNavContainer');
 
       var html = NAV_ITEMS.map(function(item) {
-        return '<button type="button" onclick="switchTab(\'' + item.id + '\')" class="nav-btn nav-btn-' + item.id + ' w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left">' +
+        return '<button type="button" onclick="switchTab(&apos;' + item.id + '&apos;)" class="nav-btn nav-btn-' + item.id + ' w-full flex items-center gap-3 px-3 py-2.5 rounded-lg font-medium text-slate-300 hover:bg-slate-800 hover:text-white transition-colors text-left">' +
           '<span>' + item.icon + '</span>' +
           '<span>' + item.label + '</span>' +
         '</button>';
@@ -385,7 +385,7 @@
         main.innerHTML = '<div class="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">' +
           '<h2 class="text-base font-bold text-rose-400">Notice</h2>' +
           '<p class="text-xs text-slate-300">' + (err.message || 'Error loading section') + '</p>' +
-          '<button onclick="switchTab(\'dashboard\')" class="px-4 py-2 rounded-xl bg-orange-600 text-white font-bold text-xs">Return to Dashboard</button>' +
+          '<button onclick="switchTab(&apos;dashboard&apos;)" class="px-4 py-2 rounded-xl bg-orange-600 text-white font-bold text-xs">Return to Dashboard</button>' +
         '</div>';
       }
     }
@@ -404,7 +404,7 @@
           '<td class="py-3 text-slate-400 hidden sm:table-cell">' + (cat ? cat.name : 'General') + '</td>' +
           '<td class="py-3"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono uppercase">' + (p.status || 'published') + '</span></td>' +
           '<td class="py-3 text-right whitespace-nowrap">' +
-            '<button type="button" onclick="editPostById(\'' + p.id + '\')" class="text-orange-400 hover:underline font-semibold mr-2">Edit</button>' +
+            '<button type="button" onclick="editPostById(&apos;' + p.id + '&apos;)" class="text-orange-400 hover:underline font-semibold mr-2">Edit</button>' +
             '<a href="/' + (p.slug || '') + '" target="_blank" class="text-slate-400 hover:text-white">View</a>' +
           '</td>' +
         '</tr>';
@@ -445,17 +445,17 @@
         '</div>' +
 
         '<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5">' +
-          '<div onclick="switchTab(\'homepage\')" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
+          '<div onclick="switchTab(&apos;homepage&apos;)" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
             '<div class="text-2xl">🎨</div>' +
             '<h3 class="font-bold text-white text-sm sm:text-base">Homepage Builder</h3>' +
             '<p class="text-xs text-slate-400">Customize Hero headline, CTA buttons, and featured stories.</p>' +
           '</div>' +
-          '<div onclick="switchTab(\'seo\')" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
+          '<div onclick="switchTab(&apos;seo&apos;)" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
             '<div class="text-2xl">🔍</div>' +
             '<h3 class="font-bold text-white text-sm sm:text-base">SEO & Social Meta</h3>' +
             '<p class="text-xs text-slate-400">Configure Google search snippets, OpenGraph cards, and GA4.</p>' +
           '</div>' +
-          '<div onclick="switchTab(\'menus\')" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
+          '<div onclick="switchTab(&apos;menus&apos;)" class="cursor-pointer p-4 sm:p-6 rounded-2xl bg-[#0f172a] border border-slate-800 hover:border-orange-500/50 transition-all space-y-1">' +
             '<div class="text-2xl">🧭</div>' +
             '<h3 class="font-bold text-white text-sm sm:text-base">Navigation Menus</h3>' +
             '<p class="text-xs text-slate-400">Manage header links and footer menus.</p>' +
@@ -465,7 +465,7 @@
         '<div class="bg-[#0f172a] rounded-2xl border border-slate-800 p-4 sm:p-6 space-y-4">' +
           '<div class="flex items-center justify-between">' +
             '<h2 class="text-sm sm:text-base font-bold text-white">Recent Articles</h2>' +
-            '<button type="button" onclick="switchTab(\'posts\')" class="text-xs text-orange-400 hover:underline">View All →</button>' +
+            '<button type="button" onclick="switchTab(&apos;posts&apos;)" class="text-xs text-orange-400 hover:underline">View All →</button>' +
           '</div>' +
           '<div class="overflow-x-auto">' +
             '<table class="w-full text-left text-xs">' +
@@ -499,9 +499,9 @@
           '<td class="p-3 sm:p-4 text-slate-300 hidden sm:table-cell">' + (cat ? cat.name : 'General') + '</td>' +
           '<td class="p-3 sm:p-4"><span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono uppercase">' + (p.status || 'published') + '</span></td>' +
           '<td class="p-3 sm:p-4 text-right whitespace-nowrap space-x-2 sm:space-x-3">' +
-            '<button type="button" onclick="editPostById(\'' + p.id + '\')" class="text-orange-400 hover:underline font-semibold">Edit</button>' +
+            '<button type="button" onclick="editPostById(&apos;' + p.id + '&apos;)" class="text-orange-400 hover:underline font-semibold">Edit</button>' +
             '<a href="/' + (p.slug || '') + '" target="_blank" class="text-slate-400 hover:text-white">View</a>' +
-            '<button type="button" onclick="deletePostById(\'' + p.id + '\')" class="text-rose-400 hover:underline">Trash</button>' +
+            '<button type="button" onclick="deletePostById(&apos;' + p.id + '&apos;)" class="text-rose-400 hover:underline">Trash</button>' +
           '</td>' +
         '</tr>';
       }).join('');
