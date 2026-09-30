@@ -9,7 +9,7 @@
 
 ## Deployment to Cloudflare Pages
 1. Go to [Cloudflare Dashboard - Pages](https://dash.cloudflare.com/?to=/:account/pages/new).
-2. Click **Connect to Git** and select `amitsi07/my-astro-blog`.
+2. Click **Connect to Git** and select `Amitsi07/my-astro-blog`.
 3. Set **Build command**: `npm run build` and **Build output directory**: `dist`.
 4. Click **Save and Deploy**.
 

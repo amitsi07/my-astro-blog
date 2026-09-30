@@ -5,7 +5,7 @@
 
 backend:
   name: github
-  repo: amitsi07/my-astro-blog
+  repo: Amitsi07/my-astro-blog
   branch: main
 
 # Media Uploads Directory (Relative to project root and public URL)
