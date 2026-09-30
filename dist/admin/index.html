@@ -869,6 +869,21 @@
         return;
       }
 
+      // Check for saved local draft
+      try {
+        var rawDraft = localStorage.getItem('astro_studio_draft_' + currentEditingPostId);
+        if (rawDraft) {
+          var draftData = JSON.parse(rawDraft);
+          if (draftData.title) post.title = draftData.title;
+          if (draftData.subtitle !== undefined) post.subtitle = draftData.subtitle;
+          if (draftData.slug) post.slug = draftData.slug;
+          if (draftData.categoryId) post.categoryId = draftData.categoryId;
+          if (draftData.content) post.content = draftData.content;
+          if (draftData.featuredImage) post.featuredImage = draftData.featuredImage;
+          if (draftData.excerpt) post.excerpt = draftData.excerpt;
+        }
+      } catch (e) {}
+
       var wordCount = (post.content || '').trim().split(/\s+/).filter(Boolean).length;
       var readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
@@ -897,7 +912,7 @@
           '</div>' +
 
           '<div class="flex items-center gap-2">' +
-            '<span class="text-[11px] text-slate-400 font-mono hidden md:inline">Saved just now</span>' +
+            '<span id="autoSaveIndicator" class="text-[11px] text-slate-400 font-mono hidden md:inline">Saved just now</span>' +
             '<button type="button" onclick="saveCurrentPostForm(&apos;draft&apos;)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all">Save Draft</button>' +
             '<button type="button" onclick="openLivePreviewModal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"><span>👁️</span><span>Preview</span></button>' +
             '<button type="button" onclick="saveCurrentPostForm(&apos;published&apos;)" class="px-4 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-500 hover:from-orange-500 hover:to-amber-400 active:scale-95 text-white text-xs font-extrabold shadow-lg shadow-orange-600/30 flex items-center gap-1.5 transition-all">' +
@@ -960,7 +975,7 @@
                 '<span class="text-orange-400 font-semibold">Raw Markdown Source</span>' +
                 '<span>Synced with Visual Blocks</span>' +
               '</div>' +
-              '<textarea id="postRawMarkdown" rows="18" oninput="updateLiveStats(this.value);" class="w-full bg-transparent border-0 text-amber-300 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y"></textarea>' +
+              '<textarea id="postRawMarkdown" rows="18" oninput="updateLiveStats(this.value);triggerDebouncedAutoSave();" class="w-full bg-transparent border-0 text-amber-300 font-mono text-xs sm:text-sm focus:ring-0 outline-none leading-relaxed resize-y"></textarea>' +
             '</div>' +
 
             // Excerpt & Summary
@@ -1709,6 +1724,55 @@
       }
     }
 
+    var autoSaveTimer = null;
+    function triggerDebouncedAutoSave() {
+      var ind = document.getElementById('autoSaveIndicator');
+      if (ind) {
+        ind.innerText = 'Unsaved changes (saving in 5s)...';
+        ind.className = 'text-[11px] text-amber-400 font-mono hidden md:inline animate-pulse';
+      }
+      if (autoSaveTimer) clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(function() {
+        if (!currentEditingPostId) return;
+        if (ind) {
+          ind.innerText = 'Auto-saving draft...';
+          ind.className = 'text-[11px] text-amber-300 font-mono hidden md:inline';
+        }
+        try {
+          var title = document.getElementById('postTitle') ? document.getElementById('postTitle').value.trim() : '';
+          var subtitle = document.getElementById('postSubtitle') ? document.getElementById('postSubtitle').value.trim() : '';
+          var slug = document.getElementById('postSlug') ? document.getElementById('postSlug').value.trim() : '';
+          var categoryId = document.getElementById('postCat') ? document.getElementById('postCat').value : '';
+          var rawTa = document.getElementById('postRawMarkdown');
+          var rawContainer = document.getElementById('rawMarkdownContainer');
+          var content = (rawContainer && !rawContainer.classList.contains('hidden') && rawTa) ? rawTa.value : compileEditorItemsToMarkdown();
+          var blocks = extractEditorBlocks();
+          var featuredImage = document.getElementById('postImage') ? document.getElementById('postImage').value.trim() : '';
+          var excerpt = document.getElementById('postExcerpt') ? document.getElementById('postExcerpt').value.trim() : '';
+
+          var draftSnapshot = {
+            title: title,
+            subtitle: subtitle,
+            slug: slug,
+            categoryId: categoryId,
+            content: content,
+            blocks: blocks,
+            featuredImage: featuredImage,
+            excerpt: excerpt,
+            updatedAt: Date.now()
+          };
+          localStorage.setItem('astro_studio_draft_' + currentEditingPostId, JSON.stringify(draftSnapshot));
+          if (ind) {
+            var timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            ind.innerText = '✓ Auto-saved at ' + timeStr;
+            ind.className = 'text-[11px] text-emerald-400 font-mono hidden md:inline';
+          }
+        } catch (e) {
+          console.warn('Auto-save error:', e);
+        }
+      }, 5000);
+    }
+
     function handleTitleInput(val) {
       if (isNewPostMode) {
         var slug = val.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
@@ -1718,6 +1782,7 @@
         if (serpSlug) serpSlug.innerText = slug || 'article';
       }
       updateSerpPreview();
+      triggerDebouncedAutoSave();
     }
 
     function regenerateSlugFromTitle() {
