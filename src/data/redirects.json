@@ -1,14 +1,20 @@
 {
   "rules": [
     {
-      "from": "/articles/facebook-reels-ai",
-      "to": "/how-to-create-facebook-reels-with-ai",
-      "code": "301"
+      "id": "red-1",
+      "fromPath": "/articles/facebook-reels-ai",
+      "toPath": "/how-to-create-facebook-reels-with-ai",
+      "type": 301,
+      "hits": 242,
+      "createdAt": "2026-09-18T10:00:00Z"
     },
     {
-      "from": "/blog/zero-cost-astro",
-      "to": "/zero-cost-fullstack-astro-cloudflare-d1",
-      "code": "301"
+      "id": "red-2",
+      "fromPath": "/blog/zero-cost-astro",
+      "toPath": "/zero-cost-fullstack-astro-cloudflare-d1",
+      "type": 301,
+      "hits": 118,
+      "createdAt": "2026-09-14T08:00:00Z"
     }
   ]
 }
