@@ -1,23 +1,18 @@
 ---
 title: "Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1 + R2 Blueprint"
-subtitle: ""
 slug: "zero-cost-fullstack-astro-cloudflare-d1"
+excerpt: "How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers."
+featuredImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80"
+category: "Cloudflare & Edge"
+tags: ["cloudflare", "cloudflare-d1", "astro", "zero-cost"]
+authorId: "user-superadmin"
 publishedAt: "2026-09-12T16:00:00Z"
 status: "published"
-category: "cat-cloudflare"
-tags: ["cloudflare","cloudflare-d1","astro","zero-cost"]
-author: "user-superadmin"
-featuredImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&h=675&q=80"
-featuredImageAlt: "Serverless Cloudflare edge network infrastructure"
-featuredImageCaption: "Global edge computing topology diagram"
-featuredImageCredit: ""
-showFeaturedImageInPost: true
-isFeatured: true
-isTrending: true
-allowComments: true
-excerpt: "How we engineered a high-throughput CMS and public blog that handles millions of pageviews per month on Cloudflare’s free tier without paying a single dollar for servers."
-seoTitle: ""
-metaDescription: ""
+readingTime: 6
+seo:
+  title: "Zero-Cost Full-Stack Architecture: Astro + Cloudflare D1"
+  description: "Complete technical architecture guide to launching a production blog on Cloudflare Pages, D1, and R2 with zero hosting expenses."
+  focusKeyword: "astro cloudflare d1"
 ---
 
 When designing the infrastructure for a high-volume digital publication, the default impulse is often to provision managed PostgreSQL databases, dedicated Redis clusters, and auto-scaling container fleets on AWS or GCP.
