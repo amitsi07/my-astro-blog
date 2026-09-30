@@ -3419,7 +3419,10 @@
     }
 
     async function pushBatchCommitDirect(owner, repo, token, branch, files, commitMessage, onProgress) {
-      var authHeader = (token.startsWith('Bearer ') || token.startsWith('token ') || token.startsWith('github_pat_')) ? token : ('token ' + token);
+      var rawToken = (token || '').trim();
+      var authHeader = rawToken.startsWith('Bearer ') || rawToken.startsWith('token ')
+        ? rawToken
+        : (rawToken.startsWith('github_pat_') ? ('Bearer ' + rawToken) : ('token ' + rawToken));
       var headers = {
         Authorization: authHeader,
         Accept: 'application/vnd.github.v3+json',
