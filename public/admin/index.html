@@ -2240,8 +2240,14 @@
       saveState();
       currentEditingPostId = null;
       isNewPostMode = false;
-      showToast('Article saved! Click "Push to GitHub" to publish live.');
       switchTab('posts');
+
+      if (status === 'published') {
+        showToast('🚀 Publishing article and deploying to Cloudflare in 1 single build...');
+        commitAllToGitHub('feat(blog): publish "' + title + '" in 1 atomic build');
+      } else {
+        showToast('Article saved as draft!');
+      }
     }
 
     function deletePostById(id) {
@@ -3194,39 +3200,347 @@
       showToast('SEO settings saved! Click "Push to GitHub" to publish.');
     }
 
-    // 14. GITHUB DIRECT COMMITTER
-    async function commitAllToGitHub() {
-      var token = localStorage.getItem('astro_sveltia_gh_token') || '';
-      var owner = localStorage.getItem('astro_sveltia_gh_user') || APP_DATA.githubUser;
-      var repo = localStorage.getItem('astro_sveltia_gh_repo') || APP_DATA.githubRepo;
+    // 14. GITHUB DIRECT COMMITTER (1 Single Atomic Commit to prevent Multiple Builds & Ensure Live Visibility)
+    var isLivePushRunning = false;
 
-      if (!token) {
-        promptEditGithubToken();
+    function buildClientArticleHtml(post, appData) {
+      var safeTitle = (post.title || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      var safeDesc = (post.excerpt || post.subtitle || '').replace(/"/g, '&quot;');
+      var safeImage = post.featuredImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80';
+      var cat = (appData.categories || []).find(function(c) { return c.id === post.categoryId; }) || { name: 'General', color: '#ea580c' };
+      var siteName = ((appData.settings && appData.settings.siteName) || 'Astro Blog').replace(/</g, '&lt;');
+      var contentHtml = (typeof marked !== 'undefined' && marked.parse) ? marked.parse(post.content || '') : ('<p>' + (post.content || '') + '</p>');
+
+      return '<!doctype html>' +
+        '<html lang="en" class="dark">' +
+        '<head>' +
+          '<meta charset="UTF-8" />' +
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0" />' +
+          '<title>' + safeTitle + ' – ' + siteName + '</title>' +
+          '<meta name="description" content="' + safeDesc + '" />' +
+          '<meta property="og:title" content="' + safeTitle + '" />' +
+          '<meta property="og:description" content="' + safeDesc + '" />' +
+          '<meta property="og:image" content="' + safeImage + '" />' +
+          '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+          '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">' +
+          '<script src="https://cdn.tailwindcss.com"></script>' +
+          '<style>' +
+            'body { font-family: "Plus Jakarta Sans", sans-serif; background: #070b14; color: #f1f5f9; }' +
+            '.prose-content { font-size: 1.0625rem; line-height: 1.85; color: #cbd5e1; }' +
+            '.prose-content h2 { font-size: 1.65rem; font-weight: 800; color: #fff; margin-top: 2rem; margin-bottom: 0.75rem; }' +
+            '.prose-content h3 { font-size: 1.3rem; font-weight: 700; color: #fff; margin-top: 1.5rem; margin-bottom: 0.5rem; }' +
+            '.prose-content p { margin-bottom: 1.35rem; }' +
+            '.prose-content a { color: #fb923c; text-decoration: underline; }' +
+            '.prose-content img { border-radius: 1rem; border: 1px solid #1e293b; margin: 1.5rem 0; width: 100%; max-height: 550px; object-fit: cover; }' +
+            '.prose-content pre { background: #020617; border: 1px solid #1e293b; border-radius: 0.75rem; padding: 1.25rem; overflow-x: auto; font-family: "JetBrains Mono", monospace; color: #34d399; margin: 1.5rem 0; }' +
+            '.prose-content blockquote { border-left: 4px solid #ea580c; padding-left: 1rem; font-style: italic; color: #94a3b8; margin: 1.5rem 0; }' +
+          '</style>' +
+        '</head>' +
+        '<body class="min-h-screen flex flex-col">' +
+          '<header class="sticky top-0 z-40 h-16 border-b border-slate-800 bg-[#070b14]/90 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between">' +
+            '<a href="/" class="flex items-center gap-2.5 font-bold text-lg text-white hover:text-orange-400 transition-colors">' +
+              '<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center text-white shadow-sm font-black">⚡</div>' +
+              '<span>' + siteName + '</span>' +
+            '</a>' +
+            '<div class="flex items-center gap-4 text-xs font-semibold">' +
+              '<a href="/" class="text-slate-300 hover:text-white transition-colors">← All Articles</a>' +
+              '<a href="/admin/index.html" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Studio Admin</a>' +
+            '</div>' +
+          '</header>' +
+          '<main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-10 w-full space-y-8">' +
+            '<div class="space-y-4">' +
+              '<div class="flex items-center gap-2">' +
+                '<span class="px-2.5 py-1 rounded-full text-xs font-bold" style="background: ' + (cat.color || '#ea580c') + '22; color: ' + (cat.color || '#ea580c') + ';">' + (cat.name || 'General') + '</span>' +
+                '<span class="text-xs text-slate-400">' + new Date(post.publishedAt || post.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '</span>' +
+              '</div>' +
+              '<h1 class="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">' + safeTitle + '</h1>' +
+              (post.subtitle ? '<p class="text-lg text-slate-400 font-medium">' + post.subtitle + '</p>' : '') +
+            '</div>' +
+            (post.featuredImage ? '<div class="rounded-2xl overflow-hidden border border-slate-800 max-h-[500px] w-full bg-slate-950"><img src="' + safeImage + '" alt="' + safeTitle + '" class="w-full h-full object-cover" /></div>' : '') +
+            '<article class="prose-content pt-4">' + contentHtml + '</article>' +
+          '</main>' +
+          '<footer class="border-t border-slate-800 bg-[#040711] py-8 text-center text-xs text-slate-500">' +
+            '<p>© ' + new Date().getFullYear() + ' ' + siteName + '. Deployed with Cloudflare Pages & Git Data API in 1 Single Build.</p>' +
+          '</footer>' +
+        '</body>' +
+        '</html>';
+    }
+
+    function buildClientHomepageHtml(appData) {
+      var settings = appData.settings || {};
+      var siteName = (settings.siteName || 'Astro Blog').replace(/</g, '&lt;');
+      var siteTagline = (settings.tagline || 'High-Velocity Publishing & Edge Architecture').replace(/</g, '&lt;');
+      var siteDesc = (settings.description || 'Fast modern blog powered by Astro and Cloudflare edge.').replace(/"/g, '&quot;');
+      var posts = (appData.posts || []).filter(function(p) { return p.status === 'published'; }).slice().sort(function(a, b) {
+        var tA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+        var tB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+        return tB - tA;
+      });
+
+      var heroPost = posts[0] || (appData.posts || [])[0] || { title: 'Welcome to ' + siteName, slug: '', excerpt: siteDesc };
+      var otherPosts = posts.slice(1);
+
+      var cardsHtml = otherPosts.map(function(p) {
+        var cat = (appData.categories || []).find(function(c) { return c.id === p.categoryId; }) || { name: 'General', color: '#ea580c' };
+        var img = p.featuredImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80';
+        return '<article class="rounded-2xl border border-slate-800/80 bg-[#0a0f1d] hover:border-slate-700 transition-all overflow-hidden flex flex-col justify-between group">' +
+          '<div>' +
+            '<a href="/' + p.slug + '" class="block aspect-video w-full overflow-hidden bg-slate-950">' +
+              '<img src="' + img + '" alt="' + (p.title || '').replace(/"/g, '&quot;') + '" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />' +
+            '</a>' +
+            '<div class="p-5 space-y-2">' +
+              '<span class="text-xs font-bold" style="color: ' + (cat.color || '#ea580c') + '">' + (cat.name || 'General') + '</span>' +
+              '<h3 class="font-bold text-base text-white group-hover:text-orange-400 transition-colors line-clamp-2">' +
+                '<a href="/' + p.slug + '">' + (p.title || '').replace(/</g, '&lt;') + '</a>' +
+              '</h3>' +
+              '<p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">' + (p.excerpt || '').replace(/</g, '&lt;') + '</p>' +
+            '</div>' +
+          '</div>' +
+          '<div class="p-5 pt-0 flex items-center justify-between text-xs text-slate-500 border-t border-slate-800/40 mt-3 font-mono">' +
+            '<span>' + new Date(p.publishedAt || p.createdAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' +
+            '<a href="/' + p.slug + '" class="text-orange-400 font-semibold hover:underline">Read Article →</a>' +
+          '</div>' +
+        '</article>';
+      }).join('');
+
+      return '<!doctype html>' +
+        '<html lang="en" class="dark">' +
+        '<head>' +
+          '<meta charset="UTF-8" />' +
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0" />' +
+          '<title>' + siteName + ' – ' + siteTagline + '</title>' +
+          '<meta name="description" content="' + siteDesc + '" />' +
+          '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+          '<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">' +
+          '<script src="https://cdn.tailwindcss.com"></script>' +
+          '<style>body { font-family: "Plus Jakarta Sans", sans-serif; background: #070b14; color: #f1f5f9; }</style>' +
+        '</head>' +
+        '<body class="min-h-screen flex flex-col">' +
+          '<header class="sticky top-0 z-40 h-16 border-b border-slate-800 bg-[#070b14]/90 backdrop-blur-md px-4 sm:px-8 flex items-center justify-between">' +
+            '<a href="/" class="flex items-center gap-2.5 font-bold text-lg text-white">' +
+              '<div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-orange-600 to-amber-500 flex items-center justify-center text-white font-black">⚡</div>' +
+              '<span>' + siteName + '</span>' +
+            '</a>' +
+            '<div class="flex items-center gap-4 text-xs font-semibold">' +
+              '<a href="/admin/index.html" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700">Studio Admin</a>' +
+            '</div>' +
+          '</header>' +
+          '<main class="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-12">' +
+            (heroPost ? (
+              '<section class="rounded-3xl border border-slate-800 bg-[#0a0f1d] p-6 sm:p-10 relative overflow-hidden">' +
+                '<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">' +
+                  '<div class="lg:col-span-7 space-y-4">' +
+                    '<span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-orange-950 text-orange-400 border border-orange-500/30">🔥 Spotlight Announcement</span>' +
+                    '<h1 class="text-2xl sm:text-4xl font-extrabold text-white leading-tight"><a href="/' + heroPost.slug + '" class="hover:text-orange-400 transition-colors">' + (heroPost.title || '').replace(/</g, '&lt;') + '</a></h1>' +
+                    '<p class="text-sm sm:text-base text-slate-400 leading-relaxed">' + (heroPost.excerpt || '').replace(/</g, '&lt;') + '</p>' +
+                    '<div class="pt-2"><a href="/' + heroPost.slug + '" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-lg shadow-orange-600/30 transition-all">Read Feature Article →</a></div>' +
+                  '</div>' +
+                  (heroPost.featuredImage ? '<div class="lg:col-span-5 aspect-video lg:aspect-auto h-64 sm:h-80 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950"><img src="' + heroPost.featuredImage + '" class="w-full h-full object-cover" alt="' + (heroPost.title || '').replace(/"/g, '&quot;') + '" /></div>' : '') +
+                '</div>' +
+              '</section>'
+            ) : '') +
+            '<section class="space-y-6">' +
+              '<h2 class="text-xl sm:text-2xl font-bold text-white flex items-center gap-2"><span>📰</span><span>Latest Publications</span></h2>' +
+              '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">' + cardsHtml + '</div>' +
+            '</section>' +
+          '</main>' +
+          '<footer class="border-t border-slate-800 bg-[#040711] py-8 text-center text-xs text-slate-500">' +
+            '<p>© ' + new Date().getFullYear() + ' ' + siteName + '. Deployed with Cloudflare Pages & Git Data API in 1 Single Build.</p>' +
+          '</footer>' +
+        '</body>' +
+        '</html>';
+    }
+
+    async function pushBatchCommitDirect(owner, repo, token, branch, files, commitMessage, onProgress) {
+      var authHeader = (token.startsWith('Bearer ') || token.startsWith('token ') || token.startsWith('github_pat_')) ? token : ('token ' + token);
+      var headers = {
+        Authorization: authHeader,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      };
+
+      // 1. Fetch current branch HEAD
+      if (onProgress) onProgress('Checking branch "' + branch + '"...');
+      var branchRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/branches/' + encodeURIComponent(branch), { headers: headers });
+      var baseCommitSha = null;
+      var baseTreeSha = null;
+      if (branchRes.ok) {
+        var branchData = await branchRes.json();
+        baseCommitSha = branchData.commit ? branchData.commit.sha : null;
+        baseTreeSha = (branchData.commit && branchData.commit.commit && branchData.commit.commit.tree) ? branchData.commit.commit.tree.sha : null;
+      }
+
+      // 2. Create Blobs in controlled batches of 5
+      var treeEntries = [];
+      var BATCH_SIZE = 5;
+      for (var i = 0; i < files.length; i += BATCH_SIZE) {
+        var batch = files.slice(i, i + BATCH_SIZE);
+        var promises = batch.map(async function(f) {
+          var base64 = btoa(unescape(encodeURIComponent(f.content)));
+          var blobRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/blobs', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({ content: base64, encoding: 'base64' })
+          });
+          if (!blobRes.ok) {
+            var err = await blobRes.json().catch(function() { return {}; });
+            throw new Error('Blob creation failed for ' + f.path + ': ' + (err.message || blobRes.statusText));
+          }
+          var blobData = await blobRes.json();
+          return { path: f.path, mode: '100644', type: 'blob', sha: blobData.sha };
+        });
+
+        var results = await Promise.all(promises);
+        treeEntries.push.apply(treeEntries, results);
+        var completed = Math.min(i + BATCH_SIZE, files.length);
+        if (onProgress) onProgress('Processed ' + completed + '/' + files.length + ' files...');
+        if (i + BATCH_SIZE < files.length) await new Promise(function(r) { setTimeout(r, 40); });
+      }
+
+      // 3. Create Git Tree
+      if (onProgress) onProgress('Building Git tree (' + treeEntries.length + ' items)...');
+      var treePayload = { tree: treeEntries };
+      if (baseTreeSha) treePayload.base_tree = baseTreeSha;
+      var treeRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/trees', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(treePayload)
+      });
+      if (!treeRes.ok) {
+        var errT = await treeRes.json().catch(function() { return {}; });
+        throw new Error('Failed to create Git tree: ' + (errT.message || treeRes.statusText));
+      }
+      var newTree = await treeRes.json();
+
+      // 4. Create 1 Single Atomic Commit
+      if (onProgress) onProgress('Creating 1 single atomic commit...');
+      var commitPayload = {
+        message: commitMessage,
+        tree: newTree.sha,
+        parents: baseCommitSha ? [baseCommitSha] : []
+      };
+      var commitRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/commits', {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(commitPayload)
+      });
+      if (!commitRes.ok) {
+        var errC = await commitRes.json().catch(function() { return {}; });
+        throw new Error('Failed to create commit: ' + (errC.message || commitRes.statusText));
+      }
+      var newCommit = await commitRes.json();
+
+      // 5. Update branch ref
+      if (onProgress) onProgress('Updating branch ref in 1 build...');
+      var updateRefRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/refs/heads/' + encodeURIComponent(branch), {
+        method: 'PATCH',
+        headers: headers,
+        body: JSON.stringify({ sha: newCommit.sha, force: true })
+      });
+
+      if (!updateRefRes.ok) {
+        var createRefRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/refs', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ ref: 'refs/heads/' + branch, sha: newCommit.sha })
+        });
+        if (!createRefRes.ok) {
+          await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/git/refs/heads/' + encodeURIComponent(branch), {
+            method: 'PATCH',
+            headers: headers,
+            body: JSON.stringify({ sha: newCommit.sha, force: true })
+          });
+        }
+      }
+
+      return newCommit;
+    }
+
+    async function commitAllToGitHub(customMessage) {
+      if (isLivePushRunning) {
+        showToast('Push already in progress. Please wait...');
         return;
       }
 
-      var syncBtn = document.getElementById('btnSyncGh');
-      if (syncBtn) {
-        syncBtn.disabled = true;
-        syncBtn.innerHTML = '<span>⏳</span><span>Pushing...</span>';
+      var token = localStorage.getItem('astro_sveltia_gh_token') || '';
+      var owner = localStorage.getItem('astro_sveltia_gh_user') || APP_DATA.githubUser;
+      var repo = localStorage.getItem('astro_sveltia_gh_repo') || APP_DATA.githubRepo;
+      var branch = localStorage.getItem('astro_sveltia_gh_branch') || 'main';
+
+      if (!token) {
+        promptEditGithubToken();
+        token = localStorage.getItem('astro_sveltia_gh_token') || '';
+        if (!token) return;
       }
 
-      try {
-        await pushFileDirect(owner, repo, token, 'src/data/settings.json', JSON.stringify(APP_DATA.settings, null, 2), 'chore: update site settings from Admin Studio');
-        await pushFileDirect(owner, repo, token, 'src/content/categories/categories.json', JSON.stringify(APP_DATA.categories, null, 2), 'content: update categories taxonomy');
-        await pushFileDirect(owner, repo, token, 'src/data/menus.json', JSON.stringify({ items: APP_DATA.menus }, null, 2), 'structure: update navigation menus');
-        await pushFileDirect(owner, repo, token, 'src/data/redirects.json', JSON.stringify({ rules: APP_DATA.redirects }, null, 2), 'routing: update 301 url redirects');
+      isLivePushRunning = true;
+      var syncBtn = document.getElementById('btnSyncGh');
+      var syncLabel = document.getElementById('syncGhLabel');
+      if (syncBtn) syncBtn.disabled = true;
 
-        var postsList = APP_DATA.posts || [];
+      function updateStatus(msg) {
+        if (syncLabel) syncLabel.innerText = msg;
+        showToast(msg);
+      }
+
+      updateStatus('Preparing atomic package...');
+
+      try {
+        // 1. Sort posts chronologically descending
+        var postsList = (APP_DATA.posts || []).slice().sort(function(a, b) {
+          var tA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+          var tB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+          return tB - tA;
+        });
+
+        var files = [];
+
+        // 2. Data manifests
+        var postsJson = JSON.stringify(postsList, null, 2);
+        var settingsJson = JSON.stringify(APP_DATA.settings || {}, null, 2);
+        var categoriesJson = JSON.stringify(APP_DATA.categories || [], null, 2);
+        var menusJson = JSON.stringify({ items: APP_DATA.menus || [] }, null, 2);
+        var redirectsJson = JSON.stringify({ rules: APP_DATA.redirects || [] }, null, 2);
+
+        files.push({ path: 'src/data/posts.json', content: postsJson });
+        files.push({ path: 'dist/data/posts.json', content: postsJson });
+        files.push({ path: 'public/data/posts.json', content: postsJson });
+
+        files.push({ path: 'src/data/settings.json', content: settingsJson });
+        files.push({ path: 'dist/data/settings.json', content: settingsJson });
+        files.push({ path: 'public/data/settings.json', content: settingsJson });
+
+        files.push({ path: 'src/content/categories/categories.json', content: categoriesJson });
+        files.push({ path: 'src/data/menus.json', content: menusJson });
+        files.push({ path: 'src/data/redirects.json', content: redirectsJson });
+
+        // Edge cache control header
+        var headersContent = '/*\n  Cache-Control: public, max-age=0, must-revalidate\n/assets/*\n  Cache-Control: public, max-age=31536000, immutable\n';
+        files.push({ path: '_headers', content: headersContent });
+        files.push({ path: 'dist/_headers', content: headersContent });
+        files.push({ path: 'public/_headers', content: headersContent });
+
+        // 3. Homepage HTML
+        var homepageHtml = buildClientHomepageHtml(APP_DATA);
+        files.push({ path: 'index.html', content: homepageHtml });
+        files.push({ path: 'dist/index.html', content: homepageHtml });
+        files.push({ path: 'public/index.html', content: homepageHtml });
+        files.push({ path: '404.html', content: homepageHtml });
+        files.push({ path: 'dist/404.html', content: homepageHtml });
+
+        // 4. Articles
         for (var i = 0; i < postsList.length; i++) {
           var p = postsList[i];
+          var catObj = (APP_DATA.categories || []).find(function(c) { return c.id === p.categoryId; }) || { name: 'General' };
           var frontmatter = '---\n' +
             'title: "' + (p.title || '').replace(/"/g, '\\"') + '"\n' +
             'subtitle: "' + (p.subtitle || '').replace(/"/g, '\\"') + '"\n' +
             'slug: "' + p.slug + '"\n' +
             'publishedAt: "' + (p.publishedAt || new Date().toISOString()) + '"\n' +
             'status: "' + (p.status || 'published') + '"\n' +
-            'category: "' + (p.categoryId || '') + '"\n' +
+            'category: "' + (catObj.name || 'General') + '"\n' +
             'tags: ' + JSON.stringify(p.tags || []) + '\n' +
             'author: "' + (p.authorId || 'Admin') + '"\n' +
             'featuredImage: "' + (p.featuredImage || '') + '"\n' +
@@ -3243,55 +3557,31 @@
             '---\n\n' +
             (p.content || '');
 
-          await pushFileDirect(owner, repo, token, 'src/content/blog/' + p.slug + '.md', frontmatter, 'content: update article "' + p.title + '"');
+          files.push({ path: 'src/content/blog/' + p.slug + '.md', content: frontmatter });
+
+          if (p.status === 'published') {
+            var postHtml = buildClientArticleHtml(p, APP_DATA);
+            files.push({ path: p.slug + '/index.html', content: postHtml });
+            files.push({ path: 'dist/' + p.slug + '/index.html', content: postHtml });
+            files.push({ path: 'public/' + p.slug + '/index.html', content: postHtml });
+          }
         }
 
-        showToast('🚀 Pushed successfully to GitHub! Live site is rebuilding now.');
+        // 5. Commit all atomically
+        var commitMsg = customMessage || ('feat(blog): update site and articles in 1 single build (' + new Date().toLocaleTimeString() + ')');
+        var commit = await pushBatchCommitDirect(owner, repo, token, branch, files, commitMsg, function(stepMsg) {
+          updateStatus(stepMsg);
+        });
+
+        if (syncLabel) syncLabel.innerText = 'Live in 1 Build (#' + (commit.sha ? commit.sha.slice(0, 7) : 'ok') + ')';
+        showToast('✨ Published live in 1 single build! Cloudflare build running once.');
       } catch (err) {
         console.error(err);
-        showToast('Failed to push: ' + (err.message || 'Check GitHub token'), false);
+        if (syncLabel) syncLabel.innerText = 'Push Failed';
+        showToast('Push failed: ' + (err.message || 'Check GitHub token'), false);
       } finally {
-        if (syncBtn) {
-          syncBtn.disabled = false;
-          syncBtn.innerHTML = '<span>🚀</span><span class="hidden sm:inline">Push to GitHub</span><span class="sm:hidden">Push</span>';
-        }
-      }
-    }
-
-    async function pushFileDirect(owner, repo, token, path, content, message) {
-      var sha = null;
-      try {
-        var getRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path, {
-          headers: {
-            Authorization: 'Bearer ' + token,
-            Accept: 'application/vnd.github.v3+json'
-          }
-        });
-        if (getRes.ok) {
-          var getData = await getRes.json();
-          sha = getData.sha;
-        }
-      } catch (e) {}
-
-      var body = {
-        message: message,
-        content: btoa(unescape(encodeURIComponent(content)))
-      };
-      if (sha) body.sha = sha;
-
-      var putRes = await fetch('https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path, {
-        method: 'PUT',
-        headers: {
-          Authorization: 'Bearer ' + token,
-          Accept: 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!putRes.ok) {
-        var errJson = await putRes.json().catch(function() { return {}; });
-        throw new Error(errJson.message || ('HTTP ' + putRes.status));
+        isLivePushRunning = false;
+        if (syncBtn) syncBtn.disabled = false;
       }
     }
 
