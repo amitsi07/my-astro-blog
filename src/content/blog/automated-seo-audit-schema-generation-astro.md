@@ -2,7 +2,7 @@
 title: "Automated SEO Audit & Schema Generation with Astro SSR"
 subtitle: ""
 slug: "automated-seo-audit-schema-generation-astro"
-publishedAt: "2026-09-29T05:24:26.576Z"
+publishedAt: "2026-09-30T03:39:59.608Z"
 status: "draft"
 category: "cat-workflows"
 tags: ["seo","astro"]
